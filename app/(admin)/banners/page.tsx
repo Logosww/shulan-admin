@@ -6,7 +6,7 @@ import { ModalForm, ProFormDependency, ProFormGroup, ProFormSegmented, ProFormSe
 import { BannerType, bannerTypeValueEnumMap } from '@/constants';
 import { DeleteOutlined, EditOutlined, EyeOutlined, LoadingOutlined, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { HttpClient } from '@/utils';
-import { useCOSUpload, useMessage, useModal } from '@/hooks';
+import { useCOS, useMessage, useModal } from '@/hooks';
 import { DndContext } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
@@ -36,7 +36,7 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
 }) => {
   const modal = useModal();
   const message = useMessage();
-  const { upload } = useCOSUpload();
+  const { upload } = useCOS();
 
   const handlePreviewPic = (file: UploadFile) => {
     const { originFileObj, url } = file;

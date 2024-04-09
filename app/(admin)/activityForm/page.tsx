@@ -20,7 +20,7 @@ import {
 } from '@ant-design/pro-components';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ActivityState, Role } from '@/constants/value-enum';
-import { useMessage, useModal, useCOSUpload } from '@/hooks';
+import { useMessage, useModal, useCOS } from '@/hooks';
 import { DebounceSelect, PageTitle, UserRoleContext } from '@/components';
 import { HttpClient } from '@/utils';
 import { activityFeatureValueEnum, activityTypeValueEnum } from '@/constants';
@@ -83,7 +83,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
   const router = useRouter();
   const message = useMessage();
   const modal = useModal();
-  const { upload } = useCOSUpload();
+  const { upload } = useCOS();
   const [role] = useContext(UserRoleContext)!;
   const [form] = Form.useForm<ActivityFormType>();
   const state = Form.useWatch('state', form) as ActivityState;

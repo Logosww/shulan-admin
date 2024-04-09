@@ -14,11 +14,11 @@ const config = {
 
 let cos: COS;
 
-export const useCOSUpload = (
+export const useCOS = (
   onProgress?: (params: ProgressInfo) => void,
-  returnUrl?: boolean
+  returnUrl?: boolean,
 ) => {
-  if(!isClient) return { upload: () => Promise.resolve('') };
+  if(!isClient) return { upload: () => Promise.resolve(''), download: () => Promise.resolve() };
 
   let globalOnProgress = onProgress;
 
@@ -64,5 +64,26 @@ export const useCOSUpload = (
     });
   };
 
-  return { upload };
+  const download = (key: string, filename?: string) => new Promise<void>((resolve, reject) => {
+    if(!cos) return reject('COS 实例初始化失败');
+
+    cos.getObjectUrl({
+      Bucket: config.bucketName,
+      Region: config.bucketRegion,
+      Key: key,
+      Sign: true,
+    }, (err, { Url }) => {
+      if(err) return reject();
+
+      const url = new URL(Url);
+      url.searchParams.append('response-content-disposition', filename ? `attachment; filename=${encodeURIComponent(filename)}` : 'attachment');
+      const a = document.createElement('a');
+      a.href = url.toString();
+      a.target = '_self';
+      a.click();
+      resolve();
+    });
+  });
+
+  return { upload, download };
 };

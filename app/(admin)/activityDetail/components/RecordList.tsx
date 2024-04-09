@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Popover, Space, Image, Button, Tag, Dropdown, Form, Input, Popconfirm, Typography } from 'antd';
 import { HttpClient, valueEnum2MenuItem } from '@/utils';
-import { useMessage, useModal, usePagingAndQuery } from '@/hooks';
+import { useCOS, useMessage, useModal, usePagingAndQuery } from '@/hooks';
 import { VolunteerType, VolunteerSignUpState, idCardTypeValueEnumMap, genderValueEnum } from '@/constants/value-enum';
 import { ModalForm, ProDescriptions, ProFormDigit, ProFormGroup, ProFormSegmented, ProList, ProTable } from '@ant-design/pro-components';
-import { DownOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { DownOutlined, DownloadOutlined, EyeOutlined, FileExcelOutlined, FileZipOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons';
 import { volunteerSignUpStateValueEnum, volunteerTypeForFormValueEnum, volunteerTypeValueEnum, volunteerWhitelistStateValueEnum } from '@/constants';
 
 import type { Key, ReactNode } from 'react';
@@ -207,7 +207,7 @@ const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () => void 
       form={form}
       modalProps={{ centered: true, destroyOnClose: true }}
       submitter={{ submitButtonProps: { disabled: !volunteerList.length } }}
-      trigger={<Button type="primary" icon={<PlusOutlined />}>临时拉人</Button>}
+      trigger={<Button type="dashed" icon={<PlusOutlined />}>临时拉人</Button>}
       onFinish={handleSubmit}
       onOpenChange={open => !open && setVolunteerList([])}
     >
@@ -256,7 +256,10 @@ const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () => void 
 
 export const SignUpRecordList = ({ id }: { id: number }) => {
 
+  const [isExporting, setIsExporting] = useState(false);
+
   const message = useMessage();
+  const { download } = useCOS();
   const [expandedRowKeys, setExpandedRowKeys] = useState<readonly Key[]>([]);
 
   const {
@@ -309,7 +312,36 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       onSubmit={handleFilterQuery}
       onReset={handleFilterReset}
       toolbar={{
-        actions: [<TempVolunteerModal key="append" id={id} onSubmit={reload} />]
+        actions: [
+          <Dropdown
+            key="export"
+            menu={{
+              items: [
+                { key: 'list', label: '志愿者名单', icon: <FileExcelOutlined /> },
+                { key: 'pics', label: '证件照合集', icon: <FileZipOutlined /> },
+              ],
+              onClick: async ({ key }) => {
+                setIsExporting(true);
+                const getKey = key === 'list' ? HttpClient.getExportedVolunteerListKey : HttpClient.getExportedIdCardPicsZipKey;
+                const filename = key === 'list' ? '志愿者列表.xlsx' : '证件照合集.zip';
+                const fileKey = await getKey({ id });
+                await download(fileKey, filename).catch(() => message.error('导出失败')).finally(() => setIsExporting(false));
+                message.success('导出成功');
+              },
+            }}
+          >
+            <Button icon={<DownloadOutlined />} loading={isExporting}>导出</Button>
+          </Dropdown>,
+          <TempVolunteerModal key="append" id={id} onSubmit={reload} />,
+          <Popconfirm 
+            key="sendSms"
+            title="提示"
+            description="确认对审核通过的志愿者群发短信通知吗？"
+            onConfirm={async () => HttpClient.batchSendSmsNotification({ id }).then(() => message.success('发送成功')).then(() => reload())}
+          >
+            <Button type="primary" icon={<SendOutlined />}>群发短信</Button>
+          </Popconfirm>,
+        ]
       }}
       expandable={{ 
         expandedRowKeys,

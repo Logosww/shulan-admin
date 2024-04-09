@@ -56,6 +56,9 @@ dependencies:
   react:
     specifier: ^18.2.0
     version: 18.2.0
+  react-countup:
+    specifier: ^6.5.3
+    version: 6.5.3(react@18.2.0)
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
@@ -1686,6 +1689,10 @@ packages:
     resolution: {integrity: sha512-/xiR86tOcJ448nXPkJq0lhsP/Kg4LmvcRO+C5LwrAvmTMTZE75ESjMHi7qbQVAxNPBroOvVyYR0YOin9UN8yHQ==}
     dependencies:
       '@xmldom/xmldom': 0.8.10
+    dev: false
+
+  /countup.js@2.8.0:
+    resolution: {integrity: sha512-f7xEhX0awl4NOElHulrl4XRfKoNH3rB+qfNSZZyjSZhaAoUk6elvhH+MNxMmlmuUJ2/QNTWPSA7U4mNtIAKljQ==}
     dev: false
 
   /cross-spawn@7.0.3:
@@ -3896,6 +3903,15 @@ packages:
       rc-util: 5.39.1(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-countup@6.5.3(react@18.2.0):
+    resolution: {integrity: sha512-udnqVQitxC7QWADSPDOxVWULkLvKUWrDapn5i53HE4DPRVgs+Y5rr4bo25qEl8jSh+0l2cToJgGMx+clxPM3+w==}
+    peerDependencies:
+      react: '>= 16.3.0'
+    dependencies:
+      countup.js: 2.8.0
+      react: 18.2.0
     dev: false
 
   /react-dom@18.2.0(react@18.2.0):

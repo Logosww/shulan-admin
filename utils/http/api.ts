@@ -200,3 +200,29 @@ export const setBannerList = (params: number[]) => put('/setBannerList', params)
 export const getActivityOptions = () => get<OptionType[]>('/getActivities');
 
 export const getLiveOptions = () => get<OptionType[]>('/getLives');
+
+export const getActivityTotalClick = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityTotalShare = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityTotalSignUp = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityToBeAudit = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityAuditPass = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityAuditReject = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityCancelled = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityIllegalCancelled = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityFinished = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getActivityOffWork = (params: { id: number }) => get<number>('/manage/activity/data/viewVolume', params);
+
+export const getExportedVolunteerListKey = (params: { id: number }) => post<string>('/excel/export/activityWorkVolunteer', params);
+
+export const getExportedIdCardPicsZipKey = (params: { id: number }) => post<string>('/zip/exportActivityWorkVolunteerIdPhoto', params);
+
+export const batchSendSmsNotification = (params: { id: number }) => get('/sms/sendActivityReviewNotice', params);

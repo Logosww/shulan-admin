@@ -226,3 +226,16 @@ export interface IOption {
   id: number;
   label: string;
 };
+
+export interface IActivityStatistics {
+  totalClick: number;
+  totalShare: number;
+  totalSignUp: number;
+  tobeAudit: number;
+  auditPass: number;
+  auditReject: number;
+  cancelled: number;
+  illegalCancelled: number;
+  finished: number;
+  offWork: number;
+};
