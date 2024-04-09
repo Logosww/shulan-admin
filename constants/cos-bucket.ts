@@ -1,0 +1,1 @@
+export const COSBucketBaseUrl = 'https://shulan-1323578300.cos.ap-shanghai.myqcloud.com';
