@@ -59,7 +59,6 @@ const SignUpRecordDetail = ({ id }: { id: number }) => (
                         },
                         {
                           title: '学生证',
-                          hide: volunteerIdentityVo.studentCardPicUrls.length === 0,
                           renderText: () => (
                             <Space>
                               {volunteerIdentityVo.studentCardPicUrls.map((url, index) => <Image className="object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
@@ -100,7 +99,7 @@ const SignUpRecordDetail = ({ id }: { id: number }) => (
       {
         title: '证件照',
         dataIndex: 'idPhotoUrl',
-        renderText: (_, { idPhotoUrl }) => <Image className="rounded-[6px]" src={idPhotoUrl} width={90} height={120} />
+        renderText: (_, { idPhotoUrl }) => <Image className="rounded-[6px] object-cover" src={idPhotoUrl} width={90} height={120} />
       },
       {
         title: '证件类型',

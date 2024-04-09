@@ -39,10 +39,9 @@ const studentColumns: ProDescriptionsProps<IVolunteerDetail>['columns'] = [
   {
     title: '学生证',
     renderText: (_, { volunteerIdentityVo: { studentCardPicUrls } }) => (
-      studentCardPicUrls.length
-      && <Space>
-          {studentCardPicUrls.map((url, index) => <Image className="rounded-[6px] object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
-        </Space>
+      <Space>
+        {studentCardPicUrls.map((url, index) => <Image className="rounded-[6px] object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
+      </Space>
     )
   },
 ];
@@ -164,6 +163,7 @@ const VolunteersPage = () => {
                 placement="right"
                 content={
                   <ProDescriptions<IVolunteerDetail>
+                    size="small"
                     bordered={true}
                     column={3}
                     request={() => HttpClient.getVolunteerDetail({ id }).then(data => ({ data, success: true }))}

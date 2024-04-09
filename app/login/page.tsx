@@ -45,7 +45,7 @@ const LoginPage = () => {
 
   const handleSendCode = async () => {
     if(!phone) return;
-    if(!/^(13[0-9]|14[5-9]|15[0-3,5-9]|16[6]|17[0-8]|18[0-9]|19[1,8,9])\d{8}$/.test(phone))
+    if(!/^(13[0-9]|14[5-9]|15[0-3,5-9]|16[6]|17[0-8]|18[0-9]|19[0-9])\d{8}$/.test(phone))
       return message.error({ content: '无效的手机号' });
 
     await HttpClient.sendSmsCode(phone);
