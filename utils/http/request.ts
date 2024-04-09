@@ -14,7 +14,7 @@ interface SearchParams {
 
 type _RequestInit = RequestInit & { disableBaseUrl?: boolean; };
 
-const baseUrl = 'https://api.test.buhuishangshu.cn';
+const baseUrl = 'https://api.admin.buhuishangshu.cn';
 
 export const isClient =  typeof window !== 'undefined';
 
