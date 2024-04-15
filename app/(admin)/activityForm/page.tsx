@@ -6,7 +6,6 @@ import { Form } from 'antd';
 import { 
   ProForm,
   ProFormText,
-  ProFormUploadButton,
   ProFormSwitch,
   ProFormList,
   ProCard,
@@ -20,13 +19,12 @@ import {
 } from '@ant-design/pro-components';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ActivityState, Role } from '@/constants/value-enum';
-import { useMessage, useModal, useCOS } from '@/hooks';
-import { DebounceSelect, PageTitle, UserRoleContext } from '@/components';
+import { useMessage } from '@/hooks';
+import { CoverUploader, DebounceSelect, PageTitle, UserRoleContext } from '@/components';
 import { HttpClient } from '@/utils';
 import { activityFeatureValueEnum, activityTypeValueEnum } from '@/constants';
 import { formOperationMap, formTitleMap, FormOperation } from '.';
 
-import type { UploadFile } from 'antd';
 import type { ActivityForm as _ActivityForm } from '@/utils/http/api-types'
 import type { IActivityFormProps, ActivityFormType, PoiType, PoiOption } from '.';
 const amapKey = process.env.NEXT_PUBLIC_AMAP_AMP_KEY;
@@ -82,25 +80,10 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
   
   const router = useRouter();
   const message = useMessage();
-  const modal = useModal();
-  const { upload } = useCOS();
   const [role] = useContext(UserRoleContext)!;
   const [form] = Form.useForm<ActivityFormType>();
   const state = Form.useWatch('state', form) as ActivityState;
-  const isWorkListModifiable = operation === FormOperation.modify && state >= ActivityState.activated ? false : true;
-
-  const handlePreviewPic = (file: UploadFile) => {
-    const { originFileObj, url } = file;
-    if(!(originFileObj || url)) return;
-
-    const src = url || URL.createObjectURL(originFileObj!);
-    modal.info({
-      centered: true,
-      maskClosable: true,
-      width: 'auto',
-      modalRender: () => <img className="rounded-[6px] max-h-[70vh] overflow-hidden" src={src} />,
-    });
-  };
+  const isWorkListModifiable = operation === FormOperation.modify && state > ActivityState.activated ? false : true;
 
   const handleFetchPoiList = (keywords: string) => {
     const city = form.getFieldValue('city');
@@ -119,7 +102,8 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
     form['workList'] = isWorkListModifiable ? workList.map(_work => {
       const { dateRange } = _work;
       const work: Record<string, any> = { ..._work, startAt: dateRange[0], endAt: dateRange[1] };
-      delete work['dateRange'], delete work['id'];
+      state !== ActivityState.activated && (work.id = null);
+      delete work['dateRange'];
       return work;
     }) : [];
     delete form['dateRange'], delete form['signUpRange'], delete form['state'];
@@ -218,31 +202,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
           <ProFormCheckbox.Group label="活动保障" name="features" valueEnum={activityFeatureValueEnum} initialValue={id ? void 0 : []} />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormUploadButton 
-            label="活动封面"
-            name="coverPath"
-            listType="picture-card"
-            tooltip="建议上传尺寸为 282x384 的 png"
-            max={1}
-            rules={[{ required: true, message: '活动封面不能为空' }]}
-            convertValue={(value: string | UploadFile[]) => {
-              if(!value || !value.length) return [] as UploadFile[];
-              if(typeof value === 'string') return [{
-                status: 'done',
-                url: value,
-              }] as UploadFile[];
-              return value;
-            }}
-            transform={(file: UploadFile[] | string) => Array.isArray(file) ? file[0].response : file}
-            fieldProps={{
-              onPreview: handlePreviewPic,
-              customRequest: async ({ onProgress, onSuccess, file }) => {
-                const covertPath = await upload(file as File, void 0, e => onProgress?.(e));
-                onSuccess?.(covertPath);
-                message.success('封面上传成功');
-              }
-            }}
-          />
+          <CoverUploader name="coverPath" label="活动封面" tooltip="建议上传尺寸为 282x384 的 png" />
           <ProFormTextArea label="活动描述" name="description" width="md" fieldProps={{ maxLength: 500, showCount: true }}  initialValue={id ? void 0 : ''} />
           <ProFormTextArea label="活动公告" name="announcement" width="md" fieldProps={{ maxLength: 500, showCount: true }} initialValue={id ? void 0 : ''} />
           <ProFormList
@@ -253,8 +213,8 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
             min={1}
             copyIconProps={false}
             tooltip="报名开始后，活动将处于进行中状态，此后岗位列表不支持编辑。如需改动，请在活动详情页进行新增岗位补录。"
-            creatorButtonProps={{ block: false, creatorButtonText: '添加岗位', disabled: !isWorkListModifiable }}
-            actionRender={(_, __, defaultActionDom) => isWorkListModifiable ? defaultActionDom : []}
+            creatorButtonProps={{ block: false, creatorButtonText: '添加岗位', disabled: (!isWorkListModifiable) || (operation === FormOperation.modify && state === ActivityState.activated) }}
+            actionRender={(_, __, defaultActionDom) => isWorkListModifiable && (state !== ActivityState.activated) ? defaultActionDom : []}
             itemRender={({ listDom, action }, { index }) => (
               <ProCard
                 style={{ marginBlockEnd: 8 }}

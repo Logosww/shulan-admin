@@ -12,6 +12,7 @@ import { ForbbidenListModal } from './components/ForbbidenListModal';
 
 import type { ProDescriptionsProps } from '@ant-design/pro-components';
 import type { IVolunteer, IVolunteerDetail } from '@/utils/http/api-types';
+import { IgnoreListModal } from './components/IgnoreListModal';
 
 type FilterForm = {
   name: string;
@@ -19,6 +20,8 @@ type FilterForm = {
   identity: VolunteerIdentity,
   state: VolunteerWhitelistState;
 };
+
+const descriptionItemStyle = { whiteSpace: 'pre-line', maxWidth: 500 };
 
 const studentColumns: ProDescriptionsProps<IVolunteerDetail>['columns'] = [
   {
@@ -105,6 +108,7 @@ const VolunteersPage = () => {
       toolbar={{
         actions: [
           <WhitelistModal key="whitelist" reloadTable={reload} />,
+          <IgnoreListModal key="ignoreList" reloadTable={reload} />,
           <ForbbidenListModal key="forbbidenList" reloadTable={reload} />,
         ],
       }}
@@ -149,6 +153,12 @@ const VolunteersPage = () => {
           valueType: 'select',
           valueEnum: volunteerWhitelistStateValueEnum,
           renderText: (_, { state }) => <Tag bordered={false} color={volunteerWhitelistStateValueEnum.get(state)?.status}>{volunteerWhitelistStateValueEnum.get(state)?.text}</Tag>
+        },
+        {
+          title: '操作人',
+          dataIndex: 'reviewerName',
+          valueType: 'text',
+          hideInSearch: true,
         },
         {
           title: '操作',
@@ -203,6 +213,8 @@ const VolunteersPage = () => {
                       {
                         title: '相关经历',
                         dataIndex: 'experience',
+                        valueType: 'textarea',
+                        contentStyle: descriptionItemStyle,
                       },
                       {
                         title: '相关经历证明',

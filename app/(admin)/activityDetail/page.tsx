@@ -7,6 +7,7 @@ import { SignUpRecordList } from './components/RecordList';
 import { Statistics } from './components/Stastics';
 import { Suspense } from 'react';
 import { ProSkeleton } from '@ant-design/pro-components';
+import { Live } from './components/Live';
 
 
 const ActivityDetailInner = () => {
@@ -26,6 +27,11 @@ const ActivityDetailInner = () => {
         key: 'statistics',
         label: '活动数据',
         children: <Statistics id={activityId} />
+      },
+      {
+        key: 'live',
+        label: '现场回顾',
+        children: <Live id={activityId} />,
       },
       {
         key: 'audi',

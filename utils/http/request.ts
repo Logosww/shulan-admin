@@ -12,7 +12,7 @@ interface SearchParams {
   [key: string]: any;
 };
 
-type _RequestInit = RequestInit & { disableBaseUrl?: boolean; };
+type _RequestInit<T = void, RawT = any> = RequestInit & { disableBaseUrl?: boolean; transform?: (data: RawT) => T };
 
 const baseUrl = 'https://api.admin.buhuishangshu.cn';
 
@@ -24,7 +24,7 @@ const rediectToLogin = () => {
   window.location.href = '/login';
 };
 
-const myFetch = async <T>(url: string, options?: _RequestInit) => {
+const myFetch = async <T = void, RawT = any>(url: string, options?: _RequestInit<T, RawT>) => {
   const message = isClient ? messageApi : void 0;
   // const cookie = !isClient && tempCookie.value;
   
@@ -66,7 +66,7 @@ const myFetch = async <T>(url: string, options?: _RequestInit) => {
   }
 
 
-  const _data: ResOption<T> = await response.json();
+  const _data: ResOption<RawT> = await response.json();
   if(disableBaseUrl) return _data as T;
   
   const { code, msg, data } = _data;
@@ -75,18 +75,18 @@ const myFetch = async <T>(url: string, options?: _RequestInit) => {
     throw new Error(msg);
   }
 
-  return data;
+  return (options?.transform ? options.transform(data) : data) as T;
 };
 
 
-export const get = <T = void>(url: string, params?: SearchParams, options?: _RequestInit) => 
+export const get = <T = void, RawT = any>(url: string, params?: SearchParams, options?: _RequestInit<T, RawT>) => 
   myFetch<T>(`${url}${params ? ('?' + new URLSearchParams(params).toString()) : ''}`, options);
 
-export const post = <T = void>(url: string, params?: Record<string, any>, options?: _RequestInit) =>
+export const post = <T = void, RawT = any>(url: string, params?: Record<string, any>, options?: _RequestInit<T, RawT>) =>
   myFetch<T>(url, { method: 'post', body: JSON.stringify(params), headers: { 'Content-Type': 'application/json' }, ...options });
 
-export const put = <T = void>(url: string, params?: Record<string, any>, options?: _RequestInit) =>
+export const put = <T = void, RawT = any>(url: string, params?: Record<string, any>, options?: _RequestInit<T, RawT>) =>
   myFetch<T>(url, { method: 'put', body: JSON.stringify(params), headers: { 'Content-Type': 'application/json' }, ...options });
 
-export const del = <T = void>(url: string, params?: Record<string, any>, options?: _RequestInit) =>
+export const del = <T = void, RawT = any>(url: string, params?: Record<string, any>, options?: _RequestInit<T, RawT>) =>
   myFetch<T>(url, { method: 'delete', body: JSON.stringify(params), headers: { 'Content-Type': 'application/json' }, ...options });

@@ -61,7 +61,7 @@ export const WhitelistModal = ({ reloadTable }: { reloadTable: () => Promise<any
       form={form}
       submitter={false}
       modalProps={{ centered: true, destroyOnClose: true }}
-      trigger={<Button type="primary" >白名单管理</Button>}
+      trigger={<Button>白名单管理</Button>}
       onOpenChange={open => open ? getWhiteList() : setVolunteerList([])}
     >
       <ProFormGroup> 

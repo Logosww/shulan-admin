@@ -39,11 +39,11 @@ export const adminMenuItems: ISideBarProps['menuItems'] = [
     icon: <GiftOutlined />,
     label: '福利专区',
   },
-  // {
-  //   key: '/banners',
-  //   icon: <FundOutlined />,
-  //   label: 'Banner 管理',
-  // },
+  {
+    key: '/banners',
+    icon: <FundOutlined />,
+    label: 'Banner 管理',
+  },
   {
     key: '/volunteers',
     icon: <UserOutlined />,

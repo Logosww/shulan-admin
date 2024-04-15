@@ -11,6 +11,7 @@ import {
   getActivityTotalClick,
   getActivityTotalShare,
   getActivityTotalSignUp,
+  getActivityWorksVolume,
 } from '@/utils/http/api';
 import CountUp from 'react-countup';
 import { CarryOutTwoTone, FireTwoTone, HeartTwoTone, LoadingOutlined, setTwoToneColor } from '@ant-design/icons';
@@ -25,7 +26,6 @@ const formatter: StatisticProps['formatter'] = (value) => (
 
 export const Statistics = ({ id }: { id: number }) => {
 
-  
   const [isLoading, setIsLoading] = useState(true);
   const [statistics, setStatistics] = useState<IActivityStatistics>();
   
@@ -43,12 +43,13 @@ export const Statistics = ({ id }: { id: number }) => {
       getActivityIllegalCancelled({ id }).then(count => ({ illegalCancelled: count })),
       getActivityFinished({ id }).then(count => ({ finished: count })),
       getActivityOffWork({ id }).then(count => ({ offWork: count })),
+      getActivityWorksVolume({ id }).then(worksVolume => ({ worksVolume })),
     ]).then(objArr => {
       objArr.forEach(obj => Object.assign(statistics, obj));
       setStatistics(statistics as IActivityStatistics);
       setIsLoading(false);
     })
-  });
+  }, []);
 
   return (
     <Spin indicator={<LoadingOutlined />} spinning={isLoading}>
@@ -58,7 +59,7 @@ export const Statistics = ({ id }: { id: number }) => {
             <Flex justify="space-around">
               <Statistic title="总浏览量" value={statistics?.totalClick} formatter={formatter} prefix={<FireTwoTone />} />
               <Statistic title="总分享量" value={statistics?.totalShare} formatter={formatter} prefix={<HeartTwoTone />} />
-              <Statistic title="总报名数" value={statistics?.tobeAudit} formatter={formatter} prefix={<CarryOutTwoTone />} />
+              <Statistic title="总报名数" value={statistics?.totalSignUp} formatter={formatter} prefix={<CarryOutTwoTone />} />
             </Flex>
           </Card>
         </Col>
@@ -84,6 +85,15 @@ export const Statistics = ({ id }: { id: number }) => {
             <Flex justify="space-around">
               <Statistic title="已完成人数" value={statistics?.finished} formatter={formatter} />
               <Statistic title="未到岗人数" value={statistics?.offWork} formatter={formatter} />
+            </Flex>
+          </Card>
+        </Col>
+        <Col span={12} xxl={{ span: 6 }}>
+          <Card>
+            <Flex justify="space-around">
+              {
+                statistics?.worksVolume.map((work, index) => <Statistic key={index} title={work.name} value={work.volume} />)
+              }
             </Flex>
           </Card>
         </Col>

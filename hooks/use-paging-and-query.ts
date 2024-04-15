@@ -69,6 +69,7 @@ export const usePagingAndQuery = <DataT, FilterFormType extends Record<string, a
       paginationConfig: {
         ...paginationConfig,
         defaultPageSize: pageSize,
+        showQuickJumper: true,
         showSizeChanger: false,
         onChange: handlePageChange,
       },

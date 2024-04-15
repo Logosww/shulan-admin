@@ -131,6 +131,7 @@ export interface IVolunteer {
   state: VolunteerWhitelistState;
   identity: VolunteerIdentity;
   createAt: string;
+  reviewerName: string;
 };
 
 export interface IVolunteerDetail extends Omit<IVolunteer, 'createAt' | 'identity' | 'state'> {
@@ -187,6 +188,7 @@ export interface ISignUpRecord {
   activityWorkVolunteerIdentity: VolunteerType;
   useWhite: boolean;
   joinAt: string;
+  reviewerName: string;
 };
 
 export type SignUpRecordDetail = ISignUpRecord & IVolunteerDetail & {
@@ -218,8 +220,9 @@ export interface ISettingForm {
 export interface IBanner {
   id: number;
   type: BannerType;
-  targetId: number;
   coverUrl: string;
+  targetId?: number;
+  targetName?: string;
 };
 
 export interface IOption {
@@ -238,4 +241,17 @@ export interface IActivityStatistics {
   illegalCancelled: number;
   finished: number;
   offWork: number;
+  worksVolume: { 
+    id: number;
+    name: string;
+    volume: number;
+  }[];
+};
+
+export interface ILive {
+  id: number;
+  coverUrl: string;
+  articleUrl: string;
+  title: string;
+  digest: string;
 };

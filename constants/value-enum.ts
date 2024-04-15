@@ -23,6 +23,7 @@ export enum ActivityType {
   drama = 1,
   talkshow = 2,
   musicFestival = 3,
+  sports = 4,
 };
 
 export enum ActivityState {
@@ -80,6 +81,7 @@ export enum WorkTag {
 export enum BannerType {
   activity = 0,
   live = 1,
+  none = 2,
 };
 
 export enum IdCardType {
@@ -101,7 +103,8 @@ export const activityTypeValueEnum= new Map<ActivityType, string>()
   .set(ActivityType.concert, '演唱会')
   .set(ActivityType.drama, '话剧')
   .set(ActivityType.talkshow, '脱口秀')
-  .set(ActivityType.musicFestival, '音乐节');
+  .set(ActivityType.musicFestival, '音乐节')
+  .set(ActivityType.sports, '体育');
 
 export const activityStateValueEnum = new Map<ActivityState, ProSchemaValueEnumType>()
   .set(ActivityState.awaitingSubmit, { text: '拟草稿', status: 'warning' })
@@ -130,7 +133,7 @@ export const volunteerSignUpStateValueEnum = new Map<VolunteerSignUpState, strin
   .set(VolunteerSignUpState.auditFailed, '审核不通过')
   .set(VolunteerSignUpState.cancelled, '手动取消')
   .set(VolunteerSignUpState.cancelledOutOfIllegal, '违规取消')
-  .set(VolunteerSignUpState.atWork, '已到岗')
+  .set(VolunteerSignUpState.atWork, '进行中')
   .set(VolunteerSignUpState.offWork, '未到岗')
   .set(VolunteerSignUpState.finished, '已完成');
 
@@ -150,7 +153,8 @@ export const volunteerIdentityValueEnum = new Map<VolunteerIdentity, string>()
 
 export const bannerTypeValueEnumMap = new Map<BannerType, string>()
   .set(BannerType.activity, '活动')
-  .set(BannerType.live, '现场回顾');
+  .set(BannerType.live, '现场回顾')
+  .set(BannerType.none, '不跳转');
 
 export const workTagValueEnumMap = new Map<WorkTag, ProSchemaValueEnumType>()
   .set(WorkTag.normal, { text: '正常', status: 'processing' })

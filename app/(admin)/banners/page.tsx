@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button, Carousel, Form, Image, Modal, Popconfirm, Spin } from 'antd';
-import { ModalForm, ProFormDependency, ProFormGroup, ProFormSegmented, ProFormSelect, ProFormUploadButton, ProTable } from '@ant-design/pro-components';
+import { ModalForm, ProFormDependency, ProFormGroup, ProFormSegmented, ProFormSelect, ProTable } from '@ant-design/pro-components';
 import { BannerType, bannerTypeValueEnumMap } from '@/constants';
 import { DeleteOutlined, EditOutlined, EyeOutlined, LoadingOutlined, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { HttpClient } from '@/utils';
-import { useCOS, useMessage, useModal } from '@/hooks';
+import { useMessage } from '@/hooks';
 import { DndContext } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
@@ -17,9 +17,10 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import type { FormInstance, UploadFile } from 'antd';
+import type { FormInstance } from 'antd';
 import type { IBanner } from '@/utils/http/api-types';
 import type { DragEndEvent } from '@dnd-kit/core';
+import { CoverUploader } from '@/components';
 
 interface IRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   'data-row-key': string;
@@ -34,26 +35,12 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
   onFinish: () => Promise<any>;
   onOpenChange: (open: boolean) => void;
 }) => {
-  const modal = useModal();
   const message = useMessage();
-  const { upload } = useCOS();
-
-  const handlePreviewPic = (file: UploadFile) => {
-    const { originFileObj, url } = file;
-    if(!(originFileObj || url)) return;
-
-    const src = url || URL.createObjectURL(originFileObj!);
-    modal.info({
-      centered: true,
-      maskClosable: true,
-      width: 'auto',
-      modalRender: () => <img className="rounded-[6px] max-h-[70vh] overflow-hidden" src={src} />,
-    });
-  };
 
   const handleSubmit = async (_form: IBanner) => {
     const { id, coverUrl } = _form;
     const form: Record<string, any>= {..._form};
+    form['targetId'] = _form.targetId ?? 0;
     form['coverPath'] = URL.canParse(coverUrl) ? new URL(coverUrl).pathname.slice(1) : coverUrl;
     delete form['coverUrl'];
     await (id ? HttpClient.modifyBanner({ ...form as BannerForm, id }) : HttpClient.appendBanner(form as BannerForm));
@@ -73,42 +60,31 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
       onFinish={handleSubmit}
     >
       <Form.Item name="id" noStyle />
-      <ProFormUploadButton 
-        label="Banner 封面"
-        name="coverUrl"
-        listType="picture-card"
-        tooltip="建议上传尺寸为 1029x450 的 png"
-        max={1}
-        rules={[{ required: true, message: 'Banner 封面不能为空' }]}
-        convertValue={(value: string) => {
-          if(!value || !value.length) return [] as UploadFile[];
-          if(typeof value === 'string') return [{
-            status: 'done',
-            url: value,
-          }] as UploadFile[];
-          return value;
-        }}
-        transform={(file: UploadFile[] | string) => Array.isArray(file) ? file[0].response : file}
-        fieldProps={{
-          onPreview: handlePreviewPic,
-          customRequest: async ({ onProgress, onSuccess, file }) => {
-            const covertPath = await upload(file as File, void 0, e => onProgress?.(e));
-            onSuccess?.(covertPath);
-            message.success('封面上传成功');
-          }
-        }}
-      />
+      <CoverUploader name="coverUrl" label="Banner 封面" tooltip="建议上传尺寸为 1029x450 的 png" />
       <ProFormGroup>
         <ProFormSegmented label="跳转类型" name="type" initialValue={BannerType.activity} valueEnum={bannerTypeValueEnumMap} />
         <ProFormDependency name={['type']}>
-          {({ type }) => (
-            <ProFormSelect
-              width="md"
-              name="targetId"
-              label={`目标${bannerTypeValueEnumMap.get(type)}`}
-              request={type === BannerType.activity ? HttpClient.getActivityOptions : HttpClient.getLiveOptions}
-            />
-          )}
+          {({ type }) => 
+            type !== BannerType.none
+              ? (
+                <ProFormSelect
+                  width="md"
+                  name="targetId"
+                  label={`目标${bannerTypeValueEnumMap.get(type)}`}
+                  params={type}
+                  fieldProps={{
+                    showSearch: true,
+                    filterOption: (input, option) => ((option?.label ?? '') as string).toLowerCase().includes(input.toLowerCase())}
+                  }
+                  request={
+                    type === BannerType.activity 
+                      ? () => HttpClient.getActivityOptions({ isFilter: true }) 
+                      : () => HttpClient.getLiveOptions({ isFilter: true })
+                  }
+                />
+              )
+              : null
+          }
         </ProFormDependency>
       </ProFormGroup>
     </ModalForm>
@@ -179,7 +155,8 @@ const BannerPreviewModal = ({ open, onOpenChange }: { open: boolean; onOpenChang
   return (
     <Modal title="Banner 预览" footer={false} open={open} onCancel={() => onOpenChange(false)} centered>
       <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} spinning={isLoading}>
-        <Carousel autoplay>
+        <div className="w-full h-[200px] rounded-[6px] bg-slate-300" style={{ display: isLoading ? 'block' : 'none' }}></div>
+        <Carousel style={{ display: isLoading ? 'none' : 'block' }} autoplay>
           {bannerList?.map((bannerSrc, index) => <img className="w-full h-[200px] rounded-[6px] object-cover" key={index} src={bannerSrc} />)}
         </Carousel>
       </Spin>
@@ -236,7 +213,7 @@ const BannersPage = () => {
             dataSource={bannerList}
             toolbar={{
               actions: [
-                <Button key="preview" icon={<EyeOutlined />} onClick={() => setPreviewModalOpen(true)}>预览</Button>,
+                <Button key="preview" icon={<EyeOutlined />} disabled={!bannerList.length} onClick={() => setPreviewModalOpen(true)}>预览</Button>,
                 <Button key="append" type="primary" icon={<PlusOutlined />} onClick={() => { setModalTitle('新增 Banner'), modalForm.resetFields(), setModalOpen(true) }}>新增 Banner</Button>,
               ]
             }}
@@ -256,7 +233,7 @@ const BannersPage = () => {
               {
                 dataIndex: 'coverUrl',
                 title: '封面图片',
-                renderText: (_, banner) => <Image className="rounded-[6px] object-cover" width={240} height={160} src={banner.coverUrl} />
+                renderText: (_, banner) => <Image className="rounded-[6px] object-cover" width={250} height={120} src={banner.coverUrl} />
               },
               {
                 dataIndex: 'type',
@@ -275,7 +252,15 @@ const BannersPage = () => {
                 width: 200,
                 renderText: (_, banner) => (
                   <>
-                    <Button type="link" icon={<EditOutlined />} onClick={() => { setModalTitle('编辑 Banner'), modalForm.setFieldsValue(banner), setModalOpen(true) }}>编辑</Button>
+                    <Button 
+                      type="link" 
+                      icon={<EditOutlined />}
+                      onClick={() => {
+                        setModalTitle('编辑 Banner');
+                        modalForm.setFieldsValue({...banner, targetId: banner.targetId ? banner.targetId : void 0 });
+                        setModalOpen(true);
+                      }}
+                    >编辑</Button>
                     <Popconfirm title="警告" description="该操作不可撤销，确认删除吗" onConfirm={() => handleDelele(banner.id)}>
                       <Button type="link" icon={<DeleteOutlined />} danger>删除</Button>
                     </Popconfirm>

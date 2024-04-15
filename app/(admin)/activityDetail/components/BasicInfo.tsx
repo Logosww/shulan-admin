@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { useContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Flex, Image, Popconfirm, Switch, Tag } from 'antd';
 import { HttpClient } from '@/utils';
 import { useMessage } from '@/hooks';
@@ -15,11 +15,10 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { ActivityState, Role, WorkTag, activityFeatureValueEnum, workTagValueEnumMap } from '@/constants/value-enum';
+import { ActivityState, WorkTag, activityFeatureValueEnum, workTagValueEnumMap } from '@/constants/value-enum';
 
 import type { ActionType} from '@ant-design/pro-components';
 import type { IActivityDetail, IVolunteerWork, VolunteerWorkForm } from '@/utils/http/api-types';
-import { UserRoleContext } from '@/components';
 
 const WorkCard = ({ data, activityId }: { data: IVolunteerWork, activityId: number }) => {
   const [available, setAvailable] = useState(!data.isFull);
@@ -61,7 +60,7 @@ const WorkCard = ({ data, activityId }: { data: IVolunteerWork, activityId: numb
             renderText: (_, { startAt, endAt }) => `${startAt} 至 ${endAt}`,
           },
           {
-            title: '报名人数',
+            title: '实际参与人数',
             dataIndex: 'signupSuccessCount',
             valueType: 'text',
           },
@@ -84,7 +83,6 @@ const WorkCard = ({ data, activityId }: { data: IVolunteerWork, activityId: numb
 export const ActivityBasicInfo = ({ id }: { id: number }) => {
   const current = dayjs();
   
-  const [role] = useContext(UserRoleContext)!;
   const message = useMessage();
   const actionRef = useRef<ActionType>();
 
