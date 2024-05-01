@@ -83,7 +83,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
   const [role] = useContext(UserRoleContext)!;
   const [form] = Form.useForm<ActivityFormType>();
   const state = Form.useWatch('state', form) as ActivityState;
-  const isWorkListModifiable = operation === FormOperation.modify && state > ActivityState.activated ? false : true;
+  const isWorkListModifiable = (operation === FormOperation.modify && state > ActivityState.activated) ? false : true;
 
   const handleFetchPoiList = (keywords: string) => {
     const city = form.getFieldValue('city');
@@ -197,12 +197,14 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
           />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormSwitch label="是否展示" name="isDisplay" initialValue={id ? void 0 : true} />
+          <ProFormSwitch label="是否在小程序展示" name="isDisplay" initialValue={id ? void 0 : true} />
           <ProFormSwitch label="启用白名单" name="isWhite" initialValue={id ? void 0 : false} tooltip="启用白名单后，白名单用户报名后将直接通过审核" />
+          <ProFormSwitch label="展示工作须知" name="isWorkInstruction" initialValue={id ? void 0 : true} />
+          <ProFormSwitch label="是否线下签到" name="isCheck" initialValue={id ? void 0 : true} />
           <ProFormCheckbox.Group label="活动保障" name="features" valueEnum={activityFeatureValueEnum} initialValue={id ? void 0 : []} />
         </ProForm.Group>
         <ProForm.Group>
-          <CoverUploader name="coverPath" label="活动封面" tooltip="建议上传尺寸为 282x384 的 png" />
+          <CoverUploader name="coverPath" label="活动封面" tooltip="建议上传尺寸为 282 x 384 的 png" />
           <ProFormTextArea label="活动描述" name="description" width="md" fieldProps={{ maxLength: 500, showCount: true }}  initialValue={id ? void 0 : ''} />
           <ProFormTextArea label="活动公告" name="announcement" width="md" fieldProps={{ maxLength: 500, showCount: true }} initialValue={id ? void 0 : ''} />
           <ProFormList
@@ -212,9 +214,15 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
             className="m-h-[500px] overflow-y-auto"
             min={1}
             copyIconProps={false}
-            tooltip="报名开始后，活动将处于进行中状态，此后岗位列表不支持编辑。如需改动，请在活动详情页进行新增岗位补录。"
+            tooltip="报名开始后，活动将处于进行中状态，此后岗位列表不支持增删。如需新增，请在活动详情页进行新增岗位补录。"
             creatorButtonProps={{ block: false, creatorButtonText: '添加岗位', disabled: (!isWorkListModifiable) || (operation === FormOperation.modify && state === ActivityState.activated) }}
-            actionRender={(_, __, defaultActionDom) => isWorkListModifiable && (state !== ActivityState.activated) ? defaultActionDom : []}
+            actionRender={(_, __, defaultActionDom) => 
+              isWorkListModifiable 
+              ? operation === FormOperation.modify && state === ActivityState.activated
+                ? []
+                : defaultActionDom
+              : []
+            }
             itemRender={({ listDom, action }, { index }) => (
               <ProCard
                 style={{ marginBlockEnd: 8 }}

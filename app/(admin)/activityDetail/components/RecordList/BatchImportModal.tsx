@@ -1,3 +1,5 @@
+'use client';
+
 import { 
   VolunteerSignUpState,
   volunteerSignUpStateValueEnum as _volunteerSignUpStateValueEnum,

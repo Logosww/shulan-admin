@@ -1,11 +1,13 @@
 import { get, post, put, del } from '@/utils/http/request';
-import  {
+import {
   Gender,
   ActivityState,
   AdminAccoutState,
   VolunteerSignUpState,
   VolunteerIdentity,
   VolunteerWhitelistState,
+  NotificationState,
+  VolunteerType,
 } from '@/constants/value-enum';
 
 import type {
@@ -31,6 +33,9 @@ import type {
   VolunteerWorkForm,
   ILive,
   IActivityStatistics,
+  INotification,
+  ICertificate,
+  ICheckinRecord,
 } from './api-types';
 
 export const login = (params: ILoginForm) =>
@@ -122,9 +127,9 @@ export const filterVolunteers = (params: NullableFilter<{
 export const batchModifyVolunteerWhitelistState = (params: { ids: number[]; state: VolunteerWhitelistState; }) =>
   put('/superAdmin/volunteer/changeBatchState', params);
 
-export const batchAddonVolunteerWhitelist = (params: { ids: number[]; expireAt: string; }) => put('/superAdmin/volunteer/editBatchWhite', params);
+export const batchAddonVolunteerWhitelist = (params: { ids: number[]; expireAt: string | null }) => put('/superAdmin/volunteer/editBatchWhite', params);
 
-export const batchForbidVolunteer = (params: { ids: number[]; releaseAt: string }) => put('/superAdmin/volunteer/editBatchViolate', params);
+export const batchForbidVolunteer = (params: { ids: number[]; releaseAt: string | null }) => put('/superAdmin/volunteer/editBatchViolate', params);
 
 export const getVolunteerDetail = (params: { id: number }) => get<IVolunteerDetail>('/superAdmin/volunteer/detail', params);
 
@@ -161,6 +166,7 @@ export const filterSignUpRecords = (
     activityWorkVolunteerState: VolunteerSignUpState;
     volunteerState: VolunteerWhitelistState;
     purePhoneNumber: string;
+    activityWorkVolunteerIdentity: VolunteerType,
   }> & { activityId: number }
 ) => post<ISignUpRecord[]>('/manage/activityWorkVolunteer/search', params);
 
@@ -234,6 +240,8 @@ export const getActivityIllegalCancelled = (params: { id: number }) => get<numbe
 
 export const getActivityFinished = (params: { id: number }) => get<number>('/manage/activity/data/actualParticipateVolume', params);
 
+export const getActivitAtWork = (params: { id: number }) => get<number>('/manage/activity/data/processVolume', params);
+
 export const getActivityOffWork = (params: { id: number }) => get<number>('/manage/activity/data/notArriveVolume', params);
 
 export const getActivityWorksVolume = (params: { id: number }) => get<IActivityStatistics['worksVolume']>('/manage/activity/data/workVolume', params);
@@ -246,13 +254,40 @@ export const batchSendSmsNotification = (params: { id: number }) => get('/sms/se
 
 export const getLive = (params: { id: number }) => get<ILive>('/manage/activity/history/get', params);
 
-export const modiftLive = (params: Omit<ILive, 'coverUrl'> & { coverPath: string }) => put('/manage/activity/history/edit', params);
+export const modifyLive = (params: Omit<ILive, 'coverUrl'> & { coverPath: string }) => put('/manage/activity/history/edit', params);
 
 export const deleteLive = (params: { id: number }) => del('/manage/activity/history/delete', params);
-
-export const importIgnoreList = (params: { key: string }) => put('/superAdmin/excel/import/blackList', params);
 
 export const auditIgnoredVolunteerReject = (params: { id: number }) => put('/manage/activityWorkVolunteer/reviewFailAllBlackList', params);
 
 export const batchImportAndAuditVolunteerSignUpState = (params: { key: string; activityWorkVolunteerState: VolunteerSignUpState }) =>
   put('/excel/importChangeActivityWorkVolunteerStateList', params);
+
+export const batchIgnoreVolunteer = (params: { ids: number[]; reason: string }) => put('/superAdmin/volunteer/editBatchBlack', params);
+
+export const getPagingNotification = (params: IPagingParams & { state?: NotificationState }) => post<IPagingResult<INotification>>('/manage/message/search', params);
+
+export const batchReadNotification = (params: { ids: number[] }) => put('/manage/message/updateState', { state: NotificationState.read, ...params });
+
+export const batchDeleteNotification = (params: { ids: number[] }) => del('/manage/message/deleteBatch', params);
+
+export const getUnreadNotificationCount = () => get<number>('/manage/message/unreadCount');
+
+export const readAllNotification = () => put('/manage/message/readAll');
+
+export const getActivityCertificate = (params: { id: number }) => get<ICertificate>('/manage/activity/certificate/get', params);
+
+export const modifyActivityCertificate = (params: Omit<ICertificate, 'coverUrl'> & { coverPath: string }) => put('/manage/activity/certificate/edit', params);
+
+export const deleteActivityCertificate = (params: { id: number }) => del('/manage/activity/certificate/delete', params);
+
+export const getPagingCheckinRecords = (params: IPagingParams & { activityId: number }) => get<IPagingResult<ICheckinRecord>>('/manage/activityWorkVolunteer/check/page', params);
+
+export const filterCheckinRecords = (params: NullableFilter<{
+  activityWorkId: number;
+  activityWorkVolunteerIdentity: VolunteerType;
+  purePhoneNumber: string;
+  name: string;
+  id: number;
+  sex: Gender;
+}> & { activityId: number }) => post<ICheckinRecord[]>('/manage/activityWorkVolunteer/check/search', params);

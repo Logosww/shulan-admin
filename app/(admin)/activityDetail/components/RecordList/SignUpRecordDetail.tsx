@@ -1,3 +1,5 @@
+'use client';
+
 import { Popover, Space, Image, Button } from 'antd';
 import { HttpClient } from '@/utils';
 import { idCardTypeValueEnumMap } from '@/constants/value-enum';
@@ -20,7 +22,7 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
         title: '身份',
         renderText: (_, { volunteerIdentityVo }) => (
           <>
-            {volunteerIdentityVo.school ? '学生' : '社会人士'}
+            {volunteerIdentityVo.studentCardPicUrls.length ? '学生' : '社会人士'}
             <Popover
               trigger="click"
               title="身份详情"
@@ -30,7 +32,7 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
                   bordered={true}
                   dataSource={volunteerIdentityVo}
                   columns={
-                    volunteerIdentityVo.school
+                    volunteerIdentityVo.studentCardPicUrls.length
                       ? [
                         {
                           title: '学校',
@@ -130,8 +132,12 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
         )
       },
       {
+        title: '白名单情况',
+        renderText: (_, { stateVo: { whiteListExpireAt }}) => whiteListExpireAt ? `${whiteListExpireAt} 到期` : '无',
+      },
+      {
         title: '违规情况',
-        renderText: (_, { volunteerViolateVo: { currentViolateCount, violateCount, violateAt, releaseAt } }) => (
+        renderText: (_, { stateVo: { currentViolateCount, violateCount, violateAt, releaseAt } }) => (
           violateCount
             ? `当前违规：${currentViolateCount}次 | 累计违规：${violateCount}次 | 封禁时间：${violateAt} | 解禁时间: ${releaseAt}`
             : '无'

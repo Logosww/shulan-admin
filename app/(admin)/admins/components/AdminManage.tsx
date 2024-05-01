@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { useMessage, usePagingAndQuery } from '@/hooks';
 import { Button, Form, Switch } from 'antd';

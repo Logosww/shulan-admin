@@ -1,3 +1,5 @@
+'use client';
+
 import { useCOS, useMessage, useModal } from '@/hooks';
 import { ProFormUploadButton } from '@ant-design/pro-components';
 

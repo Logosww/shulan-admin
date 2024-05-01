@@ -82,12 +82,22 @@ export enum BannerType {
   activity = 0,
   live = 1,
   none = 2,
+  miniprogram = 3,
 };
 
 export enum IdCardType {
   mainlandIdCard = 0,
   HTMPass = 1,
   password = 2
+};
+
+export enum NotificationState {
+  unread = 0,
+  read = 1,
+};
+
+export enum NotificationType {
+  message = 0,
 };
 
 export const genderValueEnum = new Map<Gender, string>()
@@ -123,7 +133,7 @@ export const activityFeatureValueEnum = new Map<ActivityFeature, string>()
   .set(ActivityFeature.band, '工作手环');
 
 export const volunteerTypeValueEnum = new Map<VolunteerType, ProSchemaValueEnumType>()
-  .set(VolunteerType.normal, { text: '正常报名', status: 'default' })
+  .set(VolunteerType.normal, { text: '正常报名', status: 'success' })
   .set(VolunteerType.temporary, { text: '临时', status: 'processing' })
   .set(VolunteerType.personInCharge, { text: '负责人', status: 'warning' });
 
@@ -154,7 +164,8 @@ export const volunteerIdentityValueEnum = new Map<VolunteerIdentity, string>()
 export const bannerTypeValueEnumMap = new Map<BannerType, string>()
   .set(BannerType.activity, '活动')
   .set(BannerType.live, '现场回顾')
-  .set(BannerType.none, '不跳转');
+  .set(BannerType.none, '不跳转')
+  .set(BannerType.miniprogram, '小程序');
 
 export const workTagValueEnumMap = new Map<WorkTag, ProSchemaValueEnumType>()
   .set(WorkTag.normal, { text: '正常', status: 'processing' })
@@ -164,3 +175,6 @@ export const idCardTypeValueEnumMap = new Map<IdCardType, string>()
   .set(IdCardType.mainlandIdCard, '中国大陆居民身份证')
   .set(IdCardType.HTMPass, '港澳台通行证')
   .set(IdCardType.password, '护照');
+
+export const notificationTypeValueEnumMap = new Map<NotificationType, ProSchemaValueEnumType>()
+  .set(NotificationType.message, { text: '通知', status: 'processing' });

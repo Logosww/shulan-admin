@@ -1,9 +1,9 @@
 'use client';
 
 import { ActivityState, Role } from '@/constants/value-enum';
-import { ProForm, ProFormSelect, ProFormText, ProList } from '@ant-design/pro-components';
+import { ProForm, ProFormSelect, ProFormText, ProList, ProSkeleton } from '@ant-design/pro-components';
 import { HttpClient } from '@/utils/http';
-import { useContext } from 'react';
+import { Suspense, useContext } from 'react';
 import { Button, Popconfirm, Tag } from 'antd';
 import { CheckOutlined, ClockCircleFilled, CopyOutlined, DeleteOutlined, EditOutlined, EnvironmentFilled, PlusOutlined, RollbackOutlined, SendOutlined } from '@ant-design/icons';
 import { UserRoleContext } from '@/components';
@@ -201,11 +201,10 @@ const ActivityList = () => {
   </>;
 };
 
-const ActivitiesPage = () => {
-
-  return (
+const ActivitiesPage = () => (
+  <Suspense fallback={<ProSkeleton type="list" />}>
     <ActivityList />
-  );
-};
+  </Suspense>
+);
 
 export default ActivitiesPage;

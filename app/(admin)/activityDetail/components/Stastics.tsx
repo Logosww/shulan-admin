@@ -1,6 +1,9 @@
+'use client';
+
 import { Card, Col, Flex, Row, Spin, Statistic } from 'antd';
 import { useEffect, useState } from 'react';
 import { 
+  getActivitAtWork,
   getActivityAuditPass,
   getActivityAuditReject,
   getActivityCancelled,
@@ -42,6 +45,7 @@ export const Statistics = ({ id }: { id: number }) => {
       getActivityCancelled({ id }).then(count => ({ cancelled: count })),
       getActivityIllegalCancelled({ id }).then(count => ({ illegalCancelled: count })),
       getActivityFinished({ id }).then(count => ({ finished: count })),
+      getActivitAtWork({ id }).then(count => ({ atWork: count })),
       getActivityOffWork({ id }).then(count => ({ offWork: count })),
       getActivityWorksVolume({ id }).then(worksVolume => ({ worksVolume })),
     ]).then(objArr => {
@@ -83,6 +87,7 @@ export const Statistics = ({ id }: { id: number }) => {
         <Col span={12} xxl={{ span: 6 }}>
           <Card>
             <Flex justify="space-around">
+              <Statistic title="进行中人数" value={statistics?.atWork} formatter={formatter} />
               <Statistic title="已完成人数" value={statistics?.finished} formatter={formatter} />
               <Statistic title="未到岗人数" value={statistics?.offWork} formatter={formatter} />
             </Flex>

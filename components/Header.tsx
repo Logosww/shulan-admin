@@ -13,6 +13,7 @@ import { Icon } from '@iconify/react';
 import sunLow from '@iconify/icons-tabler/sun-low';
 import moon from '@iconify/icons-tabler/moon';
 import { ProFormDigit, ProForm } from '@ant-design/pro-components';
+import { Notification } from './Notification';
 
 
 import type { ISettingForm } from '@/utils/http/api-types';
@@ -120,6 +121,7 @@ export const Header = ({
           unCheckedChildren={<Icon width={14} height={22} icon={sunLow} />}
           onChange={toggle}
         />
+        <Notification />
         { role === Role.superAdmin && (
           <>
             <SettingsModal open={settingsModalOpen} onOpenChange={setSettingsModalOpen} />

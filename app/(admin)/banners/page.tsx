@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Button, Carousel, Form, Image, Modal, Popconfirm, Spin } from 'antd';
-import { ModalForm, ProFormDependency, ProFormGroup, ProFormSegmented, ProFormSelect, ProTable } from '@ant-design/pro-components';
+import { ModalForm, ProFormDependency, ProFormGroup, ProFormSegmented, ProFormSelect, ProFormText, ProSkeleton, ProTable } from '@ant-design/pro-components';
 import { BannerType, bannerTypeValueEnumMap } from '@/constants';
 import { DeleteOutlined, EditOutlined, EyeOutlined, LoadingOutlined, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { HttpClient } from '@/utils';
 import { useMessage } from '@/hooks';
+import { CoverUploader } from '@/components';
 import { DndContext } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
@@ -20,7 +21,6 @@ import { CSS } from '@dnd-kit/utilities';
 import type { FormInstance } from 'antd';
 import type { IBanner } from '@/utils/http/api-types';
 import type { DragEndEvent } from '@dnd-kit/core';
-import { CoverUploader } from '@/components';
 
 interface IRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   'data-row-key': string;
@@ -42,6 +42,9 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
     const form: Record<string, any>= {..._form};
     form['targetId'] = _form.targetId ?? 0;
     form['coverPath'] = URL.canParse(coverUrl) ? new URL(coverUrl).pathname.slice(1) : coverUrl;
+    form['type'] !== BannerType.miniprogram && (
+      form['miniProgramName'] = form['miniProgramAppid'] = form['miniProgramPagePath'] = ''
+    );
     delete form['coverUrl'];
     await (id ? HttpClient.modifyBanner({ ...form as BannerForm, id }) : HttpClient.appendBanner(form as BannerForm));
     onFinish();
@@ -60,29 +63,62 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
       onFinish={handleSubmit}
     >
       <Form.Item name="id" noStyle />
-      <CoverUploader name="coverUrl" label="Banner 封面" tooltip="建议上传尺寸为 1029x450 的 png" />
+      <CoverUploader name="coverUrl" label="Banner 封面" tooltip="建议上传尺寸为 1029 x 450 的 png" />
       <ProFormGroup>
         <ProFormSegmented label="跳转类型" name="type" initialValue={BannerType.activity} valueEnum={bannerTypeValueEnumMap} />
         <ProFormDependency name={['type']}>
           {({ type }) => 
             type !== BannerType.none
-              ? (
-                <ProFormSelect
-                  width="md"
-                  name="targetId"
-                  label={`目标${bannerTypeValueEnumMap.get(type)}`}
-                  params={type}
-                  fieldProps={{
-                    showSearch: true,
-                    filterOption: (input, option) => ((option?.label ?? '') as string).toLowerCase().includes(input.toLowerCase())}
-                  }
-                  request={
-                    type === BannerType.activity 
-                      ? () => HttpClient.getActivityOptions({ isFilter: true }) 
-                      : () => HttpClient.getLiveOptions({ isFilter: true })
-                  }
-                />
-              )
+              ? type !== BannerType.miniprogram
+                ? (
+                  <ProFormSelect
+                    width="md"
+                    name="targetId"
+                    label={`目标${bannerTypeValueEnumMap.get(type)}`}
+                    params={type}
+                    fieldProps={{
+                      showSearch: true,
+                      filterOption: (input, option) => ((option?.label ?? '') as string).toLowerCase().includes(input.toLowerCase())}
+                    }
+                    request={
+                      type === BannerType.activity 
+                        ? () => HttpClient.getActivityOptions({ isFilter: true }) 
+                        : () => HttpClient.getLiveOptions({ isFilter: true })
+                    }
+                    rules={[{
+                      validator: (_, value) => {
+                        const type = form.getFieldValue('type') as BannerType;
+                        if([BannerType.activity, BannerType.live].includes(type) && !value) return Promise.reject(new Error('跳转目标不能为空'));
+                        return Promise.resolve();
+                      }
+                    }]}
+                  />
+                )
+                : (
+                  <>
+                    <ProFormText width="sm" name="miniProgramName" label="目标小程序名称" rules={[{
+                      validator: (_, value) => {
+                        const type = form.getFieldValue('type') as BannerType;
+                        if(type === BannerType.miniprogram && !value) return Promise.reject(new Error('目标小程序名称不能为空'));
+                        return Promise.resolve();
+                      }
+                    }]} />
+                    <ProFormText width="sm" name="miniProgramAppid" label="小程序 appId" rules={[{
+                      validator: (_, value) => {
+                        const type = form.getFieldValue('type') as BannerType;
+                        if(type === BannerType.miniprogram && !value) return Promise.reject(new Error('小程序 appId 不能为空'));
+                        return Promise.resolve();
+                      }
+                    }]} />
+                    <ProFormText width="md" name="miniProgramPagePath" label="小程序 path" rules={[{
+                      validator: (_, value) => {
+                        const type = form.getFieldValue('type') as BannerType;
+                        if(type === BannerType.miniprogram && !value) return Promise.reject(new Error('小程序 path 不能为空'));
+                        return Promise.resolve();
+                      }
+                    }]} />
+                  </>
+                )
               : null
           }
         </ProFormDependency>
@@ -200,7 +236,7 @@ const BannersPage = () => {
   },[]);
 
   return (
-    <>
+    <Suspense fallback={<ProSkeleton type="list" />}>
       <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={handleDragEnd}>
         <SortableContext
           items={bannerList.map(({ id }) => id)}
@@ -242,7 +278,7 @@ const BannersPage = () => {
               },
               {
                 dataIndex: 'targetName',
-                title: '跳转目标标题',
+                title: '跳转目标',
                 valueType: 'text',
               },
               {
@@ -273,7 +309,7 @@ const BannersPage = () => {
       </DndContext>
       <BannerModal open={modalOpen} form={modalForm} title={modalTitle} onFinish={getBannerList} onOpenChange={setModalOpen} />
       <BannerPreviewModal open={previewModalOpen} onOpenChange={setPreviewModalOpen} />
-    </>
+    </Suspense>
   );
 };
 

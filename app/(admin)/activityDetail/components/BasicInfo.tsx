@@ -1,3 +1,5 @@
+'use client';
+
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import { Button, Flex, Image, Popconfirm, Switch, Tag } from 'antd';
@@ -189,16 +191,28 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             renderText: (_, { reviewer: { name } }) => name,
           },
           {
-            title: '是否展示',
+            title: '在小程序展示',
             dataIndex: 'isDisplay',
             valueType: 'text',
             renderText: (_, { isDisplay }) => isDisplay ? '是' : '否',
           },
           {
-            title: '是否使用白名单',
+            title: '展示工作须知',
+            dataIndex: 'isWorkInstruction',
+            valueType: 'text',
+            renderText: (_, { isWorkInstruction }) => isWorkInstruction ? '是' : '否',
+          },
+          {
+            title: '使用白名单',
             dataIndex: 'isWhite',
             valueType: 'text',
             renderText: (_, { isWhite }) => isWhite ? '是' : '否',
+          },
+          {
+            title: '线下签到',
+            dataIndex: 'isCheck',
+            valueType: 'text',
+            renderText: (_, { isCheck }) => isCheck ? '是' : '否',
           },
           {
             title: '活动描述',
@@ -209,7 +223,6 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             title: '活动公告',
             dataIndex: 'announcement',
             valueType: 'textarea',
-            span: 3,
           },
           {
             title: '岗位列表',

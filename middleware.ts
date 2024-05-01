@@ -1,4 +1,3 @@
-import { tempCookie } from './utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 import type { MiddlewareConfig } from 'next/server';
@@ -23,7 +22,6 @@ export const config: MiddlewareConfig = {
 
 export function middleware(request: NextRequest) {
   let response = NextResponse.next();
-  tempCookie.value = request.cookies.toString();
   // const isLogin = request.cookies.has('Authorization');
   // if(request.nextUrl.pathname.startsWith('/login')) isLogin && (response = NextResponse.redirect(new URL('/', request.url)));
   // else !isLogin && (response = NextResponse.redirect(new URL('/login', request.url)));

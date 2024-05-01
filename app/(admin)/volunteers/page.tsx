@@ -7,12 +7,12 @@ import { HttpClient } from '@/utils';
 import { useMessage, usePagingAndQuery } from '@/hooks';
 import { VolunteerIdentity, VolunteerWhitelistState, idCardTypeValueEnumMap } from '@/constants/value-enum';
 import { genderValueEnum, volunteerIdentityValueEnum, volunteerWhitelistStateValueEnum } from '@/constants';
-import { WhitelistModal } from './components/WhitelistModal';
-import { ForbbidenListModal } from './components/ForbbidenListModal';
+import WhitelistModal from './components/WhitelistModal';
+import ForbbidenListModal from './components/ForbbidenListModal';
+import IgnoreListModal from './components/IgnoreListModal';
 
 import type { ProDescriptionsProps } from '@ant-design/pro-components';
 import type { IVolunteer, IVolunteerDetail } from '@/utils/http/api-types';
-import { IgnoreListModal } from './components/IgnoreListModal';
 
 type FilterForm = {
   name: string;
@@ -223,7 +223,19 @@ const VolunteersPage = () => {
                             {experiencePicUrls.map((url, index) => <Image className="rounded-[6px] object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
                           </Space>
                         )
-                      }
+                      },
+                      {
+                        title: '白名单情况',
+                        renderText: (_, { stateVo: { whiteListExpireAt }}) => whiteListExpireAt ? `${whiteListExpireAt} 到期` : '无',
+                      },
+                      {
+                        title: '违规情况',
+                        renderText: (_, { stateVo: { currentViolateCount, violateCount, violateAt, releaseAt, blackReason } }) => (
+                          violateCount || blackReason
+                            ? `当前违规：${currentViolateCount}次 | 累计违规：${violateCount}次 | 封禁时间：${violateAt} | 解禁时间: ${releaseAt}${blackReason && ` | 拉黑原因：${blackReason}`}`
+                            : '无'
+                        )
+                      },
                     ]}
                   />
                 }

@@ -8,7 +8,8 @@ import { Statistics } from './components/Stastics';
 import { Suspense } from 'react';
 import { ProSkeleton } from '@ant-design/pro-components';
 import { Live } from './components/Live';
-
+import { Certificate } from './components/Certificate';
+import { CheckinRecodList } from './components/CheckinRecodList';
 
 const ActivityDetailInner = () => {
 
@@ -34,9 +35,19 @@ const ActivityDetailInner = () => {
         children: <Live id={activityId} />,
       },
       {
+        key: 'certificate',
+        label: '纪念证书',
+        children: <Certificate id={activityId} />
+      },
+      {
         key: 'audi',
         label: '志愿者审核',
         children: <SignUpRecordList id={activityId} />,
+      },
+      {
+        key: 'checkin',
+        label: '签到记录',
+        children: <CheckinRecodList id={activityId} />
       },
     ]} />
   );

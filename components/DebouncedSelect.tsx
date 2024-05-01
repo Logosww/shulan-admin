@@ -1,3 +1,5 @@
+'use client';
+
 import debounce from 'lodash-es/debounce';
 import React, { useMemo, useRef, useState } from 'react';
 import { Select, Spin } from 'antd';

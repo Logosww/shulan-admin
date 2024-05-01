@@ -13,6 +13,8 @@ import type {
   BannerType,
   WorkTag,
   IdCardType,
+  NotificationType,
+  NotificationState,
 } from '@/constants/value-enum';
 
 export interface ILoginForm {
@@ -73,11 +75,14 @@ export interface IActivityDetail {
     longitude: string;
     latitude: string;
   };
+  announcement: string;
   features: ActivityFeature[];
   workList: IVolunteerWork[];
   isDisplay: boolean;
   isWhite: boolean;
   description: string;
+  isWorkInstruction: boolean;
+  isCheck: boolean;
 };
 
 export type ActivityPreview = Pick<
@@ -115,11 +120,7 @@ export type ActivityForm = Omit<IActivityDetail,
   | 'signupSuccessCount'
   | 'manager'
   | 'reviewer'
-> & {
-  announcement: string;
-  isDisplay: boolean;
-  workList: IVolunteerWork[];
-};
+>;
 
 export interface IVolunteer {
   id: number;
@@ -152,11 +153,13 @@ export interface IVolunteerDetail extends Omit<IVolunteer, 'createAt' | 'identit
     jobUnit: string;
     identityCertPicUrls: string[];
   };
-  volunteerViolateVo: {
+  stateVo: {
     violateCount: number;
     currentViolateCount: number;
     violateAt: string;
     releaseAt: string;
+    whiteListExpireAt: string;
+    blackReason: string;
   };
 };
 
@@ -221,8 +224,10 @@ export interface IBanner {
   id: number;
   type: BannerType;
   coverUrl: string;
-  targetId?: number;
-  targetName?: string;
+  targetId: number;
+  targetName: string;
+  miniProgramAppid: string;
+  miniProgramPagePath: string;
 };
 
 export interface IOption {
@@ -239,8 +244,9 @@ export interface IActivityStatistics {
   auditReject: number;
   cancelled: number;
   illegalCancelled: number;
-  finished: number;
+  atWork: number;
   offWork: number;
+  finished: number;
   worksVolume: { 
     id: number;
     name: string;
@@ -254,4 +260,36 @@ export interface ILive {
   articleUrl: string;
   title: string;
   digest: string;
+};
+
+export interface INotification {
+  id: number;
+  title: string;
+  createAt: string;
+  type: NotificationType;
+  state: NotificationState;
+  senderName: string;
+  content: string;
+};
+
+export interface ICertificate {
+  id: number;
+  title: string;
+  coverUrl: string;
+};
+
+export interface ICheckinRecord {
+  id: number;
+  purePhoneNumber: string;
+  name: string;
+  age: string;
+  sex: Gender;
+  activityWork: {
+    id: string;
+    label: string;
+  };
+  activityWorkVolunteerIdentity: VolunteerType;
+  isChecked: boolean;
+  checkAt: string;
+  reviewerName: string;
 };

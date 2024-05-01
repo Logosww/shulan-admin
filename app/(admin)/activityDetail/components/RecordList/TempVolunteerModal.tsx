@@ -1,10 +1,13 @@
+'use client';
+
 import { useState } from 'react';
-import { Button, Form, Input, Typography } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { HttpClient } from '@/utils';
 import { useMessage, useModal } from '@/hooks';
 import { ModalForm, ProFormDigit, ProFormGroup, ProFormSegmented, ProList } from '@ant-design/pro-components';
 import { PlusOutlined} from '@ant-design/icons';
 import { volunteerTypeForFormValueEnum } from '@/constants';
+import Text from 'antd/es/typography/Text';
 
 import type {
   IVolunteer,
@@ -81,7 +84,7 @@ export const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () =
             dataIndex: 'name'
           },
           subTitle: {
-            render: (_, { purePhoneNumber: phone }) => <Typography.Text>手机号：{phone}</Typography.Text>
+            render: (_, { purePhoneNumber: phone }) => <Text>手机号：{phone}</Text>
           },
           actions: {
             render: (_, { id }, index) => [

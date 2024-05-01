@@ -1,8 +1,11 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { HttpClient } from '@/utils';
-import { Button, Card, Empty, Form, Popconfirm, message } from 'antd';
+import { Button, Card, Empty, Form, Popconfirm } from 'antd';
 import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import { CoverUploader } from '@/components';
+import { useMessage } from '@/hooks';
 import Meta from 'antd/es/card/Meta';
 
 import type { ILive } from '@/utils/http/api-types';
@@ -17,11 +20,13 @@ export const LiveModal = ({ open, initialValues, onOpenChange, onFinish }: {
   onOpenChange: (open: boolean) => void;
 }) => {
 
+  const message = useMessage();
+
   const handleSubmit = async (_form: ILive) => {
     const form: Record<string, any> = {..._form};
     form['coverPath'] = URL.canParse(_form.coverUrl) ? new URL(_form.coverUrl).pathname.slice(1) : _form.coverUrl;;
     delete form.coverUrl;
-    await HttpClient.modiftLive(form as LiveForm);
+    await HttpClient.modifyLive(form as LiveForm);
     onFinish();
     message.success('编辑成功');
     return true;
@@ -37,7 +42,7 @@ export const LiveModal = ({ open, initialValues, onOpenChange, onFinish }: {
       onOpenChange={onOpenChange}
     >
       <Form.Item name="id" noStyle />
-      <CoverUploader name="coverUrl" label="封面" tooltip="建议上传尺寸为 1029x405 的 png" />
+      <CoverUploader name="coverUrl" label="封面" tooltip="建议上传尺寸为 1029 x 405 的 png" />
       <ProFormText name="title" label="标题" width="md" fieldProps={{ maxLength: 250 }} rules={[{ required: true, message: '标题不能为空' }]} />
       <ProFormText 
         name="articleUrl"
@@ -57,7 +62,7 @@ export const LiveModal = ({ open, initialValues, onOpenChange, onFinish }: {
 };
 
 export const Live = ({ id }: { id: number }) => {
-
+  const message = useMessage();
   const [live, setLive] = useState<ILive>();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -77,7 +82,12 @@ export const Live = ({ id }: { id: number }) => {
             cover={<img src={live.coverUrl} />}
             actions={[
               <Button key="modify" type="text" icon={<EditOutlined />} onClick={() => setModalOpen(true)} />,
-              <Popconfirm key="delete" title="提示" description="确认删除现场回顾吗？" onConfirm={() => HttpClient.deleteLive({ id }).then(() => {message.success('删除成功')})}>
+              <Popconfirm 
+                key="delete"
+                title="提示"
+                description="确认删除现场回顾吗？"
+                onConfirm={() => HttpClient.deleteLive({ id }).then(() => message.success('删除成功')).then(getLive)}
+              >
                 <Button type="text" icon={<DeleteOutlined />} danger />
               </Popconfirm>,
             ]}

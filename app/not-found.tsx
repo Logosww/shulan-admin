@@ -1,7 +1,6 @@
-'use client';
-
 import { LeftCircleOutlined } from '@ant-design/icons';
-import { Button, Empty, Typography } from 'antd';
+import { Button, Empty } from 'antd';
+import Title from 'antd/es/typography/Title';
 
 const NotFound = () => (
   <div className="absolute w-full h-full flex items-center justify-center">
@@ -10,7 +9,7 @@ const NotFound = () => (
       imageStyle={{ height: 120 }}
       description={
         <>
-          <Typography.Title level={2}>404</Typography.Title>
+          <Title level={2}>404</Title>
           <span>页面未找到</span>
         </>
       }

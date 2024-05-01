@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Space, Button, Tag, Dropdown, Popconfirm } from 'antd';
 import { HttpClient, valueEnum2MenuItem } from '@/utils';
@@ -17,7 +19,13 @@ import type {
 } from '@/utils/http/api-types';
 
 type FilterForm = Pick<ISignUpRecord, 
-  'id' | 'name' | 'purePhoneNumber' | 'activityWorkVolunteerState' | 'volunteerState'
+  |'id' 
+  | 'name' 
+  | 'sex' 
+  | 'purePhoneNumber' 
+  | 'activityWorkVolunteerState' 
+  | 'volunteerState'
+  | 'activityWorkVolunteerIdentity'
 > & { activityWorkId: number };
 
 export const SignUpRecordList = ({ id }: { id: number }) => {
@@ -43,12 +51,14 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
     pagingRequest: (params) => HttpClient.getPagingSignUpRecords({ ...params, activityId: id }),
     queryRequest: (form) => HttpClient.filterSignUpRecords({...form, activityId: id }),
     filterFormTransform: (form) => ({
+      sex: form.sex ?? null,
       name: form.name ?? null,
       activityWorkId: form.activityWorkId ?? null,
       volunteerState: form.volunteerState ?? null,
       purePhoneNumber: form.purePhoneNumber ?? null,
       id: form.id ? parseInt(form.id as unknown as string) : null,
       activityWorkVolunteerState: form.activityWorkVolunteerState ?? null,
+      activityWorkVolunteerIdentity: form.activityWorkVolunteerIdentity ?? null,
     }),
   });
 
@@ -145,14 +155,23 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           renderText: (_, { name, activityWorkVolunteerIdentity: type }) => (
             <>
               {name}
-              {type !== VolunteerType.normal && <Tag style={{ marginLeft: 8 }} color={volunteerTypeValueEnum.get(type)?.status}>{volunteerTypeValueEnum.get(type)?.text}</Tag>}
+              {type !== VolunteerType.normal 
+                && (
+                  <Tag 
+                    style={{ marginLeft: 8 }}
+                    bordered={false}
+                    color={volunteerTypeValueEnum.get(type)?.status}
+                  >
+                    {volunteerTypeValueEnum.get(type)?.text}
+                  </Tag>
+                )}
             </>
           )
         },
         {
           title: '性别',
+          key: 'sex',
           dataIndex: 'sex',
-          hideInSearch: true,
           valueEnum: genderValueEnum,
         },
         {
@@ -186,6 +205,12 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           title: '白名单状态',
           dataIndex: 'volunteerState',
           valueEnum: volunteerWhitelistStateValueEnum,
+          hideInTable: true,
+        },
+        {
+          title: '志愿者类型',
+          dataIndex: 'activityWorkVolunteerIdentity',
+          valueEnum: volunteerTypeValueEnum,
           hideInTable: true,
         },
         {
