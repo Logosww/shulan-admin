@@ -1,21 +1,24 @@
 'use client';
 
-import { DownOutlined, EyeOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { DownOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Popover, Space, Image, Dropdown, Tag } from 'antd';
 import { ProDescriptions, ProTable } from '@ant-design/pro-components';
 import { HttpClient } from '@/utils';
-import { useMessage, usePagingAndQuery } from '@/hooks';
-import { VolunteerIdentity, VolunteerWhitelistState, idCardTypeValueEnumMap } from '@/constants/value-enum';
-import { genderValueEnum, volunteerIdentityValueEnum, volunteerWhitelistStateValueEnum } from '@/constants';
-import WhitelistModal from './components/WhitelistModal';
-import ForbbidenListModal from './components/ForbbidenListModal';
-import IgnoreListModal from './components/IgnoreListModal';
+import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
+import { Role, VolunteerIdentity, VolunteerWhitelistState, idCardTypeValueEnumMap } from '@/constants/value-enum';
+import { genderValueEnumMap, volunteerIdentityValueEnumMap, volunteerWhitelistStateValueEnumMap } from '@/constants';
+import WhitelistDrawer from './components/WhitelistDrawer';
+import ForbbidenListDrawer from './components/ForbbidenListDrawer';
+import IgnoreListDrawer from './components/IgnoreListDrawer';
 
 import type { ProDescriptionsProps } from '@ant-design/pro-components';
 import type { IVolunteer, IVolunteerDetail } from '@/utils/http/api-types';
 
 type FilterForm = {
   name: string;
+  school: string;
+  reviewerId: number;
   purePhoneNumber: string;
   identity: VolunteerIdentity,
   state: VolunteerWhitelistState;
@@ -72,7 +75,9 @@ const socialFigureColumns: ProDescriptionsProps<IVolunteerDetail>['columns'] = [
 
 const VolunteersPage = () => {
   
+  const [isExporting, setIsExporting] = useState(false);
   const message = useMessage();
+  const { download } = useCOS();
   const {
     reload,
     state: {
@@ -90,15 +95,25 @@ const VolunteersPage = () => {
     filterFormTransform: (form) => ({
       name: form.name ?? null,
       state: form.state ?? null,
+      school: form.school ?? null,
       identity: form.identity ?? null,
+      reviewerId: form.reviewerId ?? null,
       purePhoneNumber: form.purePhoneNumber ?? null,
     }),
   });
 
+  const handleExport = async () => {
+    setIsExporting(true);
+    const key = await HttpClient.getAllExportedVolunteerListKey();
+    await download(key);
+    message.success('导出成功');
+    setIsExporting(false);
+  };
+
   return (
     <ProTable<IVolunteer, FilterForm>
       rowKey="id"
-      search={{ span: 4 }}
+      search={{ span: 5, defaultCollapsed: false }}
       form={{ variant: 'filled' }}
       loading={loading}
       dataSource={volunteerList}
@@ -107,9 +122,10 @@ const VolunteersPage = () => {
       onReset={handleFilterReset}
       toolbar={{
         actions: [
-          <WhitelistModal key="whitelist" reloadTable={reload} />,
-          <IgnoreListModal key="ignoreList" reloadTable={reload} />,
-          <ForbbidenListModal key="forbbidenList" reloadTable={reload} />,
+          <Button key="export" type="text" loading={isExporting} icon={<DownloadOutlined />} onClick={handleExport}>导出 Excel</Button>,
+          <WhitelistDrawer key="whitelist" reloadTable={reload} />,
+          <IgnoreListDrawer key="ignoreList" reloadTable={reload} />,
+          <ForbbidenListDrawer key="forbbidenList" reloadTable={reload} />,
         ],
       }}
       columns={[
@@ -121,7 +137,7 @@ const VolunteersPage = () => {
         {
           title: '性别',
           dataIndex: 'sex',
-          valueEnum: genderValueEnum,
+          valueEnum: genderValueEnumMap,
           hideInSearch: true,
         },
         {
@@ -134,7 +150,7 @@ const VolunteersPage = () => {
           title: '身份',
           dataIndex: 'identity',
           valueType: 'select',
-          valueEnum: volunteerIdentityValueEnum,
+          valueEnum: volunteerIdentityValueEnumMap,
         },
         {
           title: '手机号',
@@ -151,14 +167,27 @@ const VolunteersPage = () => {
           title: '状态',
           dataIndex: 'state',
           valueType: 'select',
-          valueEnum: volunteerWhitelistStateValueEnum,
-          renderText: (_, { state }) => <Tag bordered={false} color={volunteerWhitelistStateValueEnum.get(state)?.status}>{volunteerWhitelistStateValueEnum.get(state)?.text}</Tag>
+          valueEnum: volunteerWhitelistStateValueEnumMap,
+          renderText: (_, { state }) => <Tag bordered={false} color={volunteerWhitelistStateValueEnumMap.get(state)?.status}>{volunteerWhitelistStateValueEnumMap.get(state)?.text}</Tag>
         },
         {
           title: '操作人',
           dataIndex: 'reviewerName',
+          key: 'reviewerId',
           valueType: 'text',
+          request: () => HttpClient.getUsersByRole({ code: Role.superAdmin }).then(users => users.map(({ label, id: value }) => ({ label, value }))),
+        },
+        {
+          title: '操作时间',
+          dataIndex: 'reviewAt',
+          valueType: 'dateTime',
           hideInSearch: true,
+        },
+        {
+          title: '学校',
+          key: 'school',
+          valueType: 'text',
+          hideInTable: true,
         },
         {
           title: '操作',
@@ -236,6 +265,20 @@ const VolunteersPage = () => {
                             : '无'
                         )
                       },
+                      {
+                        title: '累计参与活动数',
+                        dataIndex: 'activityWorkExperienceTotalNum',
+                        valueType: 'digit',
+                      },
+                      {
+                        title: '历史志愿活动',
+                        dataIndex: 'activityWorkExperienceVos',
+                        valueType: 'textarea',
+                        renderText: (_, { activityWorkExperienceVos: works }) => 
+                          works.length
+                            ? works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)
+                            : '无'
+                      }
                     ]}
                   />
                 }

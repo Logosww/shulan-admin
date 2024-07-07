@@ -6,7 +6,7 @@ import { HttpClient } from '@/utils';
 import { useMessage, useModal } from '@/hooks';
 import { ModalForm, ProFormDigit, ProFormGroup, ProFormSegmented, ProList } from '@ant-design/pro-components';
 import { PlusOutlined} from '@ant-design/icons';
-import { volunteerTypeForFormValueEnum } from '@/constants';
+import { volunteerTypeForFormValueEnumMap } from '@/constants';
 import Text from 'antd/es/typography/Text';
 
 import type {
@@ -67,7 +67,7 @@ export const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () =
       onOpenChange={open => !open && setVolunteerList([])}
     >
       <ProFormGroup> 
-        <ProFormSegmented label="身份" name="activityWorkVolunteerIdentity" initialValue={1} valueEnum={volunteerTypeForFormValueEnum} rules={[{ required: true }]} />
+        <ProFormSegmented label="身份" name="activityWorkVolunteerIdentity" initialValue={1} valueEnum={volunteerTypeForFormValueEnumMap} rules={[{ required: true }]} />
         <ProFormDigit label="酬金" name="money" width="xs" max={500} rules={[{ required: true }]} />
         <ProFormDigit label="积分" name="integral" width="xs" max={1000} rules={[{ required: true }]} />
       </ProFormGroup>

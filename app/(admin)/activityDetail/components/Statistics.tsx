@@ -27,6 +27,28 @@ const formatter: StatisticProps['formatter'] = (value) => (
   <CountUp end={value as number} separator="," />
 );
 
+const GroupedWorkCards = ({ worksVolume }: Pick<IActivityStatistics, 'worksVolume'>) => {
+  const domList: JSX.Element[] = [];
+  let index = 0;
+  while(index < worksVolume.length) {
+    const workGroup = worksVolume.slice(index, index + 3);
+    domList.push(
+      <Col span={12} xxl={{ span: 6 }}>
+        <Card>
+          <Flex justify="space-around">
+            {
+              workGroup.map((work, index) => <Statistic key={index} title={work.name} value={work.volume} />)
+            }
+          </Flex>
+        </Card>
+      </Col>
+    );
+    index += 3;
+  }
+  
+  return domList;
+};
+
 export const Statistics = ({ id }: { id: number }) => {
 
   const [isLoading, setIsLoading] = useState(true);
@@ -93,15 +115,7 @@ export const Statistics = ({ id }: { id: number }) => {
             </Flex>
           </Card>
         </Col>
-        <Col span={12} xxl={{ span: 6 }}>
-          <Card>
-            <Flex justify="space-around">
-              {
-                statistics?.worksVolume.map((work, index) => <Statistic key={index} title={work.name} value={work.volume} />)
-              }
-            </Flex>
-          </Card>
-        </Col>
+        { statistics && <GroupedWorkCards worksVolume={statistics?.worksVolume} /> }
       </Row>
     </Spin>
   );

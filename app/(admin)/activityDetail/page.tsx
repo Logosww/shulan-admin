@@ -2,14 +2,18 @@
 
 import { Tabs } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import { ActivityBasicInfo } from './components/BasicInfo';
-import { SignUpRecordList } from './components/RecordList';
-import { Statistics } from './components/Stastics';
+import {
+  Live,
+  // Payroll,
+  Statistics,
+  Certificate,
+  SignUpRecordList,
+  CheckinRecodList,
+  ActivityBasicInfo,
+  Notice,
+} from './components';
 import { Suspense } from 'react';
 import { ProSkeleton } from '@ant-design/pro-components';
-import { Live } from './components/Live';
-import { Certificate } from './components/Certificate';
-import { CheckinRecodList } from './components/CheckinRecodList';
 
 const ActivityDetailInner = () => {
 
@@ -45,10 +49,20 @@ const ActivityDetailInner = () => {
         children: <SignUpRecordList id={activityId} />,
       },
       {
+        key: 'notice',
+        label: '消息通知',
+        children: <Notice id={activityId} />,
+      },
+      {
         key: 'checkin',
         label: '签到记录',
         children: <CheckinRecodList id={activityId} />
       },
+      // {
+      //   key: 'payroll',
+      //   label: '酬金打款',
+      //   children: <Payroll id={activityId} />,
+      // },
     ]} />
   );
 };

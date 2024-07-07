@@ -2,12 +2,10 @@ import { theme } from 'antd';
 
 import type { ThemeConfig } from 'antd';
 
-
 const { defaultAlgorithm, darkAlgorithm } = theme;
 
 const basicTheme: ThemeConfig = {
   cssVar: true,
-  hashed: false,
   token: {
     fontSize: 14,
     borderRadius: 6,
@@ -20,7 +18,7 @@ const basicTheme: ThemeConfig = {
     },
     Layout: {
       siderBg: '#191A17'
-    }
+    },
   }
 };
 

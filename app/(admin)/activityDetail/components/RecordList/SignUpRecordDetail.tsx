@@ -153,7 +153,9 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
         dataIndex: 'activityWorkExperienceVos',
         valueType: 'textarea',
         renderText: (_, { activityWorkExperienceVos: works }) => 
-          works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)
+          works.length
+            ? works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)
+            : '无'
       }
     ]}
   />

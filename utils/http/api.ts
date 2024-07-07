@@ -8,6 +8,8 @@ import {
   VolunteerWhitelistState,
   NotificationState,
   VolunteerType,
+  Role,
+  PayrollState,
 } from '@/constants/value-enum';
 
 import type {
@@ -36,10 +38,14 @@ import type {
   INotification,
   ICertificate,
   ICheckinRecord,
+  IOption,
+  IPayrollRecord,
+  INoticeRecord,
+  INotice,
 } from './api-types';
 
 export const login = (params: ILoginForm) =>
-  post('/public/manage/account/smsLogin', {
+  post<{ role: Role }>('/public/manage/account/smsLogin', {
     countryCode: '86',
     smsCode: params.code,
     purePhoneNumber: params.phone,
@@ -95,7 +101,7 @@ export const getActivityDetail = (params: { id: number }) => get<IActivityDetail
 
 export const createActivityDraft = (params: ActivityForm) => post('/admin/manage/activity/saveDraft', params);
 
-export const deleteActivityDraft = (params: { id: number }) => del('/admin/manage/activity/delete', params);
+export const deleteActivityDraft = (params: { id: number }) => del('/manage/activity/delete', params);
 
 export const modifyActivityDraft = (params: ActivityForm & { id: number }) => put('/manage/activity/update', params);
 
@@ -122,6 +128,8 @@ export const filterVolunteers = (params: NullableFilter<{
   name: string;
   identity: VolunteerIdentity,
   purePhoneNumber: string;
+  reviewerId: number;
+  school: string;
 }>) => post<IVolunteer[]>('/superAdmin/volunteer/search', params);
 
 export const batchModifyVolunteerWhitelistState = (params: { ids: number[]; state: VolunteerWhitelistState; }) =>
@@ -154,7 +162,9 @@ export const setWorkAvailable = (params: { activityId: number; workId: number; i
 
 export const autoCompleteCity = (params: { keyword: string }) => get<OptionType<string>[]>('/public/autoComplete/city', params);
 
-export const getCOSBucketCredentials = () => get<ICOSBucketCredentials>('/public/cos/secret');
+export const getCOSPrivateBucketCredentials = () => get<ICOSBucketCredentials>('/public/cos/secret');
+
+export const getCOSPublicBucketCredentials = () => get<ICOSBucketCredentials>('/public/cos/secret2');
 
 export const getPagingSignUpRecords = (params: IPagingParams & { activityId: number }) => get<IPagingResult<ISignUpRecord>>('/manage/activityWorkVolunteer/page', params);
 
@@ -167,6 +177,7 @@ export const filterSignUpRecords = (
     volunteerState: VolunteerWhitelistState;
     purePhoneNumber: string;
     activityWorkVolunteerIdentity: VolunteerType,
+    volunteerIdentity: VolunteerIdentity,
   }> & { activityId: number }
 ) => post<ISignUpRecord[]>('/manage/activityWorkVolunteer/search', params);
 
@@ -290,4 +301,46 @@ export const filterCheckinRecords = (params: NullableFilter<{
   name: string;
   id: number;
   sex: Gender;
+  isChecked: boolean;
 }> & { activityId: number }) => post<ICheckinRecord[]>('/manage/activityWorkVolunteer/check/search', params);
+
+export const getUsersByRole = (params: { code: Role }) => get<IOption[]>('/selectBox/getRoleUser', params);
+
+export const getAllExportedVolunteerListKey = () => post<string>('/superAdmin/excel/export/volunteer');
+
+export const getPagingPayrollRecords = (params: IPagingParams & { activityId: number }) => get<IPagingResult<IPayrollRecord>>('/payroll/record/page', params);
+
+export const filterPayrollRecords = (params: NullableFilter<{
+  id: number;
+  sex: Gender;
+  name: string;
+  state: PayrollState;
+  purePhoneNumber: string;
+}> & { activityId: number }) => post<IPayrollRecord[]>('/payroll/record/search', params);
+
+export const doPaymentToSingle = (params: { id: number, money: number, activityId: number, smsCode: string }) => post('/payroll/record/search', params);
+
+export const doPaymentToAll = (params: { activityId: number, smsCode: string }) => post('/payroll/doPayment/batchAll', params);
+
+export const sendPaymentVerifySmsCode = () => post('/payroll/payment/verify');
+
+export const getPagingNoticeRecords = (params: IPagingParams & { activityId: number }) => get<IPagingResult<INoticeRecord>>('/manage/activityWorkVolunteerNotice/page', params); 
+
+export const filterNoticeRecords = (params: NullableFilter<{
+  isSend: boolean;
+  activityWorkId: number;
+} & Pick<INoticeRecord, 
+  | 'id'
+  | 'name'
+  | 'phone'
+  | 'readState'
+  | 'activityWorkVolunteerState'
+  | 'activityWorkVolunteerIdentity'
+  >
+> & { activityId: number }) => post<INoticeRecord[]>('/manage/activityWorkVolunteerNotice/search', params);
+
+export const getNoticeContent = (params: { id: number }) => get<INotice>('/manage/activityWorkVolunteerNotice/get', params);
+
+export const sendNoticeToSingle = (params: { id: number } & INotice) => post('/manage/activityWorkVolunteerNotice/send', params);
+
+export const sendNoticeToAll = (params: { activityId: number; activityWorkId: number } & INotice) => post('/manage/activityWorkVolunteerNotice/sendAll', params);

@@ -1,4 +1,4 @@
-import type { ItemType } from "antd/es/menu/hooks/useItems"
+import type { ItemType } from "antd/es/menu/interface"
 import type { ProSchemaValueEnumType } from "@ant-design/pro-components";
 import type { ReactNode } from "react";
 

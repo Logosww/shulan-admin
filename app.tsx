@@ -3,7 +3,7 @@
 import { ConfigProvider, App } from 'antd';
 import { useDarkMode } from 'usehooks-ts';
 import { defaultTheme, darkTheme } from '@/theme/config';
-import ContextProvider from '@/components/ContextProvider';
+import { ThemeProvider } from '@/components';
 import zhCN from 'antd/locale/zh_CN';
 
 import type { MessageInstance } from 'antd/es/message/interface';
@@ -19,7 +19,7 @@ const MyApp = ({ children }: React.PropsWithChildren) => {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <ContextProvider>
+    <ThemeProvider attribute="class" defaultTheme={isDarkMode ? 'dark' : 'light'}>
       <ConfigProvider
         locale={zhCN}
         theme={isDarkMode ? darkTheme : defaultTheme}
@@ -35,7 +35,7 @@ const MyApp = ({ children }: React.PropsWithChildren) => {
           <AppInner>{children}</AppInner>
         </App>
       </ConfigProvider>
-    </ContextProvider>
+    </ThemeProvider>
   );
 };
 

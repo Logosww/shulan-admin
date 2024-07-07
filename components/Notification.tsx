@@ -3,11 +3,11 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { LoadingOutlined, MailOutlined } from '@ant-design/icons';
 import { Popover, Badge, Button, List, Spin, Empty } from 'antd';
-import { NotificationCountContext } from './ContextProvider';
 import { NotificationState, notificationTypeValueEnumMap } from '@/constants';
 import { HttpClient } from '@/utils';
 import { isClient } from '@/utils/http/request';
 import Text from 'antd/es/typography/Text';
+import useStore from '@/store';
 
 import type { INotification } from '@/utils/http/api-types';
 
@@ -16,7 +16,8 @@ export const Notification = () => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationList, setNotificationList] = useState<INotification[]>([]);
-  const [notificationCount, setNotificationCount] = useContext(NotificationCountContext)!;
+  const notificationCount = useStore(state => state.notificationCount);
+  const setNotificationCount = useStore(state => state.setNotificationCount);
 
   const handleReadNotification = async (id: number, state: NotificationState) => {
     await HttpClient.batchReadNotification({ ids: [id] });
@@ -28,7 +29,7 @@ export const Notification = () => {
 
         return list;
       });
-      notificationCount && setNotificationCount(count => --count);
+      notificationCount && setNotificationCount(notificationCount - 1);
     }
     anchorRef.current?.click();
     setOpen(false);

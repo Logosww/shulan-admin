@@ -1,6 +1,6 @@
 'use client';
 
-import { Role, genderValueEnum } from '@/constants';
+import { Role, genderValueEnumMap } from '@/constants';
 import { HttpClient } from '@/utils';
 import { IUserProfile } from '@/utils/http/api-types';
 import { LockOutlined, LogoutOutlined, ProfileOutlined, UserOutlined } from '@ant-design/icons';
@@ -10,8 +10,8 @@ import { theme } from 'antd';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useMessage, useNotification } from '@/hooks';
 import { useRouter } from 'next/navigation';
-import { IsLoginContext, UserRoleContext } from '.';
 import { useCountdown } from 'usehooks-ts';
+import useStore from '@/store';
 import Cookies from 'js-cookie';
 
 import type { MenuProps } from 'antd';
@@ -28,11 +28,11 @@ export const Avatar = () => {
   const [form] = Form.useForm();
   const [codeForm] = Form.useForm();
   const notification = useNotification();
-  const [_, setRole] = useContext(UserRoleContext)!;
-  const [__, setIsLogin] = useContext(IsLoginContext)!;
   const { token: { colorPrimary } } = theme.useToken();
   const phone = Form.useWatch('purePhoneNumber', codeForm) as string;
   const [count, { startCountdown, resetCountdown }] = useCountdown({ countStart: 60 });
+  const logout = useStore(state => state.logout);
+  const setRole = useStore(state => state.setRole);
 
   const menuItems: MenuProps['items'] = [
     {
@@ -47,7 +47,7 @@ export const Avatar = () => {
       label: '退出登录',
       onClick: async () => {
         await HttpClient.logout();
-        setIsLogin(false);
+        logout();
         setRole(Role.user);
         Cookies.remove('Authorization');
         Cookies.remove('Role');
@@ -117,7 +117,7 @@ export const Avatar = () => {
         onFinish={handleModifyProfile}
       >
         <ProFormText label="姓名" name="name" width="xs" rules={[{ required: true }]} />
-        <ProFormSelect label="性别" name="sex" width="xs" valueEnum={genderValueEnum} rules={[{ required: true }]} />
+        <ProFormSelect label="性别" name="sex" width="xs" valueEnum={genderValueEnumMap} rules={[{ required: true }]} />
         <Form.Item label="手机号">
           <Space>
             <Form.Item name="desensitizedPhone" noStyle>

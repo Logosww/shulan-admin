@@ -1,12 +1,12 @@
 'use client';
 
+import { Tag } from 'antd';
 import { ProTable } from '@ant-design/pro-components';
 import { usePagingAndQuery } from '@/hooks';
 import { HttpClient } from '@/utils';
-import { Gender, VolunteerType, genderValueEnum, volunteerTypeValueEnum } from '@/constants';
+import { Gender, VolunteerType, genderValueEnumMap, isCheckedValueEnumMap, volunteerTypeValueEnumMap } from '@/constants';
 
 import type { ICheckinRecord, NullableFilter } from '@/utils/http/api-types';
-import { Tag } from 'antd';
 
 type FilterForm = NullableFilter<{
   activityWorkId: number;
@@ -15,6 +15,7 @@ type FilterForm = NullableFilter<{
   name: string;
   id: number;
   sex: Gender;
+  isChecked: boolean;
 }>;
 
 export const CheckinRecodList = ({ id }: { id: number }) => {
@@ -34,6 +35,7 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
     filterFormTransform: (form) => ({
       sex: form.sex ?? null,
       name: form.name ?? null,
+      isChecked: form.isChecked ?? null,
       activityWorkId: form.activityWorkId ?? null,
       purePhoneNumber: form.purePhoneNumber ?? null,
       id: form.id ? parseInt(form.id as unknown as string) : null,
@@ -44,7 +46,7 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
   return (
     <ProTable<ICheckinRecord, FilterForm>
       rowKey="id"
-      form={{ variant: 'filled' }}
+      form={{ variant: 'filled', ignoreRules: false, }}
       loading={loading}
       dataSource={checkinRecordList}
       pagination={paginationConfig}
@@ -57,6 +59,12 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
           key: 'id',
           dataIndex: 'id',
           valueType: 'text',
+          formItemProps: {
+            rules: [{
+              validateTrigger: 'submit',
+              validator: (_, value) => !value || /^(\d?)+$/.test(value) ? Promise.resolve() : Promise.reject(new Error('编号需为纯数字')),
+            }],
+          },
         },
         {
           title: '姓名',
@@ -66,7 +74,7 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
         {
           title: '性别',
           dataIndex: 'sex',
-          valueEnum: genderValueEnum,
+          valueEnum: genderValueEnumMap,
         },
         {
           title: '年龄',
@@ -82,9 +90,9 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
         {
           title: '志愿者类型',
           dataIndex: 'activityWorkVolunteerIdentity',
-          valueEnum: volunteerTypeValueEnum,
+          valueEnum: volunteerTypeValueEnumMap,
           renderText: (_, { activityWorkVolunteerIdentity: type }) => (
-            <Tag bordered={false} color={volunteerTypeValueEnum.get(type)!.status}>{volunteerTypeValueEnum.get(type)!.text}</Tag>
+            <Tag bordered={false} color={volunteerTypeValueEnumMap.get(type)!.status}>{volunteerTypeValueEnumMap.get(type)!.text}</Tag>
           ),
         },
         {
@@ -103,8 +111,8 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
         {
           title: '是否签到',
           dataIndex: 'isChecked',
-          renderText: (_, { isChecked }) => isChecked ? '是' : '否',
-          hideInSearch: true,
+          valueType: 'select',
+          valueEnum: isCheckedValueEnumMap,
         },
         {
           title: '负责人',

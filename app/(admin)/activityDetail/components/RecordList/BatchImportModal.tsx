@@ -2,7 +2,7 @@
 
 import { 
   VolunteerSignUpState,
-  volunteerSignUpStateValueEnum as _volunteerSignUpStateValueEnum,
+  volunteerSignUpStateValueEnumMap as _volunteerSignUpStateValueEnumMap,
 } from '@/constants';
 import { useCOS, useMessage } from '@/hooks';
 import { HttpClient } from '@/utils/http';
@@ -21,10 +21,10 @@ const signUpStateExclude: VolunteerSignUpState[] = [
   VolunteerSignUpState.cancelledOutOfIllegal,
 ];
 
-const volunteerSignUpStateValueEnum = new Map<VolunteerSignUpState, string>();
-_volunteerSignUpStateValueEnum.forEach((label, state) => (!signUpStateExclude.includes(state)) && volunteerSignUpStateValueEnum.set(state, label));
+const volunteerSignUpStateValueEnumMap = new Map<VolunteerSignUpState, string>();
+_volunteerSignUpStateValueEnumMap.forEach((label, state) => (!signUpStateExclude.includes(state)) && volunteerSignUpStateValueEnumMap.set(state, label));
 
-export const BatchImportModal = ({ id, onSubmit }:{ id: number; onSubmit: () => void }) => {
+export const BatchImportModal = ({ onSubmit }: { onSubmit: () => void }) => {
   
   const message = useMessage();
   const { upload } = useCOS();
@@ -50,7 +50,7 @@ export const BatchImportModal = ({ id, onSubmit }:{ id: number; onSubmit: () => 
       }}
       onFinish={handleSubmit}
     >
-      <ProFormSelect name="activityWorkVolunteerState" label="报名状态" width="xs" valueEnum={volunteerSignUpStateValueEnum} rules={[{ required: true, message: '报名状态不能为空' }]} />
+      <ProFormSelect name="activityWorkVolunteerState" label="报名状态" width="xs" valueEnum={volunteerSignUpStateValueEnumMap} rules={[{ required: true, message: '报名状态不能为空' }]} />
       <ProFormUploadDragger
         name="key"
         max={1}

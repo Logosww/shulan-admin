@@ -3,7 +3,7 @@
 import { Layout, Menu } from 'antd';
 import { useRouter } from 'next/navigation';
 
-import type { MenuItemType } from 'antd/es/menu/hooks/useItems';
+import type { MenuItemType } from 'antd/es/menu/interface';
 
 const { Sider } = Layout;
 
@@ -17,7 +17,7 @@ export const SideBar = ({ collapsed, menuItems }: ISideBarProps) => {
 
   return (<Sider trigger={null} collapsed={collapsed} collapsible>
     <div className="logo-demo h-[64px] p-4">
-      <div className="rounded-lg bg-slate-500 h-full"></div>
+      <div className="rounded-lg bg-[#8df2a6] h-full"></div>
     </div>
     <Menu
       theme="dark"

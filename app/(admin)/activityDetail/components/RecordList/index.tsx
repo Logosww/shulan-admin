@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { Space, Button, Tag, Dropdown, Popconfirm } from 'antd';
 import { HttpClient, valueEnum2MenuItem } from '@/utils';
 import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
-import { VolunteerType, VolunteerSignUpState, genderValueEnum } from '@/constants/value-enum';
+import { VolunteerType, VolunteerSignUpState, genderValueEnumMap, VolunteerIdentity, volunteerIdentityValueEnumMap } from '@/constants/value-enum';
 import { ProTable } from '@ant-design/pro-components';
 import { DownOutlined, DownloadOutlined, FileExcelOutlined, FileZipOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
-import { volunteerSignUpStateValueEnum, volunteerTypeValueEnum, volunteerWhitelistStateValueEnum } from '@/constants';
+import { volunteerSignUpStateValueEnumMap, volunteerTypeValueEnumMap, volunteerWhitelistStateValueEnumMap } from '@/constants';
 import { TempVolunteerModal } from './TempVolunteerModal';
 import { SignUpRecordDetail } from './SignUpRecordDetail';
 import { BatchImportModal } from './BatchImportModal';
@@ -26,7 +26,7 @@ type FilterForm = Pick<ISignUpRecord,
   | 'activityWorkVolunteerState' 
   | 'volunteerState'
   | 'activityWorkVolunteerIdentity'
-> & { activityWorkId: number };
+> & { activityWorkId: number, volunteerIdentity: VolunteerIdentity };
 
 export const SignUpRecordList = ({ id }: { id: number }) => {
 
@@ -59,6 +59,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       id: form.id ? parseInt(form.id as unknown as string) : null,
       activityWorkVolunteerState: form.activityWorkVolunteerState ?? null,
       activityWorkVolunteerIdentity: form.activityWorkVolunteerIdentity ?? null,
+      volunteerIdentity: form.volunteerIdentity ?? null,
     }),
   });
 
@@ -80,7 +81,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       rowKey="id"
       loading={isLoading}
       dataSource={signUpRecordList}
-      form={{ variant: 'filled' }}
+      form={{ variant: 'filled', ignoreRules: false }}
       search={{ span: 5, defaultCollapsed: false }}
       onSubmit={handleFilterQuery}
       onReset={handleFilterReset}
@@ -108,7 +109,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
             <Button type="text" icon={<DownloadOutlined />} loading={isExporting}>导出</Button>
           </Dropdown>,
           <TempVolunteerModal key="append" id={id} onSubmit={reload} />,
-          <BatchImportModal key="batch" id={id} onSubmit={reload} />,
+          <BatchImportModal key="batch" onSubmit={reload} />,
           <Popconfirm 
             key="sendSms"
             title="提示"
@@ -123,7 +124,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
             description="确认将拉黑的志愿全部审核不通过吗？"
             onConfirm={async () => HttpClient.auditIgnoredVolunteerReject({ id }).then(() => {message.success('操作成功')})}
           >
-            <Button icon={<StopOutlined />} danger ghost>一键不通过</Button>
+            <Button type="primary" icon={<StopOutlined />} danger>一键不通过</Button>
           </Popconfirm>,
         ]
       }}
@@ -147,6 +148,12 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           key: 'id',
           dataIndex: 'id',
           valueType: 'text',
+          formItemProps: {
+            rules: [{
+              validateTrigger: 'submit',
+              validator: (_, value) => !value || /^(\d?)+.$/.test(value) ? Promise.resolve() : Promise.reject(new Error('编号需为纯数字')),
+            }],
+          },
         },
         {
           title: '姓名',
@@ -160,9 +167,9 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
                   <Tag 
                     style={{ marginLeft: 8 }}
                     bordered={false}
-                    color={volunteerTypeValueEnum.get(type)?.status}
+                    color={volunteerTypeValueEnumMap.get(type)?.status}
                   >
-                    {volunteerTypeValueEnum.get(type)?.text}
+                    {volunteerTypeValueEnumMap.get(type)?.text}
                   </Tag>
                 )}
             </>
@@ -172,7 +179,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           title: '性别',
           key: 'sex',
           dataIndex: 'sex',
-          valueEnum: genderValueEnum,
+          valueEnum: genderValueEnumMap,
         },
         {
           title: '年龄',
@@ -199,18 +206,18 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
         {
           title: '报名状态',
           dataIndex: 'activityWorkVolunteerState',
-          valueEnum: volunteerSignUpStateValueEnum,
+          valueEnum: volunteerSignUpStateValueEnumMap,
         },
         {
           title: '白名单状态',
           dataIndex: 'volunteerState',
-          valueEnum: volunteerWhitelistStateValueEnum,
+          valueEnum: volunteerWhitelistStateValueEnumMap,
           hideInTable: true,
         },
         {
           title: '志愿者类型',
           dataIndex: 'activityWorkVolunteerIdentity',
-          valueEnum: volunteerTypeValueEnum,
+          valueEnum: volunteerTypeValueEnumMap,
           hideInTable: true,
         },
         {
@@ -225,6 +232,19 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           valueType: 'text',
           dataIndex: 'reviewerName',
           hideInSearch: true,
+        },
+        {
+          title: '审核时间',
+          valueType: 'dateTime',
+          dataIndex: 'reviewAt',
+          hideInSearch: true,
+        },
+        {
+          title: '志愿者身份',
+          key: 'volunteerIdentity',
+          hideInTable: true,
+          valueType: 'select',
+          valueEnum: volunteerIdentityValueEnumMap,
         },
         {
           title: '操作',
@@ -274,7 +294,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
                 trigger={['click']}
                 menu={{
                   items: valueEnum2MenuItem(
-                    volunteerSignUpStateValueEnum,
+                    volunteerSignUpStateValueEnumMap,
                     [VolunteerSignUpState.awaitingAudit, VolunteerSignUpState.cancelled, VolunteerSignUpState.cancelledOutOfIllegal],
                   ),
                   onClick: async ({ key, domEvent }) =>  {

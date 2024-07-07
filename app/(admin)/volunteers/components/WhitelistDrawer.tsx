@@ -4,13 +4,13 @@ import { Button } from 'antd';
 import { HttpClient } from '@/utils/http';
 import { VolunteerWhitelistState } from '@/constants/value-enum';
 import { ProFormDigit, ProFormGroup } from '@ant-design/pro-components';
-import BatchWhitelistStateModal from './BatchWhitelistStateModal';
+import BatchWhitelistStateDrawer from './BatchWhitelistStateDrawer';
 
-import type { IBatchWhitelistStateModalProps } from './BatchWhitelistStateModal';
+import type { IBatchWhitelistStateDrawerProps } from './BatchWhitelistStateDrawer';
 import type { NullableFilter } from '@/utils/http/api-types';
 
-export const WhitelistModal = ({ reloadTable }: Pick<IBatchWhitelistStateModalProps, 'reloadTable'>) => (
-  <BatchWhitelistStateModal<NullableFilter<{ expireAt: string }>>
+export const WhitelistDrawer = ({ reloadTable }: Pick<IBatchWhitelistStateDrawerProps, 'reloadTable'>) => (
+  <BatchWhitelistStateDrawer<NullableFilter<{ expireAt: string }>>
     title="白名单管理"
     trigger={<Button>白名单管理</Button>}
     whitelistState={VolunteerWhitelistState.whitelist}
@@ -21,7 +21,7 @@ export const WhitelistModal = ({ reloadTable }: Pick<IBatchWhitelistStateModalPr
     <ProFormGroup> 
       <ProFormDigit label="白名单时长" name="expireAt" width="xs" placeholder="单位：月" min={1} />
     </ProFormGroup>
-  </BatchWhitelistStateModal>
+  </BatchWhitelistStateDrawer>
 );
 
-export default WhitelistModal;
+export default WhitelistDrawer;

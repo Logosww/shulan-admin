@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Layout, Breadcrumb, theme } from 'antd';
-import { SideBar, Header, UserRoleContext, PageTitle } from '@/components';
+import { SideBar, Header, PageTitle } from '@/components';
 import { adminMenuItems, breadcrumbItemMap, menuItems } from '@/constants';
 import { usePathname } from 'next/navigation';
 import { HomeOutlined } from '@ant-design/icons';
 import { Role } from '@/constants/value-enum';
+import useStore from '@/store';
 
 import type { BreadcrumbProps } from 'antd';
 
@@ -15,7 +16,7 @@ const { Content } = Layout;
 const AdminLayout = ({ children }: React.PropsWithChildren) => {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const [role] = useContext(UserRoleContext)!;
+  const role = useStore(state => state.role);
 
   const breadcrumbItems = useMemo<BreadcrumbProps['items']>(() => ([
     {

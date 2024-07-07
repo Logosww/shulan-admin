@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "aliases": {
+    "components": "@/components/Editor"
+  },
+  "rsc": true,
+  "style": "default",
+  "tailwind": {
+    "baseColor": "neutral",
+    "config": "tailwind.config.ts",
+    "css": "app/global.css",
+    "cssVariables": true,
+    "prefix": ""
+  }
+}

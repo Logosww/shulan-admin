@@ -4,7 +4,6 @@ import {
   FundProjectionScreenOutlined,
   GiftOutlined,
   TeamOutlined,
-  TransactionOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 
@@ -28,11 +27,6 @@ export const adminMenuItems: ISideBarProps['menuItems'] = [
     key: '/analysis',
     icon: <FundProjectionScreenOutlined />,
     label: '数据分析',
-  },
-  {
-    key: '/payroll',
-    icon: <TransactionOutlined />,
-    label: '薪资发放',
   },
   {
     key: '/welfare',

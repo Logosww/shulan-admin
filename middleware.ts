@@ -22,9 +22,9 @@ export const config: MiddlewareConfig = {
 
 export function middleware(request: NextRequest) {
   let response = NextResponse.next();
-  // const isLogin = request.cookies.has('Authorization');
-  // if(request.nextUrl.pathname.startsWith('/login')) isLogin && (response = NextResponse.redirect(new URL('/', request.url)));
-  // else !isLogin && (response = NextResponse.redirect(new URL('/login', request.url)));
+  const isLogin = request.cookies.has('Authorization');
+  if(request.nextUrl.pathname.startsWith('/login')) isLogin && (response = NextResponse.redirect(new URL('/', request.url)));
+  else !isLogin && (response = NextResponse.redirect(new URL('/login', request.url)));
 
   return response;
 };

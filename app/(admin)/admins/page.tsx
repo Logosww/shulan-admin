@@ -7,7 +7,7 @@ import { HttpClient } from '@/utils';
 import { ModalForm, ProFormSelect, ProFormText, ProSkeleton, ProTable } from '@ant-design/pro-components';
 import { AdminAccoutState } from '@/constants/value-enum';
 import { PlusOutlined } from '@ant-design/icons';
-import { adminAccnoutStateValueEnum, genderValueEnum } from '@/constants';
+import { adminAccnoutStateValueEnumMap, genderValueEnumMap } from '@/constants';
 
 import type { Gender } from '@/constants/value-enum';
 import type { ProColumns } from '@ant-design/pro-components';
@@ -55,7 +55,7 @@ const AddAdminModal = () => {
         name="sex"
         label="性别"
         rules={[{ required: true }]}
-        valueEnum={genderValueEnum}
+        valueEnum={genderValueEnumMap}
       />
       <ProFormText width="sm" name="purePhoneNumber" label="手机号" rules={[{ required: true }]} />
     </ModalForm>
@@ -110,7 +110,7 @@ const AdminsPage = () => {
           {
             title: '性别',
             dataIndex: 'sex',
-            valueEnum: genderValueEnum,
+            valueEnum: genderValueEnumMap,
             valueType: 'text',
             hideInSearch: true,
           },
@@ -124,7 +124,7 @@ const AdminsPage = () => {
             title: '状态',
             dataIndex: 'state',
             valueType: 'select',
-            valueEnum: adminAccnoutStateValueEnum,
+            valueEnum: adminAccnoutStateValueEnumMap,
           },
           {
             title: '操作',

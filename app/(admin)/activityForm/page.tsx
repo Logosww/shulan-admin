@@ -1,7 +1,7 @@
 'use client';
 
 import dayjs from 'dayjs';
-import { Suspense, useContext } from 'react';
+import { Suspense } from 'react';
 import { Form } from 'antd';
 import { 
   ProForm,
@@ -20,19 +20,21 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ActivityState, Role } from '@/constants/value-enum';
 import { useMessage } from '@/hooks';
-import { CoverUploader, DebounceSelect, PageTitle, UserRoleContext } from '@/components';
+import { CoverUploader, DebounceSelect, PageTitle } from '@/components';
 import { HttpClient } from '@/utils';
-import { activityFeatureValueEnum, activityTypeValueEnum } from '@/constants';
+import { activityFeatureValueEnumMap, activityTypeValueEnumMap } from '@/constants';
 import { formOperationMap, formTitleMap, FormOperation } from '.';
+import useStore from '@/store';
 
 import type { ActivityForm as _ActivityForm } from '@/utils/http/api-types'
 import type { IActivityFormProps, ActivityFormType, PoiType, PoiOption } from '.';
+
 const amapKey = process.env.NEXT_PUBLIC_AMAP_AMP_KEY;
 
 const fetchCityList = (keyword: string) => HttpClient.autoCompleteCity({ keyword });
 
-const getFormInitialValues = async (params: Record<string, any>) => {
-  const activityFormRaw = await HttpClient.getActivityDraft(params as { id: number });
+const getFormInitialValues = async (params: { id: number }) => {
+  const activityFormRaw = await HttpClient.getActivityDraft(params);
   const activityForm: Record<string, any> = { ...activityFormRaw };
   const { startAt, endAt, coverUrl, signupStartAt, signupEndAt, signupCancelAt, workList } = activityFormRaw;
   activityForm['coverPath'] = coverUrl;
@@ -80,7 +82,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
   
   const router = useRouter();
   const message = useMessage();
-  const [role] = useContext(UserRoleContext)!;
+  const role = useStore(state => state.role);
   const [form] = Form.useForm<ActivityFormType>();
   const state = Form.useWatch('state', form) as ActivityState;
   const isWorkListModifiable = (operation === FormOperation.modify && state > ActivityState.activated) ? false : true;
@@ -126,7 +128,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
         validateTrigger="onSubmit"
         requiredMark={false}
         form={form}
-        request={id ? getFormInitialValues : void 0}
+        initialValues={initialValues}
         onFinish={handleFormSubmit}
         params={id ? { id } : void 0}
         submitter={{ searchConfig: { 
@@ -138,7 +140,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
       >
         <ProForm.Group>
           <ProFormText label="活动名称" name="name" width="md" rules={[{ required: true, message: '活动名称不能为空' }]} />
-          <ProFormSegmented label="活动类型" name="type" valueEnum={activityTypeValueEnum} initialValue={id ? void 0 : 0} rules={[{ required: true, message: '活动类型不能为空' }]} />
+          <ProFormSegmented label="活动类型" name="type" valueEnum={activityTypeValueEnumMap} initialValue={id ? void 0 : 0} rules={[{ required: true, message: '活动类型不能为空' }]} />
           <Form.Item label="城市" name="city" rules={[{ required: true, message: '城市不能为空' }]}>
             <DebounceSelect
               fetchOptions={fetchCityList}
@@ -199,9 +201,10 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
         <ProForm.Group>
           <ProFormSwitch label="是否在小程序展示" name="isDisplay" initialValue={id ? void 0 : true} />
           <ProFormSwitch label="启用白名单" name="isWhite" initialValue={id ? void 0 : false} tooltip="启用白名单后，白名单用户报名后将直接通过审核" />
+          <ProFormSwitch label="展示酬金" name="isMoney" initialValue={id ? void 0 : true} />
           <ProFormSwitch label="展示工作须知" name="isWorkInstruction" initialValue={id ? void 0 : true} />
           <ProFormSwitch label="是否线下签到" name="isCheck" initialValue={id ? void 0 : true} />
-          <ProFormCheckbox.Group label="活动保障" name="features" valueEnum={activityFeatureValueEnum} initialValue={id ? void 0 : []} />
+          <ProFormCheckbox.Group label="活动保障" name="features" valueEnum={activityFeatureValueEnumMap} initialValue={id ? void 0 : []} />
         </ProForm.Group>
         <ProForm.Group>
           <CoverUploader name="coverPath" label="活动封面" tooltip="建议上传尺寸为 282 x 384 的 png" />
@@ -240,7 +243,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
           >
             <ProForm.Group>
               <ProFormText label="名称" name="name" width="xs" rules={[{ required: true, message: '岗位名称不能为空' }]} readonly={!isWorkListModifiable} />
-              <ProFormDigit label="酬金" name="money" width="xs" max={500} rules={[{ required: true, message: '岗位酬金不能为空' }]} readonly={!isWorkListModifiable} />
+              <ProFormDigit label="酬金" name="money" width="xs" max={1000} rules={[{ required: true, message: '岗位酬金不能为空' }]} readonly={!isWorkListModifiable} />
               <ProFormDigit label="积分" name="integral" width="xs" max={1000} rules={[{ required: true, message: '岗位积分不能为空' }]} readonly={!isWorkListModifiable} />
             </ProForm.Group>
             <ProForm.Group>
@@ -284,10 +287,12 @@ const ActivityFormPageInner = async () => {
     || (formOperation !== FormOperation.append && !activityId)
   ) throw new Error('Invalid Params');
 
+  const initialValues = activityId ? (await getFormInitialValues({ id: activityId })) : void 0;
+
   return (
     <>
       <PageTitle title={formTitleMap[formOperation as FormOperation]} />
-      <ActivityForm id={activityId} operation={formOperation as FormOperation} />
+      <ActivityForm id={activityId} operation={formOperation as FormOperation} initialValues={initialValues} />
     </>
   );
 };

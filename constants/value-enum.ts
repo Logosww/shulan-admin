@@ -100,23 +100,38 @@ export enum NotificationType {
   message = 0,
 };
 
-export const genderValueEnum = new Map<Gender, string>()
+export enum PayrollState {
+  unpaid = 0,
+  paid = 1,
+};
+
+export enum APIStatusCode {
+  fail = 0,
+  success = 1,
+};
+
+export enum NoticeState {
+  unread = 0,
+  read = 1,
+};
+
+export const genderValueEnumMap = new Map<Gender, string>()
   .set(Gender.male, '男')
   .set(Gender.female, '女')
   .set(Gender.unknown, '未知');
 
-export const adminAccnoutStateValueEnum= new Map<AdminAccoutState, ProSchemaValueEnumType>()
+export const adminAccnoutStateValueEnumMap = new Map<AdminAccoutState, ProSchemaValueEnumType>()
   .set(AdminAccoutState.normal, { text: '正常', status: 'Success' })
   .set(AdminAccoutState.disabled, { text: '停用', status: 'Error' });
 
-export const activityTypeValueEnum= new Map<ActivityType, string>()
+export const activityTypeValueEnumMap = new Map<ActivityType, string>()
   .set(ActivityType.concert, '演唱会')
   .set(ActivityType.drama, '话剧')
   .set(ActivityType.talkshow, '脱口秀')
   .set(ActivityType.musicFestival, '音乐节')
   .set(ActivityType.sports, '体育');
 
-export const activityStateValueEnum = new Map<ActivityState, ProSchemaValueEnumType>()
+export const activityStateValueEnumMap = new Map<ActivityState, ProSchemaValueEnumType>()
   .set(ActivityState.awaitingSubmit, { text: '拟草稿', status: 'warning' })
   .set(ActivityState.awaitingAudit, { text: '待审核', status: 'geekblue' })
   .set(ActivityState.auditFailed, { text: '已退回', status: 'error' })
@@ -124,7 +139,7 @@ export const activityStateValueEnum = new Map<ActivityState, ProSchemaValueEnumT
   .set(ActivityState.activated, { text: '进行中', status: 'success' })
   .set(ActivityState.finished, { text: '已结束', status: 'default' });
 
-export const activityFeatureValueEnum = new Map<ActivityFeature, string>()
+export const activityFeatureValueEnumMap = new Map<ActivityFeature, string>()
   .set(ActivityFeature.insurance, '工作保险')
   .set(ActivityFeature.meal, '工作餐')
   .set(ActivityFeature.water, '饮用水')
@@ -132,12 +147,12 @@ export const activityFeatureValueEnum = new Map<ActivityFeature, string>()
   .set(ActivityFeature.money, '工资补贴')
   .set(ActivityFeature.band, '工作手环');
 
-export const volunteerTypeValueEnum = new Map<VolunteerType, ProSchemaValueEnumType>()
+export const volunteerTypeValueEnumMap = new Map<VolunteerType, ProSchemaValueEnumType>()
   .set(VolunteerType.normal, { text: '正常报名', status: 'success' })
   .set(VolunteerType.temporary, { text: '临时', status: 'processing' })
   .set(VolunteerType.personInCharge, { text: '负责人', status: 'warning' });
 
-export const volunteerSignUpStateValueEnum = new Map<VolunteerSignUpState, string>()
+export const volunteerSignUpStateValueEnumMap = new Map<VolunteerSignUpState, string>()
   .set(VolunteerSignUpState.awaitingAudit, '待审核')
   .set(VolunteerSignUpState.auditPassed, '审核通过')
   .set(VolunteerSignUpState.auditFailed, '审核不通过')
@@ -147,17 +162,17 @@ export const volunteerSignUpStateValueEnum = new Map<VolunteerSignUpState, strin
   .set(VolunteerSignUpState.offWork, '未到岗')
   .set(VolunteerSignUpState.finished, '已完成');
 
-export const volunteerWhitelistStateValueEnum = new Map<VolunteerWhitelistState, ProSchemaValueEnumType>()
+export const volunteerWhitelistStateValueEnumMap = new Map<VolunteerWhitelistState, ProSchemaValueEnumType>()
   .set(VolunteerWhitelistState.normal, { text: '正常', status: 'success' })
   .set(VolunteerWhitelistState.ignored, { text: '黑名单', status: 'warning' })
   .set(VolunteerWhitelistState.whitelist, { text: '白名单', status: 'processing' })
   .set(VolunteerWhitelistState.forbidden, { text: '禁止报名', status: 'error' });
 
-export const volunteerTypeForFormValueEnum = new Map<VolunteerType, string>()
+export const volunteerTypeForFormValueEnumMap = new Map<VolunteerType, string>()
   .set(VolunteerType.temporary, '临时志愿者')
   .set(VolunteerType.personInCharge, '负责人');
 
-export const volunteerIdentityValueEnum = new Map<VolunteerIdentity, string>()
+export const volunteerIdentityValueEnumMap = new Map<VolunteerIdentity, string>()
   .set(VolunteerIdentity.student, '学生')
   .set(VolunteerIdentity.socialFigure, '社会人士');
 
@@ -178,3 +193,15 @@ export const idCardTypeValueEnumMap = new Map<IdCardType, string>()
 
 export const notificationTypeValueEnumMap = new Map<NotificationType, ProSchemaValueEnumType>()
   .set(NotificationType.message, { text: '通知', status: 'processing' });
+
+export const isCheckedValueEnumMap = new Map<boolean, string>()
+  .set(true, '是')
+  .set(false, '否');
+
+export const payrollStateValueEnumMap = new Map<PayrollState, ProSchemaValueEnumType>()
+  .set(PayrollState.unpaid, { text: '未到账', status: 'processing' })
+  .set(PayrollState.paid, { text: '已到账', status: 'success' });
+
+export const noticeStateValueEnumMap = new Map<NoticeState, string>()
+  .set(NoticeState.unread, '未读')
+  .set(NoticeState.read, '已读');

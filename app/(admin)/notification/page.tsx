@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useContext, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Avatar, Badge, Button, Checkbox, Flex, Tag, theme } from 'antd';
 import { ProList, ProSkeleton } from '@ant-design/pro-components';
 import { useMessage } from '@/hooks';
 import { HttpClient } from '@/utils';
 import { NotificationState, notificationTypeValueEnumMap } from '@/constants';
-import { NotificationCountContext } from '@/components';
 import Text from 'antd/es/typography/Text';
+import useStore from '@/store';
 
 import type { Key } from 'react';
 import type { INotification } from '@/utils/http/api-types';
@@ -21,7 +21,8 @@ const NotificationList = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState<readonly Key[]>([0]);
 
-  const [notificationCount, setNotificationCount] = useContext(NotificationCountContext)!;
+  const notificationCount = useStore(state => state.notificationCount);
+  const setNotificationCount = useStore(state => state.setNotificationCount);
 
   const handleReadSelected = async () => {
     setIsReadingSelected(true);

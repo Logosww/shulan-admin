@@ -1,15 +1,13 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form, Input, Button, Flex } from 'antd';
 import { MobileOutlined, LockOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useMessage, useNotification } from '@/hooks';
 import { HttpClient } from '@/utils/http';
-import { IsLoginContext, UserRoleContext } from '@/components';
 import { useCountdown } from 'usehooks-ts';
-import { getCookie } from '@/utils';
-import { Role } from '@/constants';
+import useStore from '@/store';
 
 import type { ILoginForm } from '@/utils/http/api-types';
 
@@ -17,14 +15,14 @@ const LoginPage = () => {
 
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [_, setIsLogin] = useContext(IsLoginContext)!;
-  const [__, setRole] = useContext(UserRoleContext)!;
   const [form] = Form.useForm();
   const phone = Form.useWatch('phone', form) as string;
   const router = useRouter();
   const message = useMessage();
   const notification = useNotification();
   const [count, { startCountdown, resetCountdown }] = useCountdown({ countStart: 60 });
+  const login = useStore(state => state.login);
+  const setRole = useStore(state => state.setRole);
 
   useEffect(() => {
     if(count === 0) {
@@ -35,9 +33,8 @@ const LoginPage = () => {
 
   const handleFinish = async (form: ILoginForm) => {
     setIsSubmitting(true);
-    await HttpClient.login(form).finally(() => setIsSubmitting(false));
-    const role = (parseInt(getCookie('Role') ?? '') || Role.user) as Role;
-    setIsLogin(true);
+    const { role } = await HttpClient.login(form).finally(() => setIsSubmitting(false));
+    login();
     setRole(role);
     notification.success({ message: '登录成功' });
     router.push('/');
@@ -56,8 +53,10 @@ const LoginPage = () => {
 
   return (
     <div className="absolute w-full h-full flex items-center justify-center bg-slate-100">
-      <div className="relative w-[420px] py-[32px] px-[56px] bg-white border rounded-2xl border-slate-100 shadow dark:bg-neutral-700 dark:border-neutral-100">
-        <div className='flex justify-center mb-[16px]'><img src="/image/logo.png" alt="logo" width="119" height="80" /></div>
+      <div className="relative w-[420px] py-[32px] px-[56px] bg-white border rounded-2xl border-slate-100 shadow">
+        <div className='flex justify-center mb-[16px]'>
+          <img src="/image/logo.png" alt="logo" width={119} height={80} decoding='async' />
+        </div>
         <Form name="login" form={form} onFinish={handleFinish}>
           <Form.Item
             name="phone"
@@ -79,7 +78,6 @@ const LoginPage = () => {
           <Button className="mb-[8px]" size="large" type="primary" htmlType="submit" loading={isSubmitting} block>
             登录
           </Button>
-          {/* <a>忘记密码</a> */}
         </Form>
       </div>
     </div>

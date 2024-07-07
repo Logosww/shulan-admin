@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 import { Button, Flex, Image, Popconfirm, Switch, Tag } from 'antd';
 import { HttpClient } from '@/utils';
 import { useMessage } from '@/hooks';
-import { activityStateValueEnum, activityTypeValueEnum } from '@/constants';
+import { activityStateValueEnumMap, activityTypeValueEnumMap } from '@/constants';
 import { PlusOutlined } from '@ant-design/icons';
 import { 
   CheckCard,
@@ -17,7 +17,7 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { ActivityState, WorkTag, activityFeatureValueEnum, workTagValueEnumMap } from '@/constants/value-enum';
+import { ActivityState, WorkTag, activityFeatureValueEnumMap, workTagValueEnumMap } from '@/constants/value-enum';
 
 import type { ActionType} from '@ant-design/pro-components';
 import type { IActivityDetail, IVolunteerWork, VolunteerWorkForm } from '@/utils/http/api-types';
@@ -133,13 +133,13 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             title: '活动类型',
             dataIndex: 'type',
             valueType: 'text',
-            valueEnum: activityTypeValueEnum,
+            valueEnum: activityTypeValueEnumMap,
           },
           {
             title: '活动保障',
             dataIndex: 'features',
             valueType: 'text',
-            renderText: (_, { features }) => features.map(feature => activityFeatureValueEnum.get(feature)).join(' '),
+            renderText: (_, { features }) => features.map(feature => activityFeatureValueEnumMap.get(feature)).join(' '),
           },
           {
             title: '活动封面',
@@ -160,8 +160,8 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             title: '活动状态',
             dataIndex: 'state',
             valueType: 'text',
-            valueEnum: activityStateValueEnum,
-            renderText: (_, { state }) => <Tag bordered={false} color={activityStateValueEnum.get(state)?.status}>{activityStateValueEnum.get(state)?.text}</Tag>
+            valueEnum: activityStateValueEnumMap,
+            renderText: (_, { state }) => <Tag bordered={false} color={activityStateValueEnumMap.get(state)?.status}>{activityStateValueEnumMap.get(state)?.text}</Tag>
           },
           {
             title: '活动时间',
@@ -197,6 +197,12 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             renderText: (_, { isDisplay }) => isDisplay ? '是' : '否',
           },
           {
+            title: '展示酬金',
+            dataIndex: 'isMoney',
+            valueType: 'text',
+            renderText: (_, { isMoney }) => isMoney ? '是' : '否',
+          },
+          {
             title: '展示工作须知',
             dataIndex: 'isWorkInstruction',
             valueType: 'text',
@@ -223,6 +229,7 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             title: '活动公告',
             dataIndex: 'announcement',
             valueType: 'textarea',
+            span: 3,
           },
           {
             title: '岗位列表',

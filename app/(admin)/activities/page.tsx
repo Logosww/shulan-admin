@@ -6,10 +6,10 @@ import { HttpClient } from '@/utils/http';
 import { Suspense, useContext } from 'react';
 import { Button, Popconfirm, Tag } from 'antd';
 import { CheckOutlined, ClockCircleFilled, CopyOutlined, DeleteOutlined, EditOutlined, EnvironmentFilled, PlusOutlined, RollbackOutlined, SendOutlined } from '@ant-design/icons';
-import { UserRoleContext } from '@/components';
 import { useRouter } from 'next/navigation';
 import { useMessage, usePagingAndQuery } from '@/hooks';
-import { activityStateValueEnum } from '@/constants';
+import { activityStateValueEnumMap } from '@/constants';
+import useStore from '@/store';
 
 import type { ActivityPreview } from '@/utils/http/api-types';
 
@@ -19,7 +19,7 @@ const ActivityList = () => {
 
   const router = useRouter();
   const message = useMessage();
-  const [role] = useContext(UserRoleContext)!;
+  const role = useStore(state => state.role);
 
   const {
     reload,
@@ -103,7 +103,7 @@ const ActivityList = () => {
         onFinish={handleFilterQuery}
         onReset={handleFilterReset}
       >
-        <ProFormSelect label="活动状态" name="state" width="xs" valueEnum={activityStateValueEnum} />
+        <ProFormSelect label="活动状态" name="state" width="xs" valueEnum={activityStateValueEnumMap} />
         <ProFormText label="活动名称" name="keyword" width="md" />
       </ProForm>
       <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push('/activityForm?operation=append')}>新增活动</Button>
@@ -130,7 +130,7 @@ const ActivityList = () => {
             <div className="ml-[12px] text-[#666] flex flex-col gap-[8px]">
               <div><ClockCircleFilled className="mr-[4px]" />{`${item.startAt}-${item.endAt}`}</div>
               <div><EnvironmentFilled className="mr-[4px]" />{item.city} {item.address}</div>
-              <div>状态：<Tag bordered={false} color={activityStateValueEnum.get(item.state)?.status}>{activityStateValueEnum.get(item.state)?.text}</Tag></div>
+              <div>状态：<Tag bordered={false} color={activityStateValueEnumMap.get(item.state)?.status}>{activityStateValueEnumMap.get(item.state)?.text}</Tag></div>
             </div>
           </>
         },

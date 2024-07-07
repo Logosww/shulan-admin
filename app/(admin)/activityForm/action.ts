@@ -5,10 +5,10 @@ import dayjs from "dayjs";
 
 import type { ActivityFormType } from ".";
 
-export const getFormInitialValues = async (params?: { id: number }) => {
-  if(!params) return Promise.resolve(void 0);
+export const getFormInitialValues = async (activityId?: number) => {
+  if(!activityId) return Promise.resolve(void 0);
   
-  const activityFormRaw = await HttpClient.getActivityDraft(params);
+  const activityFormRaw = await HttpClient.getActivityDraft({ id: activityId });
   const activityForm: Record<string, any> = { ...activityFormRaw };
   const { startAt, endAt, coverUrl, signupStartAt, signupEndAt, signupCancelAt, workList } = activityFormRaw;
   activityForm['coverPath'] = coverUrl;

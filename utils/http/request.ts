@@ -1,9 +1,8 @@
-// import { redirect } from 'next/navigation';
 import { messageApi } from '@/app';
-// import { tempCookie } from '../cookie';
+import { APIStatusCode } from '@/constants/value-enum';
 
 export interface ResOption<T> {
-  code: 0 | 1;
+  code: APIStatusCode;
   msg: string;
   data: T;
 };
@@ -16,7 +15,7 @@ type _RequestInit<T = void, RawT = any> = RequestInit & { disableBaseUrl?: boole
 
 const baseUrl = 'https://api.admin.buhuishangshu.cn';
 
-export const isClient =  typeof window !== 'undefined';
+export const isClient = typeof window !== 'undefined';
 
 const rediectToLogin = () => {
   // if(isClient) window.location.href = '/login';
@@ -26,7 +25,6 @@ const rediectToLogin = () => {
 
 const myFetch = async <T = void, RawT = any>(url: string, options?: _RequestInit<T, RawT>) => {
   const message = isClient ? messageApi : void 0;
-  // const cookie = !isClient && tempCookie.value;
   
   const disableBaseUrl = options?.disableBaseUrl;
   url = disableBaseUrl ? url : baseUrl + url;
@@ -38,8 +36,7 @@ const myFetch = async <T = void, RawT = any>(url: string, options?: _RequestInit
       credentials: 'include',
       ...options,
       headers: {
-        // ...(cookie && { cookie }),
-        ...options?.headers
+        ...options?.headers,
       }
     }
   ).catch(e => {
@@ -70,7 +67,7 @@ const myFetch = async <T = void, RawT = any>(url: string, options?: _RequestInit
   if(disableBaseUrl) return _data as T;
   
   const { code, msg, data } = _data;
-  if(!code) {
+  if(code === APIStatusCode.fail) {
     message?.error(msg);
     throw new Error(msg);
   }

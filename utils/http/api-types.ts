@@ -15,6 +15,8 @@ import type {
   IdCardType,
   NotificationType,
   NotificationState,
+  PayrollState,
+  NoticeState,
 } from '@/constants/value-enum';
 
 export interface ILoginForm {
@@ -83,6 +85,7 @@ export interface IActivityDetail {
   description: string;
   isWorkInstruction: boolean;
   isCheck: boolean;
+  isMoney: boolean;
 };
 
 export type ActivityPreview = Pick<
@@ -133,6 +136,7 @@ export interface IVolunteer {
   identity: VolunteerIdentity;
   createAt: string;
   reviewerName: string;
+  reviewAt: string;
 };
 
 export interface IVolunteerDetail extends Omit<IVolunteer, 'createAt' | 'identity' | 'state'> {
@@ -161,6 +165,13 @@ export interface IVolunteerDetail extends Omit<IVolunteer, 'createAt' | 'identit
     whiteListExpireAt: string;
     blackReason: string;
   };
+  activityWorkExperienceTotalNum: number;
+  activityWorkExperienceVos: {
+    id: number;
+    activityName: string;
+    activityWorkNames: string;
+    activityWorkAt: string;
+  }[];
 };
 
 export type NullableFilter<T> = {
@@ -192,17 +203,11 @@ export interface ISignUpRecord {
   useWhite: boolean;
   joinAt: string;
   reviewerName: string;
+  reviewAt: string;
 };
 
 export type SignUpRecordDetail = ISignUpRecord & IVolunteerDetail & {
   reason: string;
-  activityWorkExperienceTotalNum: number;
-  activityWorkExperienceVos: {
-    id: number;
-    activityName: string;
-    activityWorkNames: string;
-    activityWorkAt: string;
-  }[];
 };
 
 export type TemporaryVolunteerForm = {
@@ -228,6 +233,7 @@ export interface IBanner {
   targetName: string;
   miniProgramAppid: string;
   miniProgramPagePath: string;
+  isDisplay: boolean;
 };
 
 export interface IOption {
@@ -292,4 +298,42 @@ export interface ICheckinRecord {
   isChecked: boolean;
   checkAt: string;
   reviewerName: string;
+};
+
+export interface IPayrollRecord {
+  id: number;
+  name: string;
+  sex: Gender;
+  paidMoney: number;
+  paidTime: string;
+  state: PayrollState;
+  purePhoneNumber: string;
+  workVo: Pick<IVolunteerWork,
+    | 'id'
+    | 'name'
+    | 'money'
+    | 'label'
+  >;
+};
+
+export interface INoticeRecord {
+  id: number;
+  name: string;
+  phone: string;
+  activityWorkVolunteerState: VolunteerSignUpState;
+  activityWorkVolunteerIdentity: VolunteerType;
+  activityWork: {
+    id: number;
+    label: string;
+  };
+  readState: NoticeState;
+  sendCount: number;
+  senderName: string;
+  sendAt: string;
+};
+
+export interface INotice {
+  title: string;
+  rawContent: string;
+  htmlContent: string;
 };

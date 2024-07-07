@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useState } from 'react';
 import { Button, Carousel, Form, Image, Modal, Popconfirm, Spin } from 'antd';
-import { ModalForm, ProFormDependency, ProFormGroup, ProFormSegmented, ProFormSelect, ProFormText, ProSkeleton, ProTable } from '@ant-design/pro-components';
+import { ModalForm, ProFormDependency, ProFormGroup, ProFormSegmented, ProFormSelect, ProFormSwitch, ProFormText, ProSkeleton, ProTable } from '@ant-design/pro-components';
 import { BannerType, bannerTypeValueEnumMap } from '@/constants';
 import { DeleteOutlined, EditOutlined, EyeOutlined, LoadingOutlined, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { HttpClient } from '@/utils';
@@ -123,6 +123,7 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
           }
         </ProFormDependency>
       </ProFormGroup>
+      <ProFormSwitch label="是否展示" name="isDisplay" initialValue={true} />
     </ModalForm>
   );
 };
@@ -282,6 +283,11 @@ const BannersPage = () => {
                 valueType: 'text',
               },
               {
+                dataIndex: 'isDisplay',
+                title: '是否展示',
+                renderText: (_, { isDisplay }) => isDisplay ? '是' : '否',
+              },
+              {
                 key: 'option',
                 valueType: 'option',
                 title: '操作',
@@ -293,7 +299,11 @@ const BannersPage = () => {
                       icon={<EditOutlined />}
                       onClick={() => {
                         setModalTitle('编辑 Banner');
-                        modalForm.setFieldsValue({...banner, targetId: banner.targetId ? banner.targetId : void 0 });
+                        modalForm.setFieldsValue({
+                          ...banner,
+                          targetId: banner.targetId ? banner.targetId : void 0,
+                          miniProgramName: banner.targetName,
+                         });
                         setModalOpen(true);
                       }}
                     >编辑</Button>
