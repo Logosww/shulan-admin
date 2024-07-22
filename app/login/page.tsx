@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Form, Input, Button, Flex } from 'antd';
+import { Form, Input, Button, Flex, ConfigProvider } from 'antd';
 import { MobileOutlined, LockOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useMessage, useNotification } from '@/hooks';
+import { defaultTheme } from '@/theme/config';
 import { HttpClient } from '@/utils/http';
 import { useCountdown } from 'usehooks-ts';
 import useStore from '@/store';
@@ -52,35 +53,37 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="absolute w-full h-full flex items-center justify-center bg-slate-100">
-      <div className="relative w-[420px] py-[32px] px-[56px] bg-white border rounded-2xl border-slate-100 shadow">
-        <div className='flex justify-center mb-[16px]'>
-          <img src="/image/logo.png" alt="logo" width={119} height={80} decoding='async' />
+    <ConfigProvider theme={defaultTheme}>
+      <div className="absolute w-full h-full flex items-center justify-center bg-slate-100">
+        <div className="relative w-[420px] py-[32px] px-[56px] bg-white border rounded-2xl border-slate-100 shadow">
+          <div className='flex justify-center mb-[16px]'>
+            <img src="/image/logo.png" alt="logo" width={119} height={80} decoding='async' />
+          </div>
+          <Form name="login" form={form} onFinish={handleFinish}>
+            <Form.Item
+              name="phone"
+              rules={[{ required: true, message: '请输入手机号' }]}
+            >
+              <Input prefix={<MobileOutlined />} size="large" placeholder="手机号" maxLength={11} />
+            </Form.Item>
+            <Form.Item
+              name="code"
+              rules={[{ required: true, message: '请输入验证码' }]}
+            >
+              <Flex justify='space-between' gap={8}>
+                <Input prefix={<LockOutlined />} size="large" placeholder="验证码" />
+                <Button size="large" disabled={isCodeSent || !phone} onClick={handleSendCode}>
+                  { isCodeSent ? `${count} 获取验证码` : '获取验证码' }
+                </Button>
+              </Flex>
+            </Form.Item>
+            <Button className="mb-[8px]" size="large" type="primary" htmlType="submit" loading={isSubmitting} block>
+              登录
+            </Button>
+          </Form>
         </div>
-        <Form name="login" form={form} onFinish={handleFinish}>
-          <Form.Item
-            name="phone"
-            rules={[{ required: true, message: '请输入手机号' }]}
-          >
-            <Input prefix={<MobileOutlined />} size="large" placeholder="手机号" maxLength={11} />
-          </Form.Item>
-          <Form.Item
-            name="code"
-            rules={[{ required: true, message: '请输入验证码' }]}
-          >
-            <Flex justify='space-between' gap={8}>
-              <Input prefix={<LockOutlined />} size="large" placeholder="验证码" />
-              <Button size="large" disabled={isCodeSent || !phone} onClick={handleSendCode}>
-                { isCodeSent ? `${count} 获取验证码` : '获取验证码' }
-              </Button>
-            </Flex>
-          </Form.Item>
-          <Button className="mb-[8px]" size="large" type="primary" htmlType="submit" loading={isSubmitting} block>
-            登录
-          </Button>
-        </Form>
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

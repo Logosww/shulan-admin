@@ -4,7 +4,7 @@ import React, { forwardRef, useImperativeHandle } from 'react';
 import { withProps } from '@udecode/cn';
 import { createPlugins, Plate, PlateLeaf, Value, usePlateStates, withHOC, PlateController, useReplaceEditor } from '@udecode/plate-common';
 import { createParagraphPlugin, ELEMENT_PARAGRAPH } from '@udecode/plate-paragraph';
-import { createImagePlugin, ELEMENT_IMAGE, withImageUpload } from '@udecode/plate-media';
+import { createImagePlugin, ELEMENT_IMAGE } from '@udecode/plate-media';
 import { createBoldPlugin, MARK_BOLD, createItalicPlugin, MARK_ITALIC, createUnderlinePlugin, MARK_UNDERLINE } from '@udecode/plate-basic-marks';
 // import { createFontColorPlugin } from '@udecode/plate-font';
 import { createAlignPlugin } from '@udecode/plate-alignment';
@@ -117,7 +117,7 @@ export const Editor = withHOC(PlateController, forwardRef<EditorRef>(function Ed
         <FixedToolbar>
           <FixedToolbarButtons />
         </FixedToolbar>
-        <PlateEditor />
+        <PlateEditor className="max-h-[400px] overflow-y-auto" />
         <FloatingToolbar>
           <FloatingToolbarButtons />
         </FloatingToolbar>

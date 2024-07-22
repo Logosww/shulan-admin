@@ -1,7 +1,8 @@
 'use client';
 
+import { useMemo } from 'react';
 import { ConfigProvider, App } from 'antd';
-import { useDarkMode } from 'usehooks-ts';
+import { useTheme } from 'next-themes';
 import { defaultTheme, darkTheme } from '@/theme/config';
 import { ThemeProvider } from '@/components';
 import zhCN from 'antd/locale/zh_CN';
@@ -12,32 +13,43 @@ let messageApi: MessageInstance;
 
 const AppInner = ({ children }: React.PropsWithChildren) => {
   messageApi = App.useApp().message;
-  return children;
+
+  return <div className="animate-fade-in">{children}</div>;
 };
 
-const MyApp = ({ children }: React.PropsWithChildren) => {
-  const { isDarkMode } = useDarkMode();
+const AppWrapper = ({ children }: React.PropsWithChildren) => {
+  const { theme, resolvedTheme } = useTheme();
+
+  const isDarkMode = useMemo(() => (
+    theme === 'system'
+      ? resolvedTheme === 'dark'
+      : theme === 'dark'
+  ), [theme, resolvedTheme]);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme={isDarkMode ? 'dark' : 'light'}>
-      <ConfigProvider
-        locale={zhCN}
-        theme={isDarkMode ? darkTheme : defaultTheme}
-        form={{
-          requiredMark: false,
-          validateMessages: {
-            required: '${label}不能为空',
-            default: '${label}格式错误',
-          }
-        }}
-      >
-        <App>
-          <AppInner>{children}</AppInner>
-        </App>
-      </ConfigProvider>
-    </ThemeProvider>
+    <ConfigProvider
+      locale={zhCN}
+      theme={isDarkMode ? darkTheme : defaultTheme}
+      form={{
+        requiredMark: false,
+        validateMessages: {
+          required: '${label}不能为空',
+          default: '${label}格式错误',
+        }
+      }}
+    >
+      <App>
+        <AppInner>{children}</AppInner>
+      </App>
+    </ConfigProvider>
   );
 };
+
+const MyApp = ({ children }: React.PropsWithChildren) => (
+  <ThemeProvider attribute="class" enableSystem>
+    <AppWrapper>{children}</AppWrapper>
+  </ThemeProvider>
+);
 
 export default MyApp;
 

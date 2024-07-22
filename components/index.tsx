@@ -8,3 +8,4 @@ export * from './StoreProvider';
 export * from './Editor';
 export * from './ThemeProvider';
 export * from './ThemeToggle';
+export * from './Layout';

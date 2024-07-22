@@ -102,7 +102,17 @@ export enum NotificationType {
 
 export enum PayrollState {
   unpaid = 0,
-  paid = 1,
+  proccessing = 1,
+  paid = 2,
+  fail = 3,
+};
+
+export enum PayrollAPIState {
+  init = 0,
+  awaitConfirm = 1,
+  processing = 2,
+  success = 3,
+  fail = 4,
 };
 
 export enum APIStatusCode {
@@ -199,8 +209,17 @@ export const isCheckedValueEnumMap = new Map<boolean, string>()
   .set(false, '否');
 
 export const payrollStateValueEnumMap = new Map<PayrollState, ProSchemaValueEnumType>()
-  .set(PayrollState.unpaid, { text: '未到账', status: 'processing' })
-  .set(PayrollState.paid, { text: '已到账', status: 'success' });
+  .set(PayrollState.unpaid, { text: '待打款', status: 'warning' })
+  .set(PayrollState.proccessing, { text: '处理中', status: 'processing' })
+  .set(PayrollState.paid, { text: '已到账', status: 'success' })
+  .set(PayrollState.fail, { text: '转账失败', status: 'error' });
+
+export const payrollAPIStateValueEnumMap = new Map<PayrollAPIState, string>()
+  .set(PayrollAPIState.init, '转账校验中')
+  .set(PayrollAPIState.awaitConfirm, '商户待确认')
+  .set(PayrollAPIState.processing, '转账中')
+  .set(PayrollAPIState.success, '转账成功')
+  .set(PayrollAPIState.fail, '转账失败');
 
 export const noticeStateValueEnumMap = new Map<NoticeState, string>()
   .set(NoticeState.unread, '未读')

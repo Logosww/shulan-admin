@@ -116,7 +116,7 @@ export const Notice = ({ id }: INoticeProps) => {
             dataIndex: 'activityWorkVolunteerIdentity',
             valueType: 'select',
             valueEnum: volunteerTypeValueEnumMap,
-            renderText: (_, { activityWorkVolunteerIdentity: type }) => <Tag color={volunteerTypeValueEnumMap.get(type)!.status}>{volunteerTypeValueEnumMap.get(type)!.text}</Tag>,
+            renderText: (_, { activityWorkVolunteerIdentity: type }) => <Tag bordered={false} color={volunteerTypeValueEnumMap.get(type)!.status}>{volunteerTypeValueEnumMap.get(type)!.text}</Tag>,
           },
           {
             title: '报名岗位',

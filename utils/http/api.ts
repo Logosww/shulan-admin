@@ -42,6 +42,8 @@ import type {
   IPayrollRecord,
   INoticeRecord,
   INotice,
+  IPaymentPreview,
+  IPayrollDetail,
 } from './api-types';
 
 export const login = (params: ILoginForm) =>
@@ -308,21 +310,27 @@ export const getUsersByRole = (params: { code: Role }) => get<IOption[]>('/selec
 
 export const getAllExportedVolunteerListKey = () => post<string>('/superAdmin/excel/export/volunteer');
 
-export const getPagingPayrollRecords = (params: IPagingParams & { activityId: number }) => get<IPagingResult<IPayrollRecord>>('/payroll/record/page', params);
+export const getPagingPayrollRecords = (params: IPagingParams & { activityId: number }) => get<IPagingResult<IPayrollRecord>>('/manage/activityWorkVolunteerTransferOrder/page', params);
 
 export const filterPayrollRecords = (params: NullableFilter<{
   id: number;
-  sex: Gender;
   name: string;
-  state: PayrollState;
-  purePhoneNumber: string;
-}> & { activityId: number }) => post<IPayrollRecord[]>('/payroll/record/search', params);
+  phone: string;
+  activityWorkId: number;
+  wxmpUserTransferOrderState: PayrollState;
+}> & { activityId: number }) => post<IPayrollRecord[]>('/manage/activityWorkVolunteerTransferOrder/search', params);
 
-export const doPaymentToSingle = (params: { id: number, money: number, activityId: number, smsCode: string }) => post('/payroll/record/search', params);
+export const doPaymentToSingle = (params: { id: number; money: number; title: string; smsCode: string; remark: string }) => post('/superAdmin/activityWorkVolunteerTransferOrder/transfer', params);
 
-export const doPaymentToAll = (params: { activityId: number, smsCode: string }) => post('/payroll/doPayment/batchAll', params);
+export const doPaymentToAll = (params: { id: number; title: string; smsCode: string; remark: string }) => post('/superAdmin/activityWorkVolunteerTransferOrder/batchTransfer', params);
 
-export const sendPaymentVerifySmsCode = () => post('/payroll/payment/verify');
+export const sendPaymentVerifySmsCode = (params: { purePhoneNumber: string }) => post('/superAdmin/sms/sendTransferOrderVerify', { countryCode: '86', ...params });
+
+export const getPaymentToAllPreview = (params: { id: number }) => get<IPaymentPreview>('/manage/activityWorkVolunteerTransferOrder/preview', params);
+
+export const getPayrollDetails = (params: { id: number }) => get<IPayrollDetail[]>('/manage/activityWorkVolunteerTransferOrder/transferDetail', params);
+
+export const exportPayrollRecords = (params: { id: number }) => post<string>('/excel/export/activityTransferOrder', params);
 
 export const getPagingNoticeRecords = (params: IPagingParams & { activityId: number }) => get<IPagingResult<INoticeRecord>>('/manage/activityWorkVolunteerNotice/page', params); 
 

@@ -1,8 +1,6 @@
 import {
   FireOutlined,
   FundOutlined,
-  FundProjectionScreenOutlined,
-  GiftOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -24,16 +22,6 @@ export const adminMenuItems: ISideBarProps['menuItems'] = [
     label: '活动管理',
   },
   {
-    key: '/analysis',
-    icon: <FundProjectionScreenOutlined />,
-    label: '数据分析',
-  },
-  {
-    key: '/welfare',
-    icon: <GiftOutlined />,
-    label: '福利专区',
-  },
-  {
     key: '/banners',
     icon: <FundOutlined />,
     label: 'Banner 管理',
@@ -48,4 +36,4 @@ export const adminMenuItems: ISideBarProps['menuItems'] = [
     icon: <TeamOutlined />,
     label: '管理员管理',
   },
-]
+];

@@ -17,6 +17,7 @@ import type {
   NotificationState,
   PayrollState,
   NoticeState,
+  PayrollAPIState,
 } from '@/constants/value-enum';
 
 export interface ILoginForm {
@@ -303,17 +304,37 @@ export interface ICheckinRecord {
 export interface IPayrollRecord {
   id: number;
   name: string;
-  sex: Gender;
-  paidMoney: number;
+  phone: string;
+  shouldTransferMoney: number;
+  actualTransferMoney: number;
   paidTime: string;
-  state: PayrollState;
-  purePhoneNumber: string;
-  workVo: Pick<IVolunteerWork,
-    | 'id'
-    | 'name'
-    | 'money'
-    | 'label'
-  >;
+  wxmpUserTransferOrderState: PayrollState;
+  activityWorkVolunteerIdentity: VolunteerType;
+  activityWork: {
+    id: number;
+    label: string;
+  };
+};
+
+export interface IPaymentPreview {
+  totalNumber: number;
+  totalMoney: number;
+  tips: string;
+  workPreviewVo: {
+    name: string;
+    localNumber: number;
+    localMoney: number;
+  }[];
+};
+
+export interface IPayrollDetail {
+  outDetailNo: string;
+  transferAmount: number;
+  detailStatus: PayrollAPIState;
+  transferorName: string;
+  transferAt: string;
+  openid: string;
+  failReason: string;
 };
 
 export interface INoticeRecord {

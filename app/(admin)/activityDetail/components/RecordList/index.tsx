@@ -19,14 +19,14 @@ import type {
 } from '@/utils/http/api-types';
 
 type FilterForm = Pick<ISignUpRecord, 
-  |'id' 
+  | 'id' 
   | 'name' 
   | 'sex' 
   | 'purePhoneNumber' 
   | 'activityWorkVolunteerState' 
   | 'volunteerState'
   | 'activityWorkVolunteerIdentity'
-> & { activityWorkId: number, volunteerIdentity: VolunteerIdentity };
+> & { activityWorkId: number, volunteerIdentity: VolunteerIdentity, school: string };
 
 export const SignUpRecordList = ({ id }: { id: number }) => {
 
@@ -53,6 +53,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
     filterFormTransform: (form) => ({
       sex: form.sex ?? null,
       name: form.name ?? null,
+      school: form.school ?? null,
       activityWorkId: form.activityWorkId ?? null,
       volunteerState: form.volunteerState ?? null,
       purePhoneNumber: form.purePhoneNumber ?? null,
@@ -121,7 +122,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           <Popconfirm 
             key="auditReject"
             title="提示"
-            description="确认将拉黑的志愿全部审核不通过吗？"
+            description="确认将待审核的志愿全部审核不通过吗？"
             onConfirm={async () => HttpClient.auditIgnoredVolunteerReject({ id }).then(() => {message.success('操作成功')})}
           >
             <Button type="primary" icon={<StopOutlined />} danger>一键不通过</Button>
@@ -191,6 +192,12 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           title: '手机号',
           dataIndex: 'purePhoneNumber',
           valueType: 'text',
+        },
+        {
+          title: '学校',
+          key: 'school',
+          valueType: 'text',
+          hideInTable: true,
         },
         {
           title: '报名岗位',

@@ -17,11 +17,7 @@ const baseUrl = 'https://api.admin.buhuishangshu.cn';
 
 export const isClient = typeof window !== 'undefined';
 
-const rediectToLogin = () => {
-  // if(isClient) window.location.href = '/login';
-  // else redirect('/login');
-  window.location.href = '/login';
-};
+const rediectToLogin = () => isClient && (window.location.href = '/login');
 
 const myFetch = async <T = void, RawT = any>(url: string, options?: _RequestInit<T, RawT>) => {
   const message = isClient ? messageApi : void 0;
@@ -48,27 +44,26 @@ const myFetch = async <T = void, RawT = any>(url: string, options?: _RequestInit
   if(!ok) {
     switch(status) {
       case 401: {
-        message?.error('你还未登录');
+        message?.error?.('你还未登录');
         return rediectToLogin() as never;
       }
       case 403: {
-        message?.error('你的权限不够');
+        message?.error?.('你的权限不够');
         return rediectToLogin() as never;
       }
       default: {
-        message?.error('网络异常');
+        message?.error?.('网络异常');
         throw new Error(statusText);
       }
     }
   }
-
 
   const _data: ResOption<RawT> = await response.json();
   if(disableBaseUrl) return _data as T;
   
   const { code, msg, data } = _data;
   if(code === APIStatusCode.fail) {
-    message?.error(msg);
+    message?.error?.(msg);
     throw new Error(msg);
   }
 

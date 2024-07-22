@@ -4,7 +4,7 @@ import { Tabs } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import {
   Live,
-  // Payroll,
+  Payroll,
   Statistics,
   Certificate,
   SignUpRecordList,
@@ -58,11 +58,11 @@ const ActivityDetailInner = () => {
         label: '签到记录',
         children: <CheckinRecodList id={activityId} />
       },
-      // {
-      //   key: 'payroll',
-      //   label: '酬金打款',
-      //   children: <Payroll id={activityId} />,
-      // },
+      {
+        key: 'payroll',
+        label: '酬金打款',
+        children: <Payroll id={activityId} />,
+      },
     ]} />
   );
 };

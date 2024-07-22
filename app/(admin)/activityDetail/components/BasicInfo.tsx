@@ -44,7 +44,7 @@ const WorkCard = ({ data, activityId }: { data: IVolunteerWork, activityId: numb
       bodyStyle={{ paddingBlockEnd: 0 }}
       disabled={!available}
       checked={available}
-      extra={<Switch checkedChildren="报名中" unCheckedChildren="已报满" checked={available} onChange={handleAvailableChange} />}
+      extra={<Switch checkedChildren="可报名" unCheckedChildren="已报满" checked={available} onChange={handleAvailableChange} />}
       bordered
     >
       <ProDescriptions<IVolunteerWork>
@@ -120,7 +120,7 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
               state !== ActivityState.finished
               && (
                 <Popconfirm title="提示" description="确认提前结束活动吗？" onConfirm={() => handleEndActivity(id)}>
-                  <Button ghost danger>结束活动</Button>
+                  <Button danger>结束活动</Button>
                 </Popconfirm>
               )
           },
@@ -235,44 +235,48 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             title: '岗位列表',
             dataIndex: 'workList',
             span: 3,
-            renderText: (_, { workList, signupEndAt, endAt, id }) => (
+            renderText: (_, { state, workList, signupEndAt, endAt, id }) => (
               <Flex gap={24} wrap="wrap" className="w-full overflow-x-auto">
                 {
                   workList.map((work, index) => <WorkCard data={work} key={index} activityId={id} />)
                 }
-                <ModalForm<VolunteerWorkForm & { dateRange: [string, string] }>
-                  title="新增岗位"
-                  variant="filled"
-                  width={500}
-                  trigger={<Button type="dashed" icon={<PlusOutlined />}>新增岗位</Button>}
-                  onFinish={handleAppendWork}
-                >
-                  <ProForm.Group>
-                    <ProFormText label="名称" name="name" width="xs" rules={[{ required: true, message: '岗位名称不能为空' }]} />
-                    <ProFormDigit label="酬金" name="money" width="xs" max={500} rules={[{ required: true, message: '岗位酬金不能为空' }]} />
-                    <ProFormDigit label="积分" name="integral" width="xs" max={1000} rules={[{ required: true, message: '岗位积分不能为空' }]} />
-                  </ProForm.Group>
-                  <ProForm.Group>
-                    <ProFormDateTimeRangePicker
-                      label="工作时间"
-                      name="dateRange"
-                      fieldProps={{ minDate: current }}
-                      rules={[
-                        { required: true, message: '工作时间不能为空' },
-                        () => ({
-                          validator: (_, [workStart, workEnd]) => {
-                            if(workStart && workEnd && workStart.isSame(workEnd)) return Promise.reject(new Error('工作时长不能为0'));
-                            if(workStart && ( workStart.isSame(signupEndAt) || workStart.isBefore(signupEndAt))) 
-                              return Promise.reject(new Error('工作开始时间不能早于报名截止时间'));
-                            if(workEnd && workEnd.isAfter(endAt)) return Promise.reject(new Error('工作结束时间不能晚于活动结束时间'));
-                            return Promise.resolve();
-                          }
-                        }),
-                      ]}
-                    />
-                  </ProForm.Group>
-                  <ProFormTextArea label="工作内容" name="description" width="lg" rules={[{ required: true, message: '工作内容不能为空' }]} />
-                </ModalForm>
+                {
+                  state === ActivityState.activated && (
+                    <ModalForm<VolunteerWorkForm & { dateRange: [string, string] }>
+                      title="新增岗位"
+                      variant="filled"
+                      width={500}
+                      trigger={<Button type="dashed" icon={<PlusOutlined />}>新增岗位</Button>}
+                      onFinish={handleAppendWork}
+                    >
+                      <ProForm.Group>
+                        <ProFormText label="名称" name="name" width="xs" rules={[{ required: true, message: '岗位名称不能为空' }]} />
+                        <ProFormDigit label="酬金" name="money" width="xs" max={500} rules={[{ required: true, message: '岗位酬金不能为空' }]} />
+                        <ProFormDigit label="积分" name="integral" width="xs" max={1000} rules={[{ required: true, message: '岗位积分不能为空' }]} />
+                      </ProForm.Group>
+                      <ProForm.Group>
+                        <ProFormDateTimeRangePicker
+                          label="工作时间"
+                          name="dateRange"
+                          fieldProps={{ minDate: current }}
+                          rules={[
+                            { required: true, message: '工作时间不能为空' },
+                            () => ({
+                              validator: (_, [workStart, workEnd]) => {
+                                if(workStart && workEnd && workStart.isSame(workEnd)) return Promise.reject(new Error('工作时长不能为0'));
+                                if(workStart && ( workStart.isSame(signupEndAt) || workStart.isBefore(signupEndAt))) 
+                                  return Promise.reject(new Error('工作开始时间不能早于报名截止时间'));
+                                if(workEnd && workEnd.isAfter(endAt)) return Promise.reject(new Error('工作结束时间不能晚于活动结束时间'));
+                                return Promise.resolve();
+                              }
+                            }),
+                          ]}
+                        />
+                      </ProForm.Group>
+                      <ProFormTextArea label="工作内容" name="description" width="lg" rules={[{ required: true, message: '工作内容不能为空' }]} />
+                    </ModalForm>
+                  )
+                }
               </Flex>
             )
           },

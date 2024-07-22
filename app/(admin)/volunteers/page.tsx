@@ -260,7 +260,7 @@ const VolunteersPage = () => {
                       {
                         title: '违规情况',
                         renderText: (_, { stateVo: { currentViolateCount, violateCount, violateAt, releaseAt, blackReason } }) => (
-                          violateCount || blackReason
+                          violateCount || blackReason || releaseAt || violateAt
                             ? `当前违规：${currentViolateCount}次 | 累计违规：${violateCount}次 | 封禁时间：${violateAt} | 解禁时间: ${releaseAt}${blackReason && ` | 拉黑原因：${blackReason}`}`
                             : '无'
                         )

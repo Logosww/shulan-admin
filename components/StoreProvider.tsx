@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useRef } from 'react';
-import { useStore as _useStore } from 'zustand';
 import { createStore } from '@/store';
 
 import type { StoreApi } from 'zustand';

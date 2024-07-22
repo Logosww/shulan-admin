@@ -85,7 +85,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
   const role = useStore(state => state.role);
   const [form] = Form.useForm<ActivityFormType>();
   const state = Form.useWatch('state', form) as ActivityState;
-  const isWorkListModifiable = (operation === FormOperation.modify && state > ActivityState.activated) ? false : true;
+  const isWorkListModifiable = (operation === FormOperation.modify && state === ActivityState.activated) ? false : true;
 
   const handleFetchPoiList = (keywords: string) => {
     const city = form.getFieldValue('city');
@@ -101,13 +101,15 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
     form['coverPath'] = URL.canParse(coverPath) ? new URL(coverPath).pathname.slice(1) : coverPath;
     form['startAt'] = dateRange[0], form['endAt'] = dateRange[1];
     form['signupStartAt'] = signUpRange[0], form['signupEndAt'] = signUpRange[1];
-    form['workList'] = isWorkListModifiable ? workList.map(_work => {
-      const { dateRange } = _work;
-      const work: Record<string, any> = { ..._work, startAt: dateRange[0], endAt: dateRange[1] };
-      state !== ActivityState.activated && (work.id = null);
-      delete work['dateRange'];
-      return work;
-    }) : [];
+    form['workList'] = isWorkListModifiable 
+      ? workList.map(_work => {
+          const { dateRange } = _work;
+          const work: Record<string, any> = { ..._work, startAt: dateRange[0], endAt: dateRange[1] };
+          state !== ActivityState.finished && (work.id = null);
+          delete work['dateRange'];
+          return work;
+        })
+      : [];
     delete form['dateRange'], delete form['signUpRange'], delete form['state'];
 
     if(isModifying) await HttpClient.modifyActivityDraft({ ...(form as _ActivityForm), id: id! });
@@ -217,15 +219,13 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
             className="m-h-[500px] overflow-y-auto"
             min={1}
             copyIconProps={false}
-            tooltip="报名开始后，活动将处于进行中状态，此后岗位列表不支持增删。如需新增，请在活动详情页进行新增岗位补录。"
-            creatorButtonProps={{ block: false, creatorButtonText: '添加岗位', disabled: (!isWorkListModifiable) || (operation === FormOperation.modify && state === ActivityState.activated) }}
-            actionRender={(_, __, defaultActionDom) => 
-              isWorkListModifiable 
-              ? operation === FormOperation.modify && state === ActivityState.activated
-                ? []
-                : defaultActionDom
-              : []
-            }
+            tooltip="报名开始后，活动将处于进行中状态，此时岗位列表不支持编辑。如需新增，请在活动详情页进行新增岗位补录。"
+            creatorButtonProps={{
+              block: false,
+              creatorButtonText: '添加岗位',
+              disabled: !isWorkListModifiable || (operation === FormOperation.modify && state === ActivityState.finished)
+            }}
+            actionRender={(_, __, defaultActionDom) => isWorkListModifiable ? defaultActionDom : []}
             itemRender={({ listDom, action }, { index }) => (
               <ProCard
                 style={{ marginBlockEnd: 8 }}
@@ -255,11 +255,8 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
                   { required: true, message: '工作时间不能为空' },
                   ({ getFieldValue }) => ({
                     validator: (_, [workStart, workEnd]) => {
-                      const signUpEnd = getFieldValue(['signUpRange', 1]);
                       const end = getFieldValue(['dateRange', 1]);
                       if(workStart && workEnd && workStart.isSame(workEnd)) return Promise.reject(new Error('工作时长不能为0'));
-                      if(signUpEnd && workStart && ( workStart.isSame(signUpEnd) || workStart.isBefore(signUpEnd))) 
-                        return Promise.reject(new Error('工作开始时间不能早于报名截止时间'));
                       if(end && workEnd && workEnd.isAfter(end)) return Promise.reject(new Error('工作结束时间不能晚于活动结束时间'));
                       return Promise.resolve();
                     }
@@ -270,7 +267,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
               <ProFormTextArea label="工作内容" name="description" rules={[{ required: true, message: '工作内容不能为空' }]} fieldProps={{ maxLength: 250, showCount: true }} readonly={!isWorkListModifiable} />
           </ProFormList>
         </ProForm.Group>
-        <Form.Item name="state" noStyle />
+        <Form.Item name="state" initialValue={ActivityState.awaitingSubmit} noStyle />
       </ProForm>
     </>
   );
