@@ -111,7 +111,7 @@ export const getActivityDraft = (params: { id: number }) => get<ActivityForm & {
 
 export const createActivity = (params: ActivityForm) => post('/superAdmin/manage/activity/publish', params);
 
-export const endActivity = (params: { id: number }) => put('/manage/activityWorkVolunteer/ended', params);
+export const endActivity = (params: { id: number }) => put('/superAdmin/manage/activity/ended', params);
 
 export const appendWork = (params: { id: number; form: VolunteerWorkForm }) => post('/manage/activity/work/batchAdd', { id: params.id, workList: [params.form] });
 
