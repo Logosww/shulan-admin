@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Form, Input, Button, Flex, ConfigProvider } from 'antd';
 import { MobileOutlined, LockOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMessage, useNotification } from '@/hooks';
 import { defaultTheme } from '@/theme/config';
 import { HttpClient } from '@/utils/http';
@@ -24,6 +24,8 @@ const LoginPage = () => {
   const [count, { startCountdown, resetCountdown }] = useCountdown({ countStart: 60 });
   const login = useStore(state => state.login);
   const setRole = useStore(state => state.setRole);
+  const searchParams = useSearchParams();
+  const isRedirect = searchParams.get('redirect');
 
   useEffect(() => {
     if(count === 0) {
@@ -38,7 +40,8 @@ const LoginPage = () => {
     login();
     setRole(role);
     notification.success({ message: '登录成功' });
-    router.push('/');
+    const url = isRedirect ? searchParams.get('callbackUrl') ?? '/' : '/';
+    router.push(url);
   };
 
   const handleSendCode = async () => {

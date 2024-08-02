@@ -22,8 +22,10 @@ export const config: MiddlewareConfig = {
 
 export function middleware(request: NextRequest) {
   let response = NextResponse.next();
+  const isRedirect = request.nextUrl.searchParams.get('redirect');
   const isLogin = request.cookies.has('Authorization');
-  if(request.nextUrl.pathname.startsWith('/login')) isLogin && (response = NextResponse.redirect(new URL('/', request.url)));
+  if(request.nextUrl.pathname.startsWith('/login')) 
+    !isRedirect && isLogin && (response = NextResponse.redirect(new URL('/', request.url)));
   else !isLogin && (response = NextResponse.redirect(new URL('/login', request.url)));
 
   return response;

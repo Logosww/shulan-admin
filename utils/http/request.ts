@@ -17,7 +17,12 @@ const baseUrl = 'https://api.admin.buhuishangshu.cn';
 
 export const isClient = typeof window !== 'undefined';
 
-const rediectToLogin = () => isClient && (window.location.href = '/login');
+const rediectToLogin = () => {
+  if(!isClient) return;
+
+  const { href } = window.location;
+  window.location.href = `/login?redirect=true&callbackUrl=${href}`;
+};
 
 const myFetch = async <T = void, RawT = any>(url: string, options?: _RequestInit<T, RawT>) => {
   const message = isClient ? messageApi : void 0;
