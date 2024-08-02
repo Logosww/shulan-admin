@@ -85,7 +85,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
   const role = useStore(state => state.role);
   const [form] = Form.useForm<ActivityFormType>();
   const state = Form.useWatch('state', form) as ActivityState;
-  const isWorkListModifiable = (operation === FormOperation.modify && state === ActivityState.activated) ? false : true;
+  const isWorkListModifiable = (operation === FormOperation.modify && state >= ActivityState.activated) ? false : true;
 
   const handleFetchPoiList = (keywords: string) => {
     const city = form.getFieldValue('city');
@@ -101,15 +101,13 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
     form['coverPath'] = URL.canParse(coverPath) ? new URL(coverPath).pathname.slice(1) : coverPath;
     form['startAt'] = dateRange[0], form['endAt'] = dateRange[1];
     form['signupStartAt'] = signUpRange[0], form['signupEndAt'] = signUpRange[1];
-    form['workList'] = isWorkListModifiable 
-      ? workList.map(_work => {
-          const { dateRange } = _work;
-          const work: Record<string, any> = { ..._work, startAt: dateRange[0], endAt: dateRange[1] };
-          state !== ActivityState.finished && (work.id = null);
-          delete work['dateRange'];
-          return work;
-        })
-      : [];
+    form['workList'] = workList.map(_work => {
+      const { dateRange } = _work;
+      const work: Record<string, any> = { ..._work, startAt: dateRange[0], endAt: dateRange[1] };
+      isWorkListModifiable && (work.id = null);
+      delete work['dateRange'];
+      return work;
+    });
     delete form['dateRange'], delete form['signUpRange'], delete form['state'];
 
     if(isModifying) await HttpClient.modifyActivityDraft({ ...(form as _ActivityForm), id: id! });
@@ -223,16 +221,15 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
             creatorButtonProps={{
               block: false,
               creatorButtonText: '添加岗位',
-              disabled: !isWorkListModifiable || (operation === FormOperation.modify && state === ActivityState.finished)
+              disabled: !isWorkListModifiable
             }}
             actionRender={(_, __, defaultActionDom) => isWorkListModifiable ? defaultActionDom : []}
             itemRender={({ listDom, action }, { index }) => (
               <ProCard
                 style={{ marginBlockEnd: 8 }}
                 title={`岗位${index + 1}`}
-                extra={action}
+                extra={isWorkListModifiable && action}
                 bodyStyle={{ paddingBlockEnd: 0 }}
-                checked={!isWorkListModifiable}
                 bordered
               >
                 {listDom}
@@ -242,15 +239,14 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
             required
           >
             <ProForm.Group>
-              <ProFormText label="名称" name="name" width="xs" rules={[{ required: true, message: '岗位名称不能为空' }]} readonly={!isWorkListModifiable} />
-              <ProFormDigit label="酬金" name="money" width="xs" max={1000} rules={[{ required: true, message: '岗位酬金不能为空' }]} readonly={!isWorkListModifiable} />
-              <ProFormDigit label="积分" name="integral" width="xs" max={1000} rules={[{ required: true, message: '岗位积分不能为空' }]} readonly={!isWorkListModifiable} />
+              <ProFormText label="名称" name="name" width="xs" rules={[{ required: true, message: '岗位名称不能为空' }]} />
+              <ProFormDigit label="酬金" name="money" width="xs" max={1000} rules={[{ required: true, message: '岗位酬金不能为空' }]} />
+              <ProFormDigit label="积分" name="integral" width="xs" max={1000} rules={[{ required: true, message: '岗位积分不能为空' }]} />
             </ProForm.Group>
             <ProForm.Group>
               <ProFormDateTimeRangePicker
                 label="工作时间"
                 name="dateRange"
-                readonly={!isWorkListModifiable}
                 rules={isWorkListModifiable ? [
                   { required: true, message: '工作时间不能为空' },
                   ({ getFieldValue }) => ({
@@ -264,7 +260,7 @@ const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
                 ] : void 0}
               />
             </ProForm.Group>
-              <ProFormTextArea label="工作内容" name="description" rules={[{ required: true, message: '工作内容不能为空' }]} fieldProps={{ maxLength: 250, showCount: true }} readonly={!isWorkListModifiable} />
+              <ProFormTextArea label="工作内容" name="description" rules={[{ required: true, message: '工作内容不能为空' }]} fieldProps={{ maxLength: 250, showCount: true }} />
           </ProFormList>
         </ProForm.Group>
         <Form.Item name="state" initialValue={ActivityState.awaitingSubmit} noStyle />
