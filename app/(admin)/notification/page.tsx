@@ -65,7 +65,7 @@ const NotificationList = () => {
           && HttpClient.batchReadNotification({ ids: [id] })
             .then(() => setNotificationList(_list => {
               const list = [..._list];
-              list[index].state = NotificationState.read;
+              list[_index!].state = NotificationState.read;
               
               return list;
             }));
@@ -130,7 +130,11 @@ const NotificationList = () => {
           dataIndex: 'content',
           valueType: 'text',
           render: (_, { content }) => <div onClick={e => e.stopPropagation()}>{content}</div>,
-        }
+        },
+        actions: {
+          dataIndex: 'createAt',
+          valueType: 'dateTime',
+        },
       }}
     />
   );
