@@ -12,18 +12,18 @@
     "@ant-design/cssinjs": "^1.21.1",
     "@ant-design/icons": "^5.5.1",
     "@ant-design/nextjs-registry": "^1.0.1",
-    "@ant-design/pro-components": "^2.7.19",
-    "@ariakit/react": "^0.4.11",
+    "@ant-design/pro-components": "^2.8.0",
+    "@ariakit/react": "^0.4.13",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@radix-ui/react-dropdown-menu": "^2.1.1",
-    "@radix-ui/react-popover": "^1.1.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.2",
+    "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toolbar": "^1.1.0",
-    "@radix-ui/react-tooltip": "^1.1.2",
+    "@radix-ui/react-tooltip": "^1.1.3",
     "@udecode/cn": "^33.0.0",
     "@udecode/plate-alignment": "^34.0.0",
     "@udecode/plate-basic-marks": "^34.0.0",
@@ -40,16 +40,26 @@
     "@udecode/plate-resizable": "^34.0.0",
     "@udecode/plate-select": "^34.0.0",
     "@udecode/plate-serializer-html": "^34.0.0",
+<<<<<<< HEAD
     "antd": "^5.21.1",
     "class-variance-authority": "^0.7.0",
     "cos-js-sdk-v5": "^1.8.4",
+=======
+    "antd": "^5.21.4",
+    "class-variance-authority": "^0.7.0",
+    "cos-js-sdk-v5": "^1.8.6",
+>>>>>>> 4f7b057 (feat: more record search filter)
     "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.400.0",
     "moment": "^2.30.1",
     "nanoid": "^5.0.7",
+<<<<<<< HEAD
     "next": "^14.2.13",
+=======
+    "next": "^14.2.15",
+>>>>>>> 4f7b057 (feat: more record search filter)
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-countup": "^6.5.3",
@@ -59,7 +69,11 @@
     "slate-history": "^0.100.0",
     "slate-hyperscript": "^0.100.0",
     "slate-react": "^0.106.0",
+<<<<<<< HEAD
     "tailwind-merge": "^2.5.2",
+=======
+    "tailwind-merge": "^2.5.4",
+>>>>>>> 4f7b057 (feat: more record search filter)
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",
     "zustand": "^4.5.5"
@@ -69,14 +83,25 @@
     "@iconify/react": "^4.1.1",
     "@types/js-cookie": "^3.0.6",
     "@types/lodash-es": "^4.17.12",
+<<<<<<< HEAD
     "@types/node": "^20.16.10",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
+=======
+    "@types/node": "^20.16.12",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+>>>>>>> 4f7b057 (feat: more record search filter)
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.0.2",
     "postcss": "^8.4.47",
+<<<<<<< HEAD
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.2"
+=======
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
+>>>>>>> 4f7b057 (feat: more record search filter)
   }
 }

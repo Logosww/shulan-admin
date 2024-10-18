@@ -103,6 +103,11 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
         dataIndex: 'idCard',
       },
       {
+        title: '认证时间',
+        dataIndex: 'identityAt',
+        valueType: 'dateTime',
+      },
+      {
         title: '报名原因',
         dataIndex: 'reason',
         valueType: 'textarea',

@@ -178,8 +178,10 @@ export const filterSignUpRecords = (
     activityWorkVolunteerState: VolunteerSignUpState;
     volunteerState: VolunteerWhitelistState;
     purePhoneNumber: string;
-    activityWorkVolunteerIdentity: VolunteerType,
-    volunteerIdentity: VolunteerIdentity,
+    activityWorkVolunteerIdentity: VolunteerType;
+    volunteerIdentity: VolunteerIdentity;
+    activityCount: number;
+    searchActivityId: number;
   }> & { activityId: number }
 ) => post<ISignUpRecord[]>('/manage/activityWorkVolunteer/search', params);
 

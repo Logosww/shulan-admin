@@ -209,6 +209,7 @@ export interface ISignUpRecord {
 
 export type SignUpRecordDetail = ISignUpRecord & IVolunteerDetail & {
   reason: string;
+  identityAt: string;
 };
 
 export type TemporaryVolunteerForm = {
