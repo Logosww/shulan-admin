@@ -262,13 +262,13 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           valueEnum: volunteerIdentityValueEnumMap,
         },
         {
-          title: '参与活动次数',
+          title: '参与次数',
           key: 'activityCount',
           hideInTable: true,
           valueType: 'digit',
         },
         {
-          title: '历史参与活动',
+          title: '历史活动',
           key: 'searchActivityId',
           hideInTable: true,
           valueType: 'select',
