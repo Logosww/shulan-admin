@@ -17,6 +17,12 @@ const NotificationList = () => {
   const { token: { colorPrimary } } = theme.useToken();
   const [isReadingAll, setIsReadingAll] = useState(false);
   const [isReadingSelected, setIsReadingSelected] = useState(false);
+  const [notificationPaginationConfig, setNotificationPaginationConfig] =
+    useState<{
+      pageSize: number;
+      current: number;
+      total: number;
+    }>();
   const [notificationList, setNotificationList] = useState<INotification[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState<readonly Key[]>([0]);
@@ -33,7 +39,14 @@ const NotificationList = () => {
   };
 
   useEffect(() => {
-    HttpClient.getPagingNotification({ page: 1, size: 12 }).then(({ records }) => setNotificationList(records));
+    HttpClient.getPagingNotification({ page: 1, size: 12 }).then(({ records, total }) => {
+      setNotificationList(records);
+      setNotificationPaginationConfig({
+        total,
+        current: 1,
+        pageSize: 12,
+      });
+    });
     HttpClient.getUnreadNotificationCount().then(count => setNotificationCount(count));
   }, []);
 
@@ -42,10 +55,17 @@ const NotificationList = () => {
       rowKey="index"
       tableAlertRender={false}
       dataSource={notificationList}
-      pagination={{ 
-        pageSize: 12,
-        current: 1,
-        onChange: (page, size) => HttpClient.getPagingNotification({ page, size }).then(({ records }) => setNotificationList(records)),
+      pagination={{
+        ...notificationPaginationConfig,
+        onChange: (page, size) => HttpClient.getPagingNotification({ page, size }).then(({ records, total }) => {
+          setExpandedRowKeys([]);
+          setNotificationList(records);
+          setNotificationPaginationConfig({
+            total,
+            current: page,
+            pageSize: size,
+          });
+        }),
       }}
       expandable={{ 
         expandedRowKeys, 
@@ -65,7 +85,7 @@ const NotificationList = () => {
           && HttpClient.batchReadNotification({ ids: [id] })
             .then(() => setNotificationList(_list => {
               const list = [..._list];
-              list[index].state = NotificationState.read;
+              list[_index!].state = NotificationState.read;
               
               return list;
             }));
@@ -130,7 +150,11 @@ const NotificationList = () => {
           dataIndex: 'content',
           valueType: 'text',
           render: (_, { content }) => <div onClick={e => e.stopPropagation()}>{content}</div>,
-        }
+        },
+        actions: {
+          dataIndex: 'createAt',
+          valueType: 'dateTime',
+        },
       }}
     />
   );

@@ -26,7 +26,13 @@ type FilterForm = Pick<ISignUpRecord,
   | 'activityWorkVolunteerState' 
   | 'volunteerState'
   | 'activityWorkVolunteerIdentity'
-> & { activityWorkId: number, volunteerIdentity: VolunteerIdentity, school: string };
+> & { 
+  activityWorkId: number;
+  volunteerIdentity: VolunteerIdentity;
+  school: string;
+  activityCount: number;
+  searchActivityId: number;
+};
 
 export const SignUpRecordList = ({ id }: { id: number }) => {
 
@@ -61,6 +67,8 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       activityWorkVolunteerState: form.activityWorkVolunteerState ?? null,
       activityWorkVolunteerIdentity: form.activityWorkVolunteerIdentity ?? null,
       volunteerIdentity: form.volunteerIdentity ?? null,
+      activityCount: form.activityCount ?? null,
+      searchActivityId: form.searchActivityId ?? null,
     }),
   });
 
@@ -252,6 +260,20 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           hideInTable: true,
           valueType: 'select',
           valueEnum: volunteerIdentityValueEnumMap,
+        },
+        {
+          title: '参与次数',
+          key: 'activityCount',
+          hideInTable: true,
+          valueType: 'digit',
+        },
+        {
+          title: '历史活动',
+          key: 'searchActivityId',
+          hideInTable: true,
+          valueType: 'select',
+          request: () => HttpClient.getActivityOptions({ isFilter: true }),
+          fieldProps: { showSearch: true },
         },
         {
           title: '操作',

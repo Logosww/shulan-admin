@@ -62,8 +62,9 @@ const fetchPoiList = async (keywords: string, city?: string) => {
     .then(({ tips, status }: { tips: PoiType[]; status: 0 | 1 }) => {
       if(!status || tips.length === 0) return [];
 
-      return tips.filter(({ id }) => id).map(({ name, address, location }, index) => {
+      return tips.filter(({ id }) => id).map(({ name, location, address: _address }, index) => {
         const locationArr = location.split(',');
+        const address = typeof _address === 'string' ? _address : '';
         return {
           key: index,
           value: name,
