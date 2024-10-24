@@ -44,7 +44,7 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
   });
 
   return (
-    <ProTable<ICheckinRecord, FilterForm>
+    (<ProTable<ICheckinRecord, FilterForm>
       rowKey="id"
       form={{ variant: 'filled', ignoreRules: false, }}
       loading={loading}
@@ -127,6 +127,6 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
           hideInSearch: true,
         },
       ]}
-    />
+    />)
   );
 };

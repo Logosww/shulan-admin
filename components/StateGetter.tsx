@@ -1,6 +1,6 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
 import { forwardRef } from 'react';
 import { Role } from '@/constants';
 
@@ -10,7 +10,7 @@ type States = {
 };
 
 export const StateGetter = forwardRef<HTMLDivElement & { ['data-states']: States }>(function StateGetter(_, ref) {
-  const cookie = cookies();
+  const cookie = (cookies() as unknown as UnsafeUnwrappedCookies);
   
   const getState =
     <T extends any = string>(

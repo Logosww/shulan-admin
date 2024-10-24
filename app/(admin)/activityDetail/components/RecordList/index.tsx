@@ -86,7 +86,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
   };
 
   return (
-    <ProTable<ISignUpRecord, FilterForm>
+    (<ProTable<ISignUpRecord, FilterForm>
       rowKey="id"
       loading={isLoading}
       dataSource={signUpRecordList}
@@ -351,6 +351,6 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
         }
       ]}
       cardBordered
-    />
-  )
+    />)
+  );
 };

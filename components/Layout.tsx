@@ -23,7 +23,7 @@ export const Layout = ({ children }: React.PropsWithChildren) => {
       href: '/',
       title: <HomeOutlined />
     },
-    ...breadcrumbItemMap[pathname] ? [{ title: breadcrumbItemMap[pathname] }] : [],
+    ...(breadcrumbItemMap[pathname] ? [{ title: breadcrumbItemMap[pathname] }] : []),
   ]), [pathname]);
 
   const {

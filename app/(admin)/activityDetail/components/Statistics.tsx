@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, Col, Flex, Row, Spin, Statistic } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type JSX } from 'react';
 import { 
   getActivitAtWork,
   getActivityAuditPass,

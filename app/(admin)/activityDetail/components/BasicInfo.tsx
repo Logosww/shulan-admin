@@ -86,7 +86,7 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
   const current = dayjs();
   
   const message = useMessage();
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType>(undefined);
 
   const handleEndActivity = async (id: number) => {
     await HttpClient.endActivity({ id });

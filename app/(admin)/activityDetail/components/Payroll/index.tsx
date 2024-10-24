@@ -77,144 +77,142 @@ export const Payroll = ({ id }: { id: number }) => {
     setIsExporting(false);
   };
 
-  return (
-    <>
-      <ProTable<IPayrollRecord, FilterForm>
-        rowKey='id'
-        loading={loading}
-        dataSource={checkinRecordList}
-        pagination={paginationConfig}
-        form={{ variant: 'filled', ignoreRules: false }}
-        search={{ span: 5, defaultCollapsed: false }}
-        toolbar={{
-          actions: [
-            <Button 
-              key="export"
-              type="text" 
-              loading={isExporting}
-              icon={<DownloadOutlined />}
-              onClick={handleExportRecords}
-            >
-              导出报表
-            </Button>,
-            <Button
-              key="doPaymentBatch"
-              type="primary"
-              icon={<PayCircleOutlined />}
-              onClick={() => {setPaymentTarget(null), setModalOpen(true)}}
-            >
-              一键打款
-            </Button>
-          ]
-        }}
-        onReset={handleFilterReset}
-        onSubmit={handleFilterQuery}
-        columns={[
-          {
-            title: '编号',
-            key: 'id',
-            dataIndex: 'id',
-            valueType: 'text',
-            formItemProps: {
-              rules: [{
-                validateTrigger: 'submit',
-                validator: (_, value) => !value || /^(\d?)+$/.test(value) ? Promise.resolve() : Promise.reject(new Error('编号需为纯数字')),
-              }],
-            },
+  return (<>
+    <ProTable<IPayrollRecord, FilterForm>
+      rowKey='id'
+      loading={loading}
+      dataSource={checkinRecordList}
+      pagination={paginationConfig}
+      form={{ variant: 'filled', ignoreRules: false }}
+      search={{ span: 5, defaultCollapsed: false }}
+      toolbar={{
+        actions: [
+          <Button 
+            key="export"
+            type="text" 
+            loading={isExporting}
+            icon={<DownloadOutlined />}
+            onClick={handleExportRecords}
+          >
+            导出报表
+          </Button>,
+          <Button
+            key="doPaymentBatch"
+            type="primary"
+            icon={<PayCircleOutlined />}
+            onClick={() => {setPaymentTarget(null), setModalOpen(true)}}
+          >
+            一键打款
+          </Button>
+        ]
+      }}
+      onReset={handleFilterReset}
+      onSubmit={handleFilterQuery}
+      columns={[
+        {
+          title: '编号',
+          key: 'id',
+          dataIndex: 'id',
+          valueType: 'text',
+          formItemProps: {
+            rules: [{
+              validateTrigger: 'submit',
+              validator: (_, value) => !value || /^(\d?)+$/.test(value) ? Promise.resolve() : Promise.reject(new Error('编号需为纯数字')),
+            }],
           },
-          {
-            title: '姓名',
-            dataIndex: 'name',
-            valueType: 'text',
-          },
-          {
-            title: '手机号',
-            dataIndex: 'phone',
-            valueType: 'text',
-          },
-          {
-            title: '志愿者类型',
-            dataIndex: 'activityWorkVolunteerIdentity',
-            valueType: 'select',
-            valueEnum: volunteerTypeValueEnumMap,
-            renderText: (_, { activityWorkVolunteerIdentity: volunteerType }) =>
-              <Tag bordered={false} color={volunteerTypeValueEnumMap.get(volunteerType)?.status}>{volunteerTypeValueEnumMap.get(volunteerType)?.text}</Tag>,
-          },
-          {
-            title: '报名岗位',
-            dataIndex: ['workVo', 'name'],
-            valueType: 'text',
-            hideInSearch: true,
-            renderText: (_, { activityWork: { label } }) => label,
-          },
-          {
-            title: '报名岗位',
-            key: 'activityWorkId',
-            valueType: 'select',
-            hideInTable: true,
-            request: () => HttpClient.getActivityWorks({ id }).then(works => works.map(({ id, label }) => ({ label, value: id }))),
-          },
-          {
-            title: '应得酬金',
-            dataIndex: 'shouldTransferMoney',
-            valueType: 'money',
-            hideInSearch: true,
-          },
-          {
-            title: '实际酬金',
-            dataIndex: 'actualTransferMoney',
-            valueType: 'money',
-            hideInSearch: true,
-          },
-          {
-            title: '状态',
-            dataIndex: 'wxmpUserTransferOrderState',
-            valueType: 'select',
-            valueEnum: payrollStateValueEnumMap,
-          },
-          {
-            title: '操作',
-            key: 'option',
-            valueType: 'option',
-            align: 'center',
-            width: 180,
-            renderText: (_, record) => (
-              <>
-                <Popover
-                  trigger="click"
-                  placement="right"
-                  content={<HistoryCard id={record.id} />}
-                >
-                  <Button
-                    type="link"
-                    icon={<EyeOutlined />}
-                    disabled={record.wxmpUserTransferOrderState === PayrollState.unpaid}
-                  >
-                    详情
-                  </Button>
-                </Popover>
+        },
+        {
+          title: '姓名',
+          dataIndex: 'name',
+          valueType: 'text',
+        },
+        {
+          title: '手机号',
+          dataIndex: 'phone',
+          valueType: 'text',
+        },
+        {
+          title: '志愿者类型',
+          dataIndex: 'activityWorkVolunteerIdentity',
+          valueType: 'select',
+          valueEnum: volunteerTypeValueEnumMap,
+          renderText: (_, { activityWorkVolunteerIdentity: volunteerType }) =>
+            <Tag bordered={false} color={volunteerTypeValueEnumMap.get(volunteerType)?.status}>{volunteerTypeValueEnumMap.get(volunteerType)?.text}</Tag>,
+        },
+        {
+          title: '报名岗位',
+          dataIndex: ['workVo', 'name'],
+          valueType: 'text',
+          hideInSearch: true,
+          renderText: (_, { activityWork: { label } }) => label,
+        },
+        {
+          title: '报名岗位',
+          key: 'activityWorkId',
+          valueType: 'select',
+          hideInTable: true,
+          request: () => HttpClient.getActivityWorks({ id }).then(works => works.map(({ id, label }) => ({ label, value: id }))),
+        },
+        {
+          title: '应得酬金',
+          dataIndex: 'shouldTransferMoney',
+          valueType: 'money',
+          hideInSearch: true,
+        },
+        {
+          title: '实际酬金',
+          dataIndex: 'actualTransferMoney',
+          valueType: 'money',
+          hideInSearch: true,
+        },
+        {
+          title: '状态',
+          dataIndex: 'wxmpUserTransferOrderState',
+          valueType: 'select',
+          valueEnum: payrollStateValueEnumMap,
+        },
+        {
+          title: '操作',
+          key: 'option',
+          valueType: 'option',
+          align: 'center',
+          width: 180,
+          renderText: (_, record) => (
+            <>
+              <Popover
+                trigger="click"
+                placement="right"
+                content={<HistoryCard id={record.id} />}
+              >
                 <Button
                   type="link"
-                  icon={<PayCircleOutlined />}
-                  onClick={() => handleDoPaymentSingle(record)}
+                  icon={<EyeOutlined />}
+                  disabled={record.wxmpUserTransferOrderState === PayrollState.unpaid}
                 >
-                  打款
+                  详情
                 </Button>
-              </>
-            )
-          }
-        ]}
-      >
-      </ProTable>
-      <PaymentModal
-        activityId={id}
-        open={modalOpen}
-        target={paymentTarget}
-        onOpenChange={setModalOpen}
-        reloadTable={reloadTable}
-      />
-    </>
-  );
+              </Popover>
+              <Button
+                type="link"
+                icon={<PayCircleOutlined />}
+                onClick={() => handleDoPaymentSingle(record)}
+              >
+                打款
+              </Button>
+            </>
+          )
+        }
+      ]}
+    >
+    </ProTable>
+    <PaymentModal
+      activityId={id}
+      open={modalOpen}
+      target={paymentTarget}
+      onOpenChange={setModalOpen}
+      reloadTable={reloadTable}
+    />
+  </>);
 };
 
 export default Payroll;

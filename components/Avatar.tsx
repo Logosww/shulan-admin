@@ -88,77 +88,75 @@ export const Avatar = () => {
     }
   }, [count, resetCountdown]);
 
-  return (
-    <>
-      <Dropdown menu={{ items: menuItems }}>
-        <_Avatar
-          className='cursor-pointer'
-          shape='circle'
-          size={36}
-          style={{ backgroundColor: colorPrimary }}
-          icon={<UserOutlined/>}
-        />
-      </Dropdown>
-      <ModalForm<IUserProfile> 
-        title="个人资料"
-        variant="filled"
-        width={400}
-        form={form}
-        open={modalOpen}
-        requiredMark={false}
-        validateTrigger="onSubmit"
-        modalProps={{ centered: true, forceRender: true }}
-        submitter={{ 
-          searchConfig: { submitText: '保存' },
-        }}
-        onOpenChange={setModalOpen}
-        request={HttpClient.getUserProfile}
-        params={{ count: phoneUpdateCount.current }}
-        onFinish={handleModifyProfile}
-      >
-        <ProFormText label="姓名" name="name" width="xs" rules={[{ required: true }]} />
-        <ProFormSelect label="性别" name="sex" width="xs" valueEnum={genderValueEnumMap} rules={[{ required: true }]} />
-        <Form.Item label="手机号">
-          <Space>
-            <Form.Item name="desensitizedPhone" noStyle>
-              <Input readOnly />
-            </Form.Item>
-            <Button type="link" onClick={() => setCodeModalOpen(true)}>换绑</Button>
-          </Space>
-        </Form.Item>
-      </ModalForm>
-      <ModalForm 
-        width={300}
-        variant="filled"
-        form={codeForm}
-        open={codeModalOpen}
-        onOpenChange={setCodeModalOpen}
-        onFinish={handleCodeSubmit}
-        modalProps={{ afterClose: () => codeForm.resetFields() }}
-       >
-        <ProFormText 
-          label="手机号"
-          name="purePhoneNumber"
-          rules={[
-            { required: true, message: '手机号不能为空' },
-            {
-              validateTrigger: 'blur',
-              validator: async (_, value) => {
-                if(/^(13[0-9]|14[5-9]|15[0-3,5-9]|16[6]|17[0-8]|18[0-9]|19[8,9])\d{8}$/.test(value)) return Promise.resolve();
-                else return Promise.reject(new Error('无效的手机号'));
-              }
+  return (<>
+    <Dropdown menu={{ items: menuItems }}>
+      <_Avatar
+        className='cursor-pointer'
+        shape='circle'
+        size={36}
+        style={{ backgroundColor: colorPrimary }}
+        icon={<UserOutlined/>}
+      />
+    </Dropdown>
+    <ModalForm<IUserProfile> 
+      title="个人资料"
+      variant="filled"
+      width={400}
+      form={form}
+      open={modalOpen}
+      requiredMark={false}
+      validateTrigger="onSubmit"
+      modalProps={{ centered: true, forceRender: true }}
+      submitter={{ 
+        searchConfig: { submitText: '保存' },
+      }}
+      onOpenChange={setModalOpen}
+      request={HttpClient.getUserProfile}
+      params={{ count: phoneUpdateCount.current }}
+      onFinish={handleModifyProfile}
+    >
+      <ProFormText label="姓名" name="name" width="xs" rules={[{ required: true }]} />
+      <ProFormSelect label="性别" name="sex" width="xs" valueEnum={genderValueEnumMap} rules={[{ required: true }]} />
+      <Form.Item label="手机号">
+        <Space>
+          <Form.Item name="desensitizedPhone" noStyle>
+            <Input readOnly />
+          </Form.Item>
+          <Button type="link" onClick={() => setCodeModalOpen(true)}>换绑</Button>
+        </Space>
+      </Form.Item>
+    </ModalForm>
+    <ModalForm 
+      width={300}
+      variant="filled"
+      form={codeForm}
+      open={codeModalOpen}
+      onOpenChange={setCodeModalOpen}
+      onFinish={handleCodeSubmit}
+      modalProps={{ afterClose: () => codeForm.resetFields() }}
+     >
+      <ProFormText 
+        label="手机号"
+        name="purePhoneNumber"
+        rules={[
+          { required: true, message: '手机号不能为空' },
+          {
+            validateTrigger: 'blur',
+            validator: async (_, value) => {
+              if(/^(13[0-9]|14[5-9]|15[0-3,5-9]|16[6]|17[0-8]|18[0-9]|19[8,9])\d{8}$/.test(value)) return Promise.resolve();
+              else return Promise.reject(new Error('无效的手机号'));
             }
-          ]}
-         />
-        <Form.Item label="验证码" name="code" rules={[{ required: true, message: '验证码不能为空' }]}>
-          <Flex justify='space-between' gap={8}>
-            <Input prefix={<LockOutlined />} />
-            <Button type="primary" disabled={isCodeSent || !phone} onClick={handleSendCode}>
-              { isCodeSent ? `${count} 获取验证码` : '获取验证码' }
-            </Button>
-          </Flex>
-        </Form.Item>
-      </ModalForm>
-    </>
-  );
+          }
+        ]}
+       />
+      <Form.Item label="验证码" name="code" rules={[{ required: true, message: '验证码不能为空' }]}>
+        <Flex justify='space-between' gap={8}>
+          <Input prefix={<LockOutlined />} />
+          <Button type="primary" disabled={isCodeSent || !phone} onClick={handleSendCode}>
+            { isCodeSent ? `${count} 获取验证码` : '获取验证码' }
+          </Button>
+        </Flex>
+      </Form.Item>
+    </ModalForm>
+  </>);
 };
