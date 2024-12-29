@@ -1,9 +1,10 @@
 'use client';
 
 import { useCOS, useMessage, useModal } from '@/hooks';
-import { ProFormUploadButton } from '@ant-design/pro-components';
+import { ProFormUploadButton, ProFormUploadButtonProps } from '@ant-design/pro-components';
 
 import type { UploadFile } from 'antd';
+import React from 'react';
 
 export interface ICoverUploaderProps {
   label: string;
@@ -32,31 +33,58 @@ export const CoverUploader = ({ label, name, tooltip, required: _required }: ICo
     });
   };
 
-  return (
-    <ProFormUploadButton 
-      listType="picture-card"
-      max={1}
-      name={name}
-      label={label}
-      tooltip={tooltip}
-      rules={required ? [{ required: true, message: `${label}不能为空` }]: void 0}
-      convertValue={(value: string) => {
+  return React.createElement(
+    ProFormUploadButton as any,
+    {
+      listType:"picture-card",
+      max: 1,
+      name,
+      label,
+      tooltip,
+      rules: required ? [{ required: true, message: `${label}不能为空` }]: void 0,
+      convertValue: (value: string) => {
         if(!value || !value.length) return [] as UploadFile[];
         if(typeof value === 'string') return [{
           status: 'done',
           url: value,
         }] as UploadFile[];
         return value;
-      }}
-      transform={(file: UploadFile[] | string) => Array.isArray(file) ? file[0].response : file}
-      fieldProps={{
+      },
+      transform: (file: UploadFile[] | string) => Array.isArray(file) ? file[0].response : file,
+      fieldProps: {
         onPreview: handlePreviewPic,
         customRequest: async ({ onProgress, onSuccess, file }) => {
           const covertPath = await upload(file as File, void 0, e => onProgress?.(e));
           onSuccess?.(covertPath);
           message.success('封面上传成功');
         }
-      }}
-    />
+      }
+    } as ProFormUploadButtonProps,
+  // return (
+  //   <ProFormUploadButton
+  //     listType="picture-card"
+  //     max={1}
+  //     name={name}
+  //     label={label}
+  //     tooltip={tooltip}
+  //     rules={required ? [{ required: true, message: `${label}不能为空` }]: void 0}
+  //     convertValue={(value: string) => {
+  //       if(!value || !value.length) return [] as UploadFile[];
+  //       if(typeof value === 'string') return [{
+  //         status: 'done',
+  //         url: value,
+  //       }] as UploadFile[];
+  //       return value;
+  //     }}
+  //     transform={(file: UploadFile[] | string) => Array.isArray(file) ? file[0].response : file}
+  //     fieldProps={{
+  //       onPreview: handlePreviewPic,
+  //       customRequest: async ({ onProgress, onSuccess, file }) => {
+  //         const covertPath = await upload(file as File, void 0, e => onProgress?.(e));
+  //         onSuccess?.(covertPath);
+  //         message.success('封面上传成功');
+  //       }
+  //     }}
+  //   />
   )
 };

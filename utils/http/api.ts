@@ -44,6 +44,7 @@ import type {
   INotice,
   IPaymentPreview,
   IPayrollDetail,
+  AuditRejectVolunteersForm,
 } from './api-types';
 
 export const login = (params: ILoginForm) =>
@@ -180,6 +181,7 @@ export const filterSignUpRecords = (
     purePhoneNumber: string;
     activityWorkVolunteerIdentity: VolunteerType;
     volunteerIdentity: VolunteerIdentity;
+    hasActivityExperience: boolean;
     activityCount: number;
     searchActivityId: number;
   }> & { activityId: number }
@@ -273,7 +275,7 @@ export const modifyLive = (params: Omit<ILive, 'coverUrl'> & { coverPath: string
 
 export const deleteLive = (params: { id: number }) => del('/manage/activity/history/delete', params);
 
-export const auditIgnoredVolunteerReject = (params: { id: number }) => put('/manage/activityWorkVolunteer/reviewFailAllBlackList', params);
+export const auditIgnoredVolunteerReject = (params: NullableFilter<AuditRejectVolunteersForm>) => put('/manage/activityWorkVolunteer/reviewFailByCondition', params);
 
 export const batchImportAndAuditVolunteerSignUpState = (params: { key: string; activityWorkVolunteerState: VolunteerSignUpState }) =>
   put('/excel/importChangeActivityWorkVolunteerStateList', params);
@@ -318,6 +320,8 @@ export const filterPayrollRecords = (params: NullableFilter<{
   id: number;
   name: string;
   phone: string;
+  money: number;
+  remark: string;
   activityWorkId: number;
   wxmpUserTransferOrderState: PayrollState;
 }> & { activityId: number }) => post<IPayrollRecord[]>('/manage/activityWorkVolunteerTransferOrder/search', params);
@@ -354,3 +358,5 @@ export const getNoticeContent = (params: { id: number }) => get<INotice>('/manag
 export const sendNoticeToSingle = (params: { id: number } & INotice) => post('/manage/activityWorkVolunteerNotice/send', params);
 
 export const sendNoticeToAll = (params: { activityId: number; activityWorkId: number } & INotice) => post('/manage/activityWorkVolunteerNotice/sendAll', params);
+
+export const getVolunteersByWhitelistState = (params: { state: VolunteerWhitelistState }) => post<IVolunteer[]>('/superAdmin/volunteer/searchStateVolunteer', params);

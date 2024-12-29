@@ -4,17 +4,18 @@ import { useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import { HttpClient } from '@/utils';
 import { useMessage, useModal } from '@/hooks';
-import { ModalForm, ProFormDigit, ProFormGroup, ProFormSegmented, ProList } from '@ant-design/pro-components';
+import { ModalForm, ProFormDigit, ProFormGroup, ProFormSegmented, ProFormText, ProList } from '@ant-design/pro-components';
 import { PlusOutlined} from '@ant-design/icons';
 import { volunteerTypeForFormValueEnumMap } from '@/constants';
 import Text from 'antd/es/typography/Text';
 
 import type {
   IVolunteer,
-  TemporaryVolunteerForm,
+  TemporaryVolunteerForm as _TemporaryVolunteerForm,
   SignUpRecordDetail as _SignUpRecordDetail,
 } from '@/utils/http/api-types';
 
+type TemporaryVolunteerForm = Omit<_TemporaryVolunteerForm, 'id' | 'volunteerIds'>;
 
 export const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () => void }) => {
   
@@ -47,7 +48,7 @@ export const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () =
     });
   };
 
-  const handleSubmit = async (form: Omit<TemporaryVolunteerForm, 'id' | 'volunteerIds'>) => {
+  const handleSubmit = async (form: TemporaryVolunteerForm) => {
     const volunteerIds = volunteerList.map(({ id }) => id);
     await HttpClient.batchSetTempVolunteers({ id, volunteerIds, ...form });
     onSubmit();
@@ -55,10 +56,10 @@ export const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () =
   };
 
   return (
-    <ModalForm
+    <ModalForm<TemporaryVolunteerForm>
       title="临时拉人"
       variant="filled"
-      width={480}
+      width={680}
       form={form}
       modalProps={{ centered: true, destroyOnClose: true }}
       submitter={{ submitButtonProps: { disabled: !volunteerList.length } }}
@@ -70,6 +71,7 @@ export const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () =
         <ProFormSegmented label="身份" name="activityWorkVolunteerIdentity" initialValue={1} valueEnum={volunteerTypeForFormValueEnumMap} rules={[{ required: true }]} />
         <ProFormDigit label="酬金" name="money" width="xs" max={500} rules={[{ required: true }]} />
         <ProFormDigit label="积分" name="integral" width="xs" max={1000} rules={[{ required: true }]} />
+        <ProFormText label="备注" name="remark" width="xs" initialValue="" />
       </ProFormGroup>
       <Form.Item name="phones">
         <Input.Search placeholder="请输入手机号，并以空格分隔" enterButton="批量导入" onSearch={handleSearch} />
@@ -87,13 +89,14 @@ export const TempVolunteerModal = ({ id, onSubmit }:{ id: number; onSubmit: () =
             render: (_, { purePhoneNumber: phone }) => <Text>手机号：{phone}</Text>
           },
           actions: {
-            render: (_, { id }, index) => [
+            render: (_, { id }) => [
               <Button 
                 type="text"
                 size="small"
                 key={id}
                 onClick={() => setVolunteerList(_list => {
                   const list = [..._list];
+                  const index = list.findIndex(({ id: _id }) => _id === id);
                   list.splice(index, 1);
                   return list;
                 })}

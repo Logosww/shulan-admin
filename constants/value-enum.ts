@@ -224,3 +224,7 @@ export const payrollAPIStateValueEnumMap = new Map<PayrollAPIState, string>()
 export const noticeStateValueEnumMap = new Map<NoticeState, string>()
   .set(NoticeState.unread, '未读')
   .set(NoticeState.read, '已读');
+
+export const hasActivityExperienceValueEnumMap = new Map<boolean, string>()
+  .set(false, '未参与')
+  .set(true, '已参与');

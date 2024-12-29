@@ -88,7 +88,7 @@ const InlineCombobox = ({
 }: InlineComboboxProps) => {
   const editor = useEditorRef();
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const cursorState = useHTMLInputCursorState(inputRef);
+  const cursorState = useHTMLInputCursorState(inputRef as RefObject<HTMLInputElement>);
 
   const [valueState, setValueState] = useState('');
   const hasValueProp = valueProp !== undefined;
@@ -144,7 +144,7 @@ const InlineCombobox = ({
         });
       }
     },
-    ref: inputRef,
+    ref: inputRef as RefObject<HTMLInputElement>,
   });
 
   const [hasEmpty, setHasEmpty] = useState(false);

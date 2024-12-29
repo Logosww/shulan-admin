@@ -20,6 +20,8 @@ type FilterForm = {
   id: number;
   name: string;
   phone: string;
+  money: number;
+  remark: string;
   activityWorkId: number;
   wxmpUserTransferOrderState: PayrollState;
   activityWorkVolunteerIdentity: VolunteerType;
@@ -49,6 +51,8 @@ export const Payroll = ({ id }: { id: number }) => {
     filterFormTransform: (form) => ({
       name: form.name ?? null,
       phone: form.phone ?? null,
+      money: form.money ?? null,
+      remark: form.remark ?? null,
       activityWorkId: form.activityWorkId ?? null,
       id: form.id ? parseInt(form.id as unknown as string) : null,
       wxmpUserTransferOrderState: form.wxmpUserTransferOrderState ?? null,
@@ -163,7 +167,13 @@ export const Payroll = ({ id }: { id: number }) => {
           title: '实际酬金',
           dataIndex: 'actualTransferMoney',
           valueType: 'money',
-          hideInSearch: true,
+          key: 'money',
+        },
+        {
+          title: '备注',
+          key: 'remark',
+          valueType: 'text',
+          render: (_dom, { remark }) => remark || '-',
         },
         {
           title: '状态',

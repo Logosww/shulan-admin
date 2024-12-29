@@ -1,4 +1,4 @@
-import { adminMenuItems } from '.';
+import { adminMenuItems } from './menu';
 
 export const breadcrumbItemMap: Record<string, string> = {
   '/activityDetail': '活动详情',

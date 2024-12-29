@@ -218,6 +218,7 @@ export type TemporaryVolunteerForm = {
   activityWorkVolunteerIdentity: VolunteerType;
   money: number;
   integral: number;
+  remark: string;
 };
 
 export interface ISettingForm {
@@ -309,6 +310,7 @@ export interface IPayrollRecord {
   shouldTransferMoney: number;
   actualTransferMoney: number;
   paidTime: string;
+  remark: string;
   wxmpUserTransferOrderState: PayrollState;
   activityWorkVolunteerIdentity: VolunteerType;
   activityWork: {
@@ -359,3 +361,21 @@ export interface INotice {
   rawContent: string;
   htmlContent: string;
 };
+
+export type AuditRejectVolunteersForm = Pick<ISignUpRecord, 
+  | 'id'
+  | 'name'
+  | 'sex'
+  | 'purePhoneNumber'
+  | 'activityWorkVolunteerState'
+  | 'volunteerState'
+  | 'activityWorkVolunteerIdentity'
+> & {
+  activityId: number;
+  activityWorkId: number;
+  volunteerIdentity: VolunteerIdentity;
+  school: string;
+  hasActivityExperience: boolean;
+  activityCount: number;
+  searchActivityId: number;
+}

@@ -64,6 +64,7 @@ export const usePagingAndQuery = <DataT, FilterFormType extends Record<string, a
   return {
     reload: getList,
     state: {
+      isQueryed,
       loading: [loading, setLoading] as [boolean, Dispatch<SetStateAction<boolean>>],
       dataSource: [dataSource, setDataSource] as [DataT[], Dispatch<SetStateAction<DataT[]>>],
       paginationConfig: {

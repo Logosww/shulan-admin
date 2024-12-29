@@ -7,12 +7,11 @@ import { LockOutlined, LogoutOutlined, ProfileOutlined, UserOutlined } from '@an
 import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Avatar as _Avatar, Button, Dropdown, Flex, Form, Input, Space } from 'antd';
 import { theme } from 'antd';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMessage, useNotification } from '@/hooks';
 import { useRouter } from 'next/navigation';
 import { useCountdown } from 'usehooks-ts';
 import useStore from '@/store';
-import Cookies from 'js-cookie';
 
 import type { MenuProps } from 'antd';
 
@@ -49,8 +48,6 @@ export const Avatar = () => {
         await HttpClient.logout();
         logout();
         setRole(Role.user);
-        Cookies.remove('Authorization');
-        Cookies.remove('Role');
         notification.success({ message: '登出成功' });
         router.push('/login');
       }

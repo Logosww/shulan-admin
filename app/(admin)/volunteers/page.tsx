@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { DownOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Popover, Space, Image, Dropdown, Tag } from 'antd';
+import { Button, Popover, Space, Image, Dropdown, Tag, Form } from 'antd';
 import { ProDescriptions, ProTable } from '@ant-design/pro-components';
 import { HttpClient } from '@/utils';
 import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
-import { Role, VolunteerIdentity, VolunteerWhitelistState, idCardTypeValueEnumMap } from '@/constants/value-enum';
+import { Role, VolunteerIdentity, VolunteerWhitelistState, hasActivityExperienceValueEnumMap, idCardTypeValueEnumMap } from '@/constants/value-enum';
 import { genderValueEnumMap, volunteerIdentityValueEnumMap, volunteerWhitelistStateValueEnumMap } from '@/constants';
 import WhitelistDrawer from './components/WhitelistDrawer';
 import ForbbidenListDrawer from './components/ForbbidenListDrawer';
@@ -22,6 +22,9 @@ type FilterForm = {
   purePhoneNumber: string;
   identity: VolunteerIdentity,
   state: VolunteerWhitelistState;
+  activityCount: number;
+  searchActivityId: number;
+  hasActivityExperience: boolean;
 };
 
 const descriptionItemStyle = { whiteSpace: 'pre-line', maxWidth: 500 };
@@ -76,6 +79,8 @@ const socialFigureColumns: ProDescriptionsProps<IVolunteerDetail>['columns'] = [
 const VolunteersPage = () => {
   
   const [isExporting, setIsExporting] = useState(false);
+  const [searchForm] = Form.useForm();
+  const isSignedUp = Form.useWatch('hasActivityExperience', searchForm);
   const message = useMessage();
   const { download } = useCOS();
   const {
@@ -99,6 +104,9 @@ const VolunteersPage = () => {
       identity: form.identity ?? null,
       reviewerId: form.reviewerId ?? null,
       purePhoneNumber: form.purePhoneNumber ?? null,
+      activityCount: form.activityCount ?? null,
+      searchActivityId: form.searchActivityId ?? null,
+      hasActivityExperience: form.hasActivityExperience ?? null,
     }),
   });
 
@@ -113,13 +121,13 @@ const VolunteersPage = () => {
   return (
     <ProTable<IVolunteer, FilterForm>
       rowKey="id"
-      search={{ span: 5, defaultCollapsed: false }}
       form={{ variant: 'filled' }}
       loading={loading}
       dataSource={volunteerList}
       pagination={paginationConfig}
       onSubmit={handleFilterQuery}
       onReset={handleFilterReset}
+      search={{ span: 5, defaultCollapsed: false, form: searchForm }}
       toolbar={{
         actions: [
           <Button key="export" type="text" loading={isExporting} icon={<DownloadOutlined />} onClick={handleExport}>导出 Excel</Button>,
@@ -190,6 +198,30 @@ const VolunteersPage = () => {
           hideInTable: true,
         },
         {
+          title: '历史参与',
+          key: 'hasActivityExperience',
+          valueType: 'select',
+          valueEnum: hasActivityExperienceValueEnumMap,
+          hideInTable: true,
+        },
+        {
+          title: '参与次数',
+          key: 'activityCount',
+          hideInTable: true,
+          valueType: 'digit',
+          fieldProps: { placeholder: '请输入（≥）' },
+          hideInSearch: !isSignedUp,
+        },
+        {
+          title: '历史活动',
+          key: 'searchActivityId',
+          hideInTable: true,
+          valueType: 'select',
+          hideInSearch: !isSignedUp,
+          request: () => HttpClient.getActivityOptions({ isFilter: true }),
+          fieldProps: { showSearch: true },
+        },
+        {
           title: '操作',
           key: 'option',
           valueType: 'option',
@@ -200,6 +232,7 @@ const VolunteersPage = () => {
                 trigger="click"
                 title="更多详情"
                 placement="right"
+                overlayClassName="max-h-screen overflow-y-auto overflow-x-hidden"
                 content={
                   <ProDescriptions<IVolunteerDetail>
                     size="small"

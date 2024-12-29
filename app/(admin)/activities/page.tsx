@@ -1,9 +1,9 @@
 'use client';
 
 import { ActivityState, Role } from '@/constants/value-enum';
-import { ProForm, ProFormSelect, ProFormText, ProList, ProSkeleton } from '@ant-design/pro-components';
+import { ProForm, ProFormInstance, ProFormSelect, ProFormText, ProList, ProSkeleton } from '@ant-design/pro-components';
 import { HttpClient } from '@/utils/http';
-import { Suspense, useContext } from 'react';
+import { Suspense, useRef } from 'react';
 import { Button, Popconfirm, Tag } from 'antd';
 import { CheckOutlined, ClockCircleFilled, CopyOutlined, DeleteOutlined, EditOutlined, EnvironmentFilled, PlusOutlined, RollbackOutlined, SendOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
@@ -20,6 +20,7 @@ const ActivityList = () => {
   const router = useRouter();
   const message = useMessage();
   const role = useStore(state => state.role);
+  const formRef = useRef<ProFormInstance>(null);
 
   const {
     reload,
@@ -99,12 +100,13 @@ const ActivityList = () => {
       <ProForm<FilterForm>
         layout="inline"
         variant="filled"
+        formRef={formRef}
         submitter={{ searchConfig: { submitText: '搜索' } }}
         onFinish={handleFilterQuery}
         onReset={handleFilterReset}
       >
         <ProFormSelect label="活动状态" name="state" width="xs" valueEnum={activityStateValueEnumMap} />
-        <ProFormText label="活动名称" name="keyword" width="md" />
+        <ProFormText label="活动名称" name="keyword" width="md" fieldProps={{ onPressEnter: formRef.current?.submit }} />
       </ProForm>
       <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push('/activityForm?operation=append')}>新增活动</Button>
     </div>

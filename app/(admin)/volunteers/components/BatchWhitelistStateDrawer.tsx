@@ -10,7 +10,7 @@ import { DownloadOutlined } from '@ant-design/icons';
 import Text from 'antd/es/typography/Text';
 
 import type { ReactNode } from 'react';
-import type{ IVolunteer } from '@/utils/http/api-types';
+import type { IVolunteer } from '@/utils/http/api-types';
 
 export interface IBatchWhitelistStateDrawerProps<T = null> {
   title: string;
@@ -41,17 +41,13 @@ export const BatchWhitelistStateDrawer = <T extends Record<string, any>>(props: 
   const modal = useModal();
   const [form] = Form.useForm();
 
-  const getVolunteerList = useCallback(() => HttpClient.filterVolunteers({
-    name: null,
-    school: null,
-    identity: null,
-    reviewerId: null,
-    purePhoneNumber: null,
-    state: whitelistState,
-  }).then(list => setTimeout(() => {
-    setVolunteerList(list);
-    setIsLoading(false);
-  }, 450)), [whitelistState]);
+  const getVolunteerList = useCallback(() => {
+    HttpClient.getVolunteersByWhitelistState({ state: whitelistState })
+      .then(list => setTimeout(() => {
+        setVolunteerList(list);
+        setIsLoading(false);
+      }, 450));
+  }, [whitelistState]);
 
   const handleSearch = async () => {
     await form.validateFields();

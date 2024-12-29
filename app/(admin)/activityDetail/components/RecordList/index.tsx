@@ -1,50 +1,56 @@
 'use client';
 
 import { useState } from 'react';
-import { Space, Button, Tag, Dropdown, Popconfirm } from 'antd';
+import { Space, Button, Tag, Dropdown, Popconfirm, Form } from 'antd';
 import { HttpClient, valueEnum2MenuItem } from '@/utils';
 import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
-import { VolunteerType, VolunteerSignUpState, genderValueEnumMap, VolunteerIdentity, volunteerIdentityValueEnumMap } from '@/constants/value-enum';
+import { VolunteerType, VolunteerSignUpState, genderValueEnumMap, volunteerIdentityValueEnumMap } from '@/constants/value-enum';
 import { ProTable } from '@ant-design/pro-components';
 import { DownOutlined, DownloadOutlined, FileExcelOutlined, FileZipOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
-import { volunteerSignUpStateValueEnumMap, volunteerTypeValueEnumMap, volunteerWhitelistStateValueEnumMap } from '@/constants';
+import { volunteerSignUpStateValueEnumMap, volunteerTypeValueEnumMap, volunteerWhitelistStateValueEnumMap, hasActivityExperienceValueEnumMap } from '@/constants';
 import { TempVolunteerModal } from './TempVolunteerModal';
 import { SignUpRecordDetail } from './SignUpRecordDetail';
 import { BatchImportModal } from './BatchImportModal';
 
 import type { Key, ReactNode } from 'react';
 import type {
+  AuditRejectVolunteersForm,
   ISignUpRecord,
   SignUpRecordDetail as _SignUpRecordDetail,
 } from '@/utils/http/api-types';
 
-type FilterForm = Pick<ISignUpRecord, 
-  | 'id' 
-  | 'name' 
-  | 'sex' 
-  | 'purePhoneNumber' 
-  | 'activityWorkVolunteerState' 
-  | 'volunteerState'
-  | 'activityWorkVolunteerIdentity'
-> & { 
-  activityWorkId: number;
-  volunteerIdentity: VolunteerIdentity;
-  school: string;
-  activityCount: number;
-  searchActivityId: number;
-};
+type FilterForm = Omit<AuditRejectVolunteersForm, 'activityId'>;
 
 export const SignUpRecordList = ({ id }: { id: number }) => {
 
   const [isExporting, setIsExporting] = useState(false);
+  const [searchForm] = Form.useForm<FilterForm>();
+  const isSignedUp = Form.useWatch('hasActivityExperience', searchForm);
 
   const message = useMessage();
   const { download } = useCOS();
   const [expandedRowKeys, setExpandedRowKeys] = useState<readonly Key[]>([]);
 
+  const filterFormTransform = (form: FilterForm) => ({
+    sex: form.sex ?? null,
+    name: form.name ?? null,
+    school: form.school ?? null,
+    activityWorkId: form.activityWorkId ?? null,
+    volunteerState: form.volunteerState ?? null,
+    purePhoneNumber: form.purePhoneNumber ?? null,
+    id: form.id ? parseInt(form.id as unknown as string) : null,
+    activityWorkVolunteerState: form.activityWorkVolunteerState ?? null,
+    activityWorkVolunteerIdentity: form.activityWorkVolunteerIdentity ?? null,
+    volunteerIdentity: form.volunteerIdentity ?? null,
+    hasActivityExperience: form.hasActivityExperience ?? null,
+    activityCount: form.activityCount ?? null,
+    searchActivityId: form.searchActivityId ?? null,
+  });
+
   const {
     reload,
     state: {
+      isQueryed,
       paginationConfig,
       loading: [isLoading],
       dataSource: [signUpRecordList, setSignUpRecordList],
@@ -54,22 +60,9 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       handleFilterReset,
     }
   } = usePagingAndQuery<ISignUpRecord, FilterForm>({
+    filterFormTransform,
     pagingRequest: (params) => HttpClient.getPagingSignUpRecords({ ...params, activityId: id }),
     queryRequest: (form) => HttpClient.filterSignUpRecords({...form, activityId: id }),
-    filterFormTransform: (form) => ({
-      sex: form.sex ?? null,
-      name: form.name ?? null,
-      school: form.school ?? null,
-      activityWorkId: form.activityWorkId ?? null,
-      volunteerState: form.volunteerState ?? null,
-      purePhoneNumber: form.purePhoneNumber ?? null,
-      id: form.id ? parseInt(form.id as unknown as string) : null,
-      activityWorkVolunteerState: form.activityWorkVolunteerState ?? null,
-      activityWorkVolunteerIdentity: form.activityWorkVolunteerIdentity ?? null,
-      volunteerIdentity: form.volunteerIdentity ?? null,
-      activityCount: form.activityCount ?? null,
-      searchActivityId: form.searchActivityId ?? null,
-    }),
   });
 
   const handleSetSignUpState = async (id: number, state: VolunteerSignUpState) => {
@@ -91,7 +84,11 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       loading={isLoading}
       dataSource={signUpRecordList}
       form={{ variant: 'filled', ignoreRules: false }}
-      search={{ span: 5, defaultCollapsed: false }}
+      search={{ 
+        span: 5,
+        defaultCollapsed: false,
+        form: searchForm,
+      }}
       onSubmit={handleFilterQuery}
       onReset={handleFilterReset}
       toolbar={{
@@ -127,13 +124,18 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           >
             <Button type="primary" icon={<SendOutlined />}>群发短信</Button>
           </Popconfirm>,
-          <Popconfirm 
+          <Popconfirm
             key="auditReject"
             title="提示"
-            description="确认将待审核的志愿全部审核不通过吗？"
-            onConfirm={async () => HttpClient.auditIgnoredVolunteerReject({ id }).then(() => {message.success('操作成功')})}
+            description="确认将符合条件的志愿全部审核不通过吗？"
+            onConfirm={async () => {
+              const form = filterFormTransform(searchForm.getFieldsValue());
+              await HttpClient.auditIgnoredVolunteerReject({ activityId: id, ...form });
+              message.success('一键不通过成功');
+              reload();
+            }}
           >
-            <Button type="primary" icon={<StopOutlined />} danger>一键不通过</Button>
+            <Button type="primary" icon={<StopOutlined />} disabled={!(isQueryed.current && signUpRecordList.length)} danger>一键不通过</Button>
           </Popconfirm>,
         ]
       }}
@@ -262,16 +264,26 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           valueEnum: volunteerIdentityValueEnumMap,
         },
         {
+          title: '历史参与',
+          key: 'hasActivityExperience',
+          valueType: 'select',
+          valueEnum: hasActivityExperienceValueEnumMap,
+          hideInTable: true,
+        },
+        {
           title: '参与次数',
           key: 'activityCount',
           hideInTable: true,
           valueType: 'digit',
+          fieldProps: { placeholder: '请输入（≥）' },
+          hideInSearch: !isSignedUp,
         },
         {
           title: '历史活动',
           key: 'searchActivityId',
           hideInTable: true,
           valueType: 'select',
+          hideInSearch: !isSignedUp,
           request: () => HttpClient.getActivityOptions({ isFilter: true }),
           fieldProps: { showSearch: true },
         },

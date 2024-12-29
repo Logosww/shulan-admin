@@ -22,7 +22,6 @@ import { CarryOutTwoTone, FireTwoTone, HeartTwoTone, LoadingOutlined, setTwoTone
 import type { StatisticProps } from 'antd';
 import type { IActivityStatistics } from '@/utils/http/api-types';
 
-
 const formatter: StatisticProps['formatter'] = (value) => (
   <CountUp end={value as number} separator="," />
 );
