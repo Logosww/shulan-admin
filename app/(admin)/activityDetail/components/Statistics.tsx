@@ -23,6 +23,7 @@ import type { StatisticProps } from 'antd';
 import type { IActivityStatistics } from '@/utils/http/api-types';
 
 const formatter: StatisticProps['formatter'] = (value) => (
+  // @ts-ignore
   <CountUp end={value as number} separator="," />
 );
 

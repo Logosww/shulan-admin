@@ -157,9 +157,13 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
         title: '历史志愿活动',
         dataIndex: 'activityWorkExperienceVos',
         valueType: 'textarea',
-        renderText: (_, { activityWorkExperienceVos: works }) => 
+        render: (_, { activityWorkExperienceVos: works }) => 
           works.length
-            ? works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)
+            ? (
+              <div className="max-h-[300px] overflow-y-auto">
+                {works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)}
+              </div>
+            )
             : '无'
       }
     ]}

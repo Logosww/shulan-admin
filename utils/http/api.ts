@@ -45,6 +45,7 @@ import type {
   IPaymentPreview,
   IPayrollDetail,
   AuditRejectVolunteersForm,
+  IRiskUser,
 } from './api-types';
 
 export const login = (params: ILoginForm) =>
@@ -108,7 +109,7 @@ export const deleteActivityDraft = (params: { id: number }) => del('/manage/acti
 
 export const modifyActivityDraft = (params: ActivityForm & { id: number }) => put('/manage/activity/update', params);
 
-export const getActivityDraft = (params: { id: number }) => get<ActivityForm & { id: number; state: ActivityState }>('/manage/activity/get', params);
+export const getActivityDraft = (params: { id: number }, options?: RequestInit) => get<ActivityForm & { id: number; state: ActivityState }>('/manage/activity/get', params, options);
 
 export const createActivity = (params: ActivityForm) => post('/superAdmin/manage/activity/publish', params);
 
@@ -156,6 +157,7 @@ export const filterActivityVolunteers = (params: NullableFilter<{
   volunteerState: VolunteerWhitelistState;
   purePhoneNumber: string;
   idCard: string;
+  ip: string;
 }>) => post<IVolunteer & { activityWorkVolunteerState: VolunteerSignUpState }>('/manage/activityWorkVolunteer/search', params);
 
 export const batchAuditVolunteerSignUpState = (params: { ids: number[]; activityWorkVolunteerState: VolunteerSignUpState; }) =>
@@ -360,3 +362,13 @@ export const sendNoticeToSingle = (params: { id: number } & INotice) => post('/m
 export const sendNoticeToAll = (params: { activityId: number; activityWorkId: number } & INotice) => post('/manage/activityWorkVolunteerNotice/sendAll', params);
 
 export const getVolunteersByWhitelistState = (params: { state: VolunteerWhitelistState }) => post<IVolunteer[]>('/superAdmin/volunteer/searchStateVolunteer', params);
+
+export const getPagingRiskUsers = (params: IPagingParams) => get<IPagingResult<IRiskUser>>('/superAdmin/riskUser/page', params);
+
+export const filterRiskUsers = (params: NullableFilter<Pick<IRiskUser, 'name' | 'phone' | 'idCard'>>) => post<IRiskUser[]>('/superAdmin/riskUser/search', params);
+
+export const appendRiskUser = (params: Omit<IRiskUser, 'id' | 'createAt' | 'operator' | 'ip' | 'onceCertified'>) => post('/superAdmin/riskUser/add', params);
+
+export const deleteRiskUser = (params: { id: number }) => del('/superAdmin/riskUser/delete', params);
+
+export const batchImportRiskUsers = (params: { key: string }) => put('/superAdmin/excel/import/riskUser', params);

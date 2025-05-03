@@ -1,6 +1,7 @@
 import {
   FireOutlined,
   FundOutlined,
+  SecurityScanOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -35,5 +36,10 @@ export const adminMenuItems: ISideBarProps['menuItems'] = [
     key: '/admins',
     icon: <TeamOutlined />,
     label: '管理员管理',
+  },
+  {
+    key: '/riskUsers',
+    label: '风险用户管理',
+    icon: <SecurityScanOutlined />,
   },
 ];

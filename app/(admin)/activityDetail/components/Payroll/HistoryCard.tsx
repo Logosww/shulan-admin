@@ -22,15 +22,14 @@ const HistoryCard = ({ id }: { id: number }) => (
         copyable: true,
       },
       {
-        dataIndex: 'openid',
-        title: '志愿者 openid',
-        valueType: 'text',
-        copyable: true,
-      },
-      {
         dataIndex: 'transferAmount',
         title: '转账金额',
         valueType: 'money',
+      },
+      {
+        dataIndex: 'transferRemark',
+        title: '转账备注',
+        valueType: 'text',
       },
       {
         dataIndex: 'detailStatus',

@@ -10,7 +10,7 @@ type StoreProviderProps = { state: State } & React.PropsWithChildren;
 
 export const StoreContext = createContext<StoreApi<Store> | null>(null);
 
-export const StoreProvider = async ({ children, state }: StoreProviderProps) => {
+export const StoreProvider = ({ children, state }: StoreProviderProps) => {
   const storeRef = useRef<StoreApi<Store>>(createStore(state));
 
   return (

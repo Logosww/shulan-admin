@@ -205,6 +205,7 @@ export interface ISignUpRecord {
   joinAt: string;
   reviewerName: string;
   reviewAt: string;
+  ip: string;
 };
 
 export type SignUpRecordDetail = ISignUpRecord & IVolunteerDetail & {
@@ -335,6 +336,7 @@ export interface IPayrollDetail {
   transferAmount: number;
   detailStatus: PayrollAPIState;
   transferorName: string;
+  transferRemark: string;
   transferAt: string;
   openid: string;
   failReason: string;
@@ -370,6 +372,7 @@ export type AuditRejectVolunteersForm = Pick<ISignUpRecord,
   | 'activityWorkVolunteerState'
   | 'volunteerState'
   | 'activityWorkVolunteerIdentity'
+  | 'ip'
 > & {
   activityId: number;
   activityWorkId: number;
@@ -378,4 +381,16 @@ export type AuditRejectVolunteersForm = Pick<ISignUpRecord,
   hasActivityExperience: boolean;
   activityCount: number;
   searchActivityId: number;
-}
+};
+
+export interface IRiskUser {
+  id: number;
+  name: string;
+  phone: string;
+  idCardType: IdCardType;
+  idCard: string;
+  onceCertified: boolean;
+  ip: string;
+  operator: string;
+  createAt: string;
+};

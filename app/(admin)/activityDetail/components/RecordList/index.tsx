@@ -7,7 +7,7 @@ import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
 import { VolunteerType, VolunteerSignUpState, genderValueEnumMap, volunteerIdentityValueEnumMap } from '@/constants/value-enum';
 import { ProTable } from '@ant-design/pro-components';
 import { DownOutlined, DownloadOutlined, FileExcelOutlined, FileZipOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
-import { volunteerSignUpStateValueEnumMap, volunteerTypeValueEnumMap, volunteerWhitelistStateValueEnumMap, hasActivityExperienceValueEnumMap } from '@/constants';
+import { volunteerSignUpStateValueEnumMap, volunteerTypeValueEnumMap, volunteerWhitelistStateValueEnumMap, hasActivityExperienceValueEnumMap, provinceOptions } from '@/constants';
 import { TempVolunteerModal } from './TempVolunteerModal';
 import { SignUpRecordDetail } from './SignUpRecordDetail';
 import { BatchImportModal } from './BatchImportModal';
@@ -45,6 +45,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
     hasActivityExperience: form.hasActivityExperience ?? null,
     activityCount: form.activityCount ?? null,
     searchActivityId: form.searchActivityId ?? null,
+    ip: form.ip ?? null,
   });
 
   const {
@@ -243,6 +244,12 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           valueType: 'select',
           request: () => HttpClient.getActivityWorks({ id }).then(works => works.map(({ id, label }) => ({ label, value: id }))),
           hideInTable: true,
+        },
+        {
+          title: 'IP 归属地',
+          dataIndex: 'ip',
+          valueType: 'select',
+          request: async () => Promise.resolve(provinceOptions),
         },
         {
           title: '审核人',

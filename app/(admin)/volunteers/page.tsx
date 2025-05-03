@@ -232,7 +232,7 @@ const VolunteersPage = () => {
                 trigger="click"
                 title="更多详情"
                 placement="right"
-                overlayClassName="max-h-screen overflow-y-auto overflow-x-hidden"
+                classNames={{ root: 'max-h-screen overflow-y-auto overflow-x-hidden' }}
                 content={
                   <ProDescriptions<IVolunteerDetail>
                     size="small"
@@ -307,9 +307,13 @@ const VolunteersPage = () => {
                         title: '历史志愿活动',
                         dataIndex: 'activityWorkExperienceVos',
                         valueType: 'textarea',
-                        renderText: (_, { activityWorkExperienceVos: works }) => 
+                        render: (_, { activityWorkExperienceVos: works }) => 
                           works.length
-                            ? works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)
+                            ? (
+                              <div className="max-h-[300px] overflow-y-auto">
+                                {works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)}
+                              </div>
+                            )
                             : '无'
                       }
                     ]}
