@@ -63,14 +63,14 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
   } = usePagingAndQuery<ISignUpRecord, FilterForm>({
     filterFormTransform,
     pagingRequest: (params) => HttpClient.getPagingSignUpRecords({ ...params, activityId: id }),
-    queryRequest: (form) => HttpClient.filterSignUpRecords({...form, activityId: id }),
+    queryRequest: (form) => HttpClient.filterSignUpRecords({ ...form, activityId: id }),
   });
 
   const handleSetSignUpState = async (id: number, state: VolunteerSignUpState) => {
     await HttpClient.setSignUpRecordState({ id, activityWorkVolunteerState: state });
     setSignUpRecordList(list => {
       const index = list.findIndex(({ id: _id }) => _id === id);
-      if(index < 0) return list;
+      if (index < 0) return list;
 
       const signUpRecordList = [...list];
       signUpRecordList[index].activityWorkVolunteerState = state;
@@ -85,7 +85,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       loading={isLoading}
       dataSource={signUpRecordList}
       form={{ variant: 'filled', ignoreRules: false }}
-      search={{ 
+      search={{
         span: 5,
         defaultCollapsed: false,
         form: searchForm,
@@ -117,11 +117,11 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           </Dropdown>,
           <TempVolunteerModal key="append" id={id} onSubmit={reload} />,
           <BatchImportModal key="batch" onSubmit={reload} />,
-          <Popconfirm 
+          <Popconfirm
             key="sendSms"
             title="提示"
             description="确认对审核通过的志愿者群发短信通知吗？"
-            onConfirm={async () => HttpClient.batchSendSmsNotification({ id }).then(() => {message.success('发送成功')}).then(() => reload())}
+            onConfirm={async () => HttpClient.batchSendSmsNotification({ id }).then(() => { message.success('发送成功') }).then(() => reload())}
           >
             <Button type="primary" icon={<SendOutlined />}>群发短信</Button>
           </Popconfirm>,
@@ -140,10 +140,10 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           </Popconfirm>,
         ]
       }}
-      expandable={{ 
+      expandable={{
         expandedRowKeys,
         onExpandedRowsChange: setExpandedRowKeys,
-        expandedRowRender: ({ id }) => <SignUpRecordDetail id={id} />, 
+        expandedRowRender: ({ id }) => <SignUpRecordDetail id={id} />,
       }}
       pagination={paginationConfig}
       onRow={({ id }) => ({
@@ -174,9 +174,9 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           renderText: (_, { name, activityWorkVolunteerIdentity: type }) => (
             <>
               {name}
-              {type !== VolunteerType.normal 
+              {type !== VolunteerType.normal
                 && (
-                  <Tag 
+                  <Tag
                     style={{ marginLeft: 8 }}
                     bordered={false}
                     color={volunteerTypeValueEnumMap.get(type)?.status}
@@ -197,7 +197,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           title: '年龄',
           dataIndex: 'age',
           valueType: 'digit',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '手机号',
@@ -214,12 +214,12 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           title: '报名岗位',
           dataIndex: ['activityWork', 'label'],
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '报名时间',
           dataIndex: 'joinAt',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '报名状态',
@@ -255,13 +255,13 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           title: '审核人',
           valueType: 'text',
           dataIndex: 'reviewerName',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '审核时间',
           valueType: 'dateTime',
           dataIndex: 'reviewAt',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '志愿者身份',
@@ -283,14 +283,14 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           hideInTable: true,
           valueType: 'digit',
           fieldProps: { placeholder: '请输入（≥）' },
-          hideInSearch: !isSignedUp,
+          search: isSignedUp,
         },
         {
           title: '历史活动',
           key: 'searchActivityId',
           hideInTable: true,
           valueType: 'select',
-          hideInSearch: !isSignedUp,
+          search: isSignedUp,
           request: () => HttpClient.getActivityOptions({ isFilter: true }),
           fieldProps: { showSearch: true },
         },
@@ -303,7 +303,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           render: (_, record) => {
             const domList: ReactNode[] = [];
             const { id, useWhite, activityWorkVolunteerState: state, activityWorkVolunteerIdentity: type } = record;
-            if(type === VolunteerType.normal) domList.push(
+            if (type === VolunteerType.normal) domList.push(
               <>
                 {useWhite && <Tag color="processing" bordered={false}>白名单</Tag>}
                 {state === VolunteerSignUpState.awaitingAudit
@@ -323,20 +323,20 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
             );
             else domList.push(
               <Popconfirm
-                  title="警告"
-                  description="该操作不可撤销，确认删除吗？"
-                  onPopupClick={e => e.stopPropagation()}
-                  onCancel={e => e?.stopPropagation()}
-                  onConfirm={e => HttpClient.batchRemoveTempVolunteers({ ids: [id] }).then(() => {
-                    e?.stopPropagation();
-                    message.success('删除成功');
-                    reload();
-                  })}
-                >
-                  <Button type="text" size="small" onClick={e => e.stopPropagation()} danger>删除</Button>
-                </Popconfirm>
+                title="警告"
+                description="该操作不可撤销，确认删除吗？"
+                onPopupClick={e => e.stopPropagation()}
+                onCancel={e => e?.stopPropagation()}
+                onConfirm={e => HttpClient.batchRemoveTempVolunteers({ ids: [id] }).then(() => {
+                  e?.stopPropagation();
+                  message.success('删除成功');
+                  reload();
+                })}
+              >
+                <Button type="text" size="small" onClick={e => e.stopPropagation()} danger>删除</Button>
+              </Popconfirm>
             );
-            
+
             domList.push(
               <Dropdown
                 trigger={['click']}
@@ -345,7 +345,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
                     volunteerSignUpStateValueEnumMap,
                     [VolunteerSignUpState.awaitingAudit, VolunteerSignUpState.cancelled, VolunteerSignUpState.cancelledOutOfIllegal],
                   ),
-                  onClick: async ({ key, domEvent }) =>  {
+                  onClick: async ({ key, domEvent }) => {
                     domEvent.stopPropagation();
                     const state = parseInt(key);
                     await handleSetSignUpState(id, state);

@@ -9,7 +9,7 @@ import { HttpClient } from '@/utils';
 import { activityFeatureValueEnumMap, activityTypeValueEnumMap } from '@/constants';
 import { Form } from "antd";
 import { FormOperation } from "..";
-import { 
+import {
   ProForm,
   ProFormText,
   ProFormSwitch,
@@ -30,7 +30,7 @@ import dayjs, { Dayjs } from "dayjs";
 const amapKey = process.env.NEXT_PUBLIC_AMAP_AMP_KEY;
 
 const convertToDayjs = (value: string | string[] | Dayjs | Dayjs[]) => {
-  if(Array.isArray(value)) return value.map(val => dayjs.isDayjs(val) ? val : dayjs(val));
+  if (Array.isArray(value)) return value.map(val => dayjs.isDayjs(val) ? val : dayjs(val));
 
   return dayjs.isDayjs(value) ? value : dayjs(value);
 };
@@ -38,20 +38,19 @@ const convertToDayjs = (value: string | string[] | Dayjs | Dayjs[]) => {
 const fetchCityList = (keyword: string) => HttpClient.autoCompleteCity({ keyword });
 
 const fetchPoiList = async (keywords: string, city?: string) => {
-  if(!amapKey) return [];
-  const url = `https://restapi.amap.com/v3/assistant/inputtips?${
-    new URLSearchParams({
-      keywords,
-      key: amapKey,
-      dataType: 'poi',
-      ...(city ? { city } : {}),
-    }).toString()
-  }`;
+  if (!amapKey) return [];
+  const url = `https://restapi.amap.com/v3/assistant/inputtips?${new URLSearchParams({
+    keywords,
+    key: amapKey,
+    dataType: 'poi',
+    ...(city ? { city } : {}),
+  }).toString()
+    }`;
 
   return fetch(url)
     .then(response => response.json())
     .then(({ tips, status }: { tips: PoiType[]; status: 0 | 1 }) => {
-      if(!status || tips.length === 0) return [];
+      if (!status || tips.length === 0) return [];
 
       return tips.filter(({ id }) => id).map(({ name, location, address: _address }, index) => {
         const locationArr = location.split(',');
@@ -71,7 +70,7 @@ const fetchPoiList = async (keywords: string, city?: string) => {
 };
 
 export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProps) => {
-  
+
   const router = useRouter();
   const message = useMessage();
   const role = useStore(state => state.role);
@@ -102,13 +101,12 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
     });
     delete form['dateRange'], delete form['signUpRange'], delete form['state'];
 
-    if(isModifying) await HttpClient.modifyActivityDraft({ ...(form as _ActivityForm), id: id! });
+    if (isModifying) await HttpClient.modifyActivityDraft({ ...(form as _ActivityForm), id: id! });
     else await (isSuperAdmin ? HttpClient.createActivity : HttpClient.createActivityDraft)(form as _ActivityForm);
-    message.success(`${
-      isModifying
-        ? '编辑活动成功'
-        : (isSuperAdmin ? '创建活动成功' : '保存草稿成功')
-    }`);
+    message.success(`${isModifying
+      ? '编辑活动成功'
+      : (isSuperAdmin ? '创建活动成功' : '保存草稿成功')
+      }`);
     router.replace('/activities');
   };
 
@@ -123,11 +121,13 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
         initialValues={initialValues}
         onFinish={handleFormSubmit}
         params={id ? { id } : void 0}
-        submitter={{ searchConfig: { 
-          submitText: operation === FormOperation.modify
-            ? '保存编辑'
-            : role === Role.superAdmin ? '创建活动' : '保存草稿'
-        }}}
+        submitter={{
+          searchConfig: {
+            submitText: operation === FormOperation.modify
+              ? '保存编辑'
+              : role === Role.superAdmin ? '创建活动' : '保存草稿'
+          }
+        }}
         autoFocusFirstInput
       >
         <ProForm.Group>
@@ -141,7 +141,7 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
             />
           </Form.Item>
           <Form.Item label="具体地址" name="address" rules={[{ required: true, message: '具体地址不能为空' }]}>
-            <DebounceSelect<string, PoiOption> 
+            <DebounceSelect<string, PoiOption>
               placeholder="请输入地址"
               fetchOptions={handleFetchPoiList}
               style={{ width: 328 }}
@@ -152,12 +152,12 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
           <Form.Item name="addressDetail" noStyle />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormDateTimeRangePicker 
+          <ProFormDateTimeRangePicker
             label="活动时间"
             name="dateRange"
             rules={[{ required: true, message: '活动时间不能为空' }]}
           />
-          <ProFormDateTimeRangePicker 
+          <ProFormDateTimeRangePicker
             label="报名时间"
             name="signUpRange"
             rules={[
@@ -166,17 +166,17 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
                 validator: (_, value) => {
                   const [signUpStart, signUpEnd] = convertToDayjs(value) as Dayjs[];
                   const [start] = getFieldValue('dateRange');
-                  if(signUpStart && signUpEnd && signUpStart.isSame(signUpEnd)) return Promise.reject(new Error('报名时长不能为0'));
-                  if(start && signUpStart.isAfter(start)) return Promise.reject(new Error('报名开始时间不能晚于活动开始时间'));
-                  if(start && signUpEnd.isAfter(start)) return Promise.reject(new Error('报名截止时间不能晚于活动开始时间'));
-                  if(signUpStart && signUpEnd && signUpStart.isSame(signUpEnd)) return Promise.reject('报名开始和截止时间不能一致');
+                  if (signUpStart && signUpEnd && signUpStart.isSame(signUpEnd)) return Promise.reject(new Error('报名时长不能为0'));
+                  if (start && signUpStart.isAfter(start)) return Promise.reject(new Error('报名开始时间不能晚于活动开始时间'));
+                  if (start && signUpEnd.isAfter(start)) return Promise.reject(new Error('报名截止时间不能晚于活动开始时间'));
+                  if (signUpStart && signUpEnd && signUpStart.isSame(signUpEnd)) return Promise.reject('报名开始和截止时间不能一致');
                   return Promise.resolve();
                 }
               }),
             ]}
           />
-          <ProFormDateTimePicker 
-            label="取消报名截止时间" 
+          <ProFormDateTimePicker
+            label="取消报名截止时间"
             name="signupCancelAt"
             convertValue={convertToDayjs}
             rules={[
@@ -184,12 +184,12 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
               ({ getFieldValue }) => ({
                 validator: (_, value) => {
                   const [signUpStart] = convertToDayjs(getFieldValue('signUpRange')) as Dayjs[];
-                  if(signUpStart && value && (signUpStart.isSame(value) || signUpStart.isAfter(value)))
+                  if (signUpStart && value && (signUpStart.isSame(value) || signUpStart.isAfter(value)))
                     return Promise.reject(new Error('取消报名截止时间不能早于报名开始时间'));
                   else return Promise.resolve();
                 }
               }),
-            ]} 
+            ]}
           />
         </ProForm.Group>
         <ProForm.Group>
@@ -202,7 +202,7 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
         </ProForm.Group>
         <ProForm.Group>
           <CoverUploader name="coverPath" label="活动封面" tooltip="建议上传尺寸为 282 x 384 的 png" />
-          <ProFormTextArea label="活动描述" name="description" width="md" fieldProps={{ maxLength: 500, showCount: true }}  initialValue={id ? void 0 : ''} />
+          <ProFormTextArea label="活动描述" name="description" width="md" fieldProps={{ maxLength: 500, showCount: true }} initialValue={id ? void 0 : ''} />
           <ProFormTextArea label="活动公告" name="announcement" width="md" fieldProps={{ maxLength: 500, showCount: true }} initialValue={id ? void 0 : ''} />
           <ProFormList
             label="岗位列表"
@@ -224,7 +224,6 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
                 title={`岗位${index + 1}`}
                 extra={isWorkListModifiable && action}
                 bodyStyle={{ paddingBlockEnd: 0 }}
-                bordered
               >
                 {listDom}
               </ProCard>
@@ -248,15 +247,15 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
                     validator: (_, value) => {
                       const [workStart, workEnd] = convertToDayjs(value) as Dayjs[];
                       const end = convertToDayjs(getFieldValue(['dateRange', 1])) as Dayjs;
-                      if(workStart && workEnd && workStart.isSame(workEnd)) return Promise.reject(new Error('工作时长不能为0'));
-                      if(end && workEnd && workEnd.isAfter(end)) return Promise.reject(new Error('工作结束时间不能晚于活动结束时间'));
+                      if (workStart && workEnd && workStart.isSame(workEnd)) return Promise.reject(new Error('工作时长不能为0'));
+                      if (end && workEnd && workEnd.isAfter(end)) return Promise.reject(new Error('工作结束时间不能晚于活动结束时间'));
                       return Promise.resolve();
                     }
                   }),
                 ] : void 0}
               />
             </ProForm.Group>
-              <ProFormTextArea label="工作内容" name="description" rules={[{ required: true, message: '工作内容不能为空' }]} fieldProps={{ maxLength: 250, showCount: true }} />
+            <ProFormTextArea label="工作内容" name="description" rules={[{ required: true, message: '工作内容不能为空' }]} fieldProps={{ maxLength: 250, showCount: true }} />
           </ProFormList>
         </ProForm.Group>
         <Form.Item name="state" initialValue={ActivityState.awaitingSubmit} noStyle />

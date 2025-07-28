@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - cos-js-sdk-v5
+  - sharp
+  - unrs-resolver

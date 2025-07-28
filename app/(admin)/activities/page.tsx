@@ -15,12 +15,12 @@ import type { ActivityPreview } from '@/utils/http/api-types';
 
 type FilterForm = { state: ActivityState; keyword: string };
 
-const ActivityList = () => { 
+const ActivityList = () => {
 
   const router = useRouter();
   const message = useMessage();
   const role = useStore(state => state.role);
-  const formRef = useRef<ProFormInstance>(null);
+  const formRef = useRef<ProFormInstance>(void 0);
 
   const {
     reload,
@@ -42,7 +42,7 @@ const ActivityList = () => {
   const handleCopyActivity = (id: number) => router.push(`/activityForm?operation=copy&id=${id}`);
 
   const handleModifyActivity = (id: number) => router.push(`/activityForm?operation=modify&id=${id}`);
-  
+
   const handleDeleteActivity = async (id: number) => {
     await HttpClient.deleteActivityDraft({ id });
     message.success('删除活动成功');
@@ -53,7 +53,7 @@ const ActivityList = () => {
     await HttpClient.cancelActivityApplication({ id });
     setActivityList(_activityList => {
       const index = _activityList.findIndex(({ id: _id }) => _id === id);
-      if(index < 0) return _activityList;
+      if (index < 0) return _activityList;
 
       const activityList = [..._activityList];
       activityList[index].state = ActivityState.awaitingSubmit;
@@ -66,7 +66,7 @@ const ActivityList = () => {
     await HttpClient.applyForActivity({ id });
     setActivityList(_activityList => {
       const index = _activityList.findIndex(({ id: _id }) => _id === id);
-      if(index < 0) return _activityList;
+      if (index < 0) return _activityList;
 
       const activityList = [..._activityList];
       activityList[index].state = ActivityState.awaitingAudit;
@@ -79,7 +79,7 @@ const ActivityList = () => {
     await HttpClient.auditRejectActivity({ id });
     setActivityList(_list => {
       const index = _list.findIndex(({ id: _id }) => _id === id);
-      if(index < 0) return _list;
+      if (index < 0) return _list;
 
       const activityList = [..._list];
       activityList[index].state = ActivityState.auditFailed;
@@ -121,11 +121,11 @@ const ActivityList = () => {
         };
       }}
       metas={{
-        title: { 
+        title: {
           render: (_, item) => (
             <div className="text-lg flex items-center pl-[12px] font-[700]">{item.name}</div>
           )
-         },
+        },
         content: {
           render: (_, item) => <>
             <img className="w-[88px] h-[120px] rounded-[8px] object-cover" src={item.coverUrl} />
@@ -139,10 +139,10 @@ const ActivityList = () => {
         actions: {
           cardActionProps: 'actions',
           render: (_, item) => {
-            if(role === Role.superAdmin)
+            if (role === Role.superAdmin)
               return (
                 <>
-                  { item.state === ActivityState.awaitingAudit
+                  {item.state === ActivityState.awaitingAudit
                     && (
                       <>
                         <Button type="link" icon={<CheckOutlined />} onClick={() => handleAuditPassActivity(item.id)}>通过</Button>
@@ -152,43 +152,43 @@ const ActivityList = () => {
                       </>
                     )
                   }
-                  { item.state !== ActivityState.awaitingSubmit && <Button type="text" icon={<CopyOutlined />} onClick={() => handleCopyActivity(item.id)}>复制</Button> }
+                  {item.state !== ActivityState.awaitingSubmit && <Button type="text" icon={<CopyOutlined />} onClick={() => handleCopyActivity(item.id)}>复制</Button>}
                   <Button type="link" icon={<EditOutlined />} onClick={() => handleModifyActivity(item.id)}>编辑</Button>
                   {
                     [ActivityState.awaitingSubmit, ActivityState.auditFailed, ActivityState.auditPassed].includes(item.state)
-                      && (
-                        <Popconfirm title="警告" description="该操作不可撤销，确认删除该活动吗" onConfirm={() => handleDeleteActivity(item.id)}>
-                          <Button type="link" icon={<DeleteOutlined />} danger>删除</Button>
-                        </Popconfirm>
-                      )
-                  }
-                </>
-            );
-
-            return (
-              <>
-                {
-                  [ActivityState.awaitingSubmit, ActivityState.auditFailed].includes(item.state)
-                    && (
-                      <Popconfirm title="提示" description="确认提交该活动的审核申请吗" onConfirm={() => handleApplyForActivity(item.id)}>
-                        <Button type="text" icon={<SendOutlined />}>提交审核</Button>
-                      </Popconfirm>
-                    )
-                }
-                { item.state === ActivityState.awaitingAudit && (
-                  <Popconfirm title="提示" description="确认取消申请审核该活动吗" onConfirm={() => handleCancelApplication(item.id)}>
-                    <Button type="link" icon={<RollbackOutlined />} danger>取消申请</Button>
-                  </Popconfirm>
-                )}
-                { item.state >= ActivityState.auditPassed && <Button type="text" icon={<CopyOutlined />} onClick={() => handleCopyActivity(item.id)}>复制</Button> }
-                { item.state !== ActivityState.finished && <Button type="link" icon={<EditOutlined />} onClick={() => handleModifyActivity(item.id)}>编辑</Button> }
-                {
-                  [ActivityState.awaitingSubmit, ActivityState.auditFailed, ActivityState.auditPassed].includes(item.state)
                     && (
                       <Popconfirm title="警告" description="该操作不可撤销，确认删除该活动吗" onConfirm={() => handleDeleteActivity(item.id)}>
                         <Button type="link" icon={<DeleteOutlined />} danger>删除</Button>
                       </Popconfirm>
                     )
+                  }
+                </>
+              );
+
+            return (
+              <>
+                {
+                  [ActivityState.awaitingSubmit, ActivityState.auditFailed].includes(item.state)
+                  && (
+                    <Popconfirm title="提示" description="确认提交该活动的审核申请吗" onConfirm={() => handleApplyForActivity(item.id)}>
+                      <Button type="text" icon={<SendOutlined />}>提交审核</Button>
+                    </Popconfirm>
+                  )
+                }
+                {item.state === ActivityState.awaitingAudit && (
+                  <Popconfirm title="提示" description="确认取消申请审核该活动吗" onConfirm={() => handleCancelApplication(item.id)}>
+                    <Button type="link" icon={<RollbackOutlined />} danger>取消申请</Button>
+                  </Popconfirm>
+                )}
+                {item.state >= ActivityState.auditPassed && <Button type="text" icon={<CopyOutlined />} onClick={() => handleCopyActivity(item.id)}>复制</Button>}
+                {item.state !== ActivityState.finished && <Button type="link" icon={<EditOutlined />} onClick={() => handleModifyActivity(item.id)}>编辑</Button>}
+                {
+                  [ActivityState.awaitingSubmit, ActivityState.auditFailed, ActivityState.auditPassed].includes(item.state)
+                  && (
+                    <Popconfirm title="警告" description="该操作不可撤销，确认删除该活动吗" onConfirm={() => handleDeleteActivity(item.id)}>
+                      <Button type="link" icon={<DeleteOutlined />} danger>删除</Button>
+                    </Popconfirm>
+                  )
                 }
               </>
             );

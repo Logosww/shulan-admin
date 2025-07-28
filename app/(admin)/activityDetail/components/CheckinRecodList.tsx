@@ -80,7 +80,7 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
           title: '年龄',
           dataIndex: 'age',
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '手机号',
@@ -99,7 +99,7 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
           title: '报名岗位',
           dataIndex: ['activityWork', 'label'],
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '报名岗位',
@@ -118,13 +118,13 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
           title: '负责人',
           dataIndex: 'reviewerName',
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '签到时间',
           dataIndex: 'checkAt',
           valueType: 'dateTime',
-          hideInSearch: true,
+          search: false,
         },
       ]}
     />)

@@ -5,10 +5,10 @@ import { ProTable } from '@ant-design/pro-components';
 import { HttpClient } from '@/utils/http';
 import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
 import {
-  PayrollState, 
+  PayrollState,
   payrollStateValueEnumMap,
   VolunteerType,
-  volunteerTypeValueEnumMap, 
+  volunteerTypeValueEnumMap,
 } from '@/constants';
 import PaymentModal from './PaymentModal';
 import HistoryCard from './HistoryCard';
@@ -91,9 +91,9 @@ export const Payroll = ({ id }: { id: number }) => {
       search={{ span: 5, defaultCollapsed: false }}
       toolbar={{
         actions: [
-          <Button 
+          <Button
             key="export"
-            type="text" 
+            type="text"
             loading={isExporting}
             icon={<DownloadOutlined />}
             onClick={handleExportRecords}
@@ -104,7 +104,7 @@ export const Payroll = ({ id }: { id: number }) => {
             key="doPaymentBatch"
             type="primary"
             icon={<PayCircleOutlined />}
-            onClick={() => {setPaymentTarget(null), setModalOpen(true)}}
+            onClick={() => { setPaymentTarget(null), setModalOpen(true) }}
           >
             一键打款
           </Button>
@@ -147,7 +147,7 @@ export const Payroll = ({ id }: { id: number }) => {
           title: '报名岗位',
           dataIndex: ['workVo', 'name'],
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
           renderText: (_, { activityWork: { label } }) => label,
         },
         {
@@ -161,7 +161,7 @@ export const Payroll = ({ id }: { id: number }) => {
           title: '应得酬金',
           dataIndex: 'shouldTransferMoney',
           valueType: 'money',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '实际酬金',

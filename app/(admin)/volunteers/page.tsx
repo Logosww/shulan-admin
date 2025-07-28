@@ -70,14 +70,14 @@ const socialFigureColumns: ProDescriptionsProps<IVolunteerDetail>['columns'] = [
     renderText: (_, { volunteerIdentityVo: { identityCertPicUrls } }) => (
       identityCertPicUrls.length
       && <Space>
-          {identityCertPicUrls.map((url, index) => <Image className="rounded-[6px] object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
-        </Space>
+        {identityCertPicUrls.map((url, index) => <Image className="rounded-[6px] object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
+      </Space>
     )
   }
 ];
 
 const VolunteersPage = () => {
-  
+
   const [isExporting, setIsExporting] = useState(false);
   const [searchForm] = Form.useForm();
   const isSignedUp = Form.useWatch('hasActivityExperience', searchForm);
@@ -146,13 +146,13 @@ const VolunteersPage = () => {
           title: '性别',
           dataIndex: 'sex',
           valueEnum: genderValueEnumMap,
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '年龄',
           dataIndex: 'age',
           valueType: 'digit',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '身份',
@@ -169,7 +169,7 @@ const VolunteersPage = () => {
           title: '注册时间',
           dataIndex: 'createAt',
           valueType: 'dateTime',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '状态',
@@ -189,7 +189,7 @@ const VolunteersPage = () => {
           title: '操作时间',
           dataIndex: 'reviewAt',
           valueType: 'dateTime',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '学校',
@@ -210,14 +210,14 @@ const VolunteersPage = () => {
           hideInTable: true,
           valueType: 'digit',
           fieldProps: { placeholder: '请输入（≥）' },
-          hideInSearch: !isSignedUp,
+          search: isSignedUp,
         },
         {
           title: '历史活动',
           key: 'searchActivityId',
           hideInTable: true,
           valueType: 'select',
-          hideInSearch: !isSignedUp,
+          search: isSignedUp,
           request: () => HttpClient.getActivityOptions({ isFilter: true }),
           fieldProps: { showSearch: true },
         },
@@ -264,7 +264,7 @@ const VolunteersPage = () => {
                       },
                       {
                         title: '证件扫描件',
-                        renderText: (_ ,{ idCardNationalUrl, idCardPortraitUrl }) => (
+                        renderText: (_, { idCardNationalUrl, idCardPortraitUrl }) => (
                           <Space>
                             <Image className="rounded-[6px] object-cover" src={idCardNationalUrl} style={{ width: 96, height: 60, borderRadius: 6 }} />
                             <Image className="rounded-[6px] object-cover" src={idCardPortraitUrl} style={{ width: 96, height: 60, borderRadius: 6 }} />
@@ -288,7 +288,7 @@ const VolunteersPage = () => {
                       },
                       {
                         title: '白名单情况',
-                        renderText: (_, { stateVo: { whiteListExpireAt }}) => whiteListExpireAt ? `${whiteListExpireAt} 到期` : '无',
+                        renderText: (_, { stateVo: { whiteListExpireAt } }) => whiteListExpireAt ? `${whiteListExpireAt} 到期` : '无',
                       },
                       {
                         title: '违规情况',
@@ -307,7 +307,7 @@ const VolunteersPage = () => {
                         title: '历史志愿活动',
                         dataIndex: 'activityWorkExperienceVos',
                         valueType: 'textarea',
-                        render: (_, { activityWorkExperienceVos: works }) => 
+                        render: (_, { activityWorkExperienceVos: works }) =>
                           works.length
                             ? (
                               <div className="max-h-[300px] overflow-y-auto">
@@ -320,20 +320,20 @@ const VolunteersPage = () => {
                   />
                 }
               >
-                <Button type="link"size="small" icon={<EyeOutlined />}>详情</Button>
+                <Button type="link" size="small" icon={<EyeOutlined />}>详情</Button>
               </Popover>
               <Dropdown
                 trigger={['click']}
                 menu={{
-                  items: state === VolunteerWhitelistState.normal 
+                  items: state === VolunteerWhitelistState.normal
                     ? [{ key: VolunteerWhitelistState.ignored, label: '拉黑' }]
                     : state === VolunteerWhitelistState.ignored
                       ? [{ key: VolunteerWhitelistState.normal, label: '取消拉黑' }]
-                        : state === VolunteerWhitelistState.whitelist
-                          ? [{ key: VolunteerWhitelistState.normal, label: '移出白名单' }]
-                            : state === VolunteerWhitelistState.forbidden
-                              ? [{ key: VolunteerWhitelistState.normal, label: '解封' }]
-                              : [],
+                      : state === VolunteerWhitelistState.whitelist
+                        ? [{ key: VolunteerWhitelistState.normal, label: '移出白名单' }]
+                        : state === VolunteerWhitelistState.forbidden
+                          ? [{ key: VolunteerWhitelistState.normal, label: '解封' }]
+                          : [],
                   onClick: async ({ key }) => {
                     const state = parseInt(key);
                     await HttpClient.batchModifyVolunteerWhitelistState({ ids: [id], state });

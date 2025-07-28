@@ -50,7 +50,7 @@ const AddAdminModal = () => {
       autoFocusFirstInput
     >
       <ProFormText width="sm" name="name" label="姓名" rules={[{ required: true }]} />
-      <ProFormSelect 
+      <ProFormSelect
         width="xs"
         name="sex"
         label="性别"
@@ -112,7 +112,7 @@ const AdminsPage = () => {
             dataIndex: 'sex',
             valueEnum: genderValueEnumMap,
             valueType: 'text',
-            hideInSearch: true,
+            search: false,
           },
           {
             disable: true,
@@ -133,7 +133,7 @@ const AdminsPage = () => {
             render: (_, record, index) => {
               const StateSwitch = () => {
                 const [isLoading, setIsLoading] = useState(false);
-        
+
                 const handleCheckedChange = async (checked: boolean) => {
                   const state = checked ? AdminAccoutState.normal : AdminAccoutState.disabled;
                   setIsLoading(true);
@@ -145,10 +145,10 @@ const AdminsPage = () => {
                   });
                   message.success({ content: '修改成功' });
                 };
-        
+
                 return (
                   <Switch
-                    checkedChildren='开启' 
+                    checkedChildren='开启'
                     unCheckedChildren='停用'
                     loading={isLoading}
                     checked={record.state === AdminAccoutState.normal}
@@ -156,7 +156,7 @@ const AdminsPage = () => {
                   />
                 );
               };
-        
+
               return <StateSwitch />;
             }
           }

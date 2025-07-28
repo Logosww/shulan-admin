@@ -13,7 +13,7 @@ import type { INoticeRecord, NullableFilter } from '@/utils/http/api-types';
 type FilterForm = NullableFilter<{
   isSend: boolean;
   activityWorkId: number;
-} & Pick<INoticeRecord, 
+} & Pick<INoticeRecord,
   | 'id'
   | 'name'
   | 'phone'
@@ -121,7 +121,7 @@ export const Notice = ({ id }: INoticeProps) => {
           title: '报名岗位',
           dataIndex: ['activityWork', 'label'],
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '报名岗位',
@@ -154,19 +154,19 @@ export const Notice = ({ id }: INoticeProps) => {
           title: '发送次数',
           dataIndex: 'sendCount',
           valueType: 'digit',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '操作人',
           dataIndex: 'senderName',
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '操作时间',
           dataIndex: 'sendAt',
           valueType: 'text',
-          hideInSearch: true,
+          search: false,
         },
         {
           title: '操作',

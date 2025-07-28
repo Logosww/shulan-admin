@@ -35,7 +35,7 @@ const columns: ProColumns<IAdminAccount>[] = [
     dataIndex: 'sex',
     valueEnum: genderValueEnumMap,
     valueType: 'text',
-    hideInSearch: true,
+    search: false,
   },
   {
     disable: true,
@@ -68,7 +68,7 @@ const columns: ProColumns<IAdminAccount>[] = [
 
         return (
           <Switch
-            checkedChildren='开启' 
+            checkedChildren='开启'
             unCheckedChildren='停用'
             loading={isLoading}
             checked={record.state === AdminAccoutState.normal}
@@ -112,7 +112,7 @@ const AddAdminModal = () => {
       autoFocusFirstInput
     >
       <ProFormText width="sm" name="name" label="姓名" rules={[{ required: true }]} />
-      <ProFormSelect 
+      <ProFormSelect
         width="xs"
         name="sex"
         label="性别"
