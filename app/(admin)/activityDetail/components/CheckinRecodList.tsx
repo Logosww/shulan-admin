@@ -47,6 +47,7 @@ export const CheckinRecodList = ({ id }: { id: number }) => {
     (<ProTable<ICheckinRecord, FilterForm>
       rowKey="id"
       form={{ variant: 'filled', ignoreRules: false, }}
+      scroll={{ x: '100%' }}
       loading={loading}
       dataSource={checkinRecordList}
       pagination={paginationConfig}

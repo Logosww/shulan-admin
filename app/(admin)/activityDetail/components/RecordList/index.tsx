@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { Space, Button, Tag, Dropdown, Popconfirm, Form } from 'antd';
 import { HttpClient, valueEnum2MenuItem } from '@/utils';
 import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
-import { VolunteerType, VolunteerSignUpState, genderValueEnumMap, volunteerIdentityValueEnumMap } from '@/constants/value-enum';
-import { ProTable } from '@ant-design/pro-components';
+import { VolunteerType, VolunteerSignUpState, genderValueEnumMap, volunteerIdentityValueEnumMap, isCheckedValueEnumMap } from '@/constants/value-enum';
+import { ProFormTreeSelect, ProTable } from '@ant-design/pro-components';
 import { DownOutlined, DownloadOutlined, FileExcelOutlined, FileZipOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
 import { volunteerSignUpStateValueEnumMap, volunteerTypeValueEnumMap, volunteerWhitelistStateValueEnumMap, hasActivityExperienceValueEnumMap, provinceOptions } from '@/constants';
 import { TempVolunteerModal } from './TempVolunteerModal';
@@ -46,6 +46,8 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
     activityCount: form.activityCount ?? null,
     searchActivityId: form.searchActivityId ?? null,
     ip: form.ip ?? null,
+    isStudentVerified: form.isStudentVerified ?? null,
+    householdRegister: form.householdRegister ?? null,
   });
 
   const {
@@ -84,6 +86,7 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
       rowKey="id"
       loading={isLoading}
       dataSource={signUpRecordList}
+      scroll={{ x: '100%' }}
       form={{ variant: 'filled', ignoreRules: false }}
       search={{
         span: 5,
@@ -172,8 +175,8 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           key: 'name',
           valueType: 'text',
           renderText: (_, { name, activityWorkVolunteerIdentity: type }) => (
-            <>
-              {name}
+            <div className="flex items-center">
+              <span className="flex-none whitespace-nowrap">{name}</span>
               {type !== VolunteerType.normal
                 && (
                   <Tag
@@ -184,8 +187,15 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
                     {volunteerTypeValueEnumMap.get(type)?.text}
                   </Tag>
                 )}
-            </>
+            </div>
           )
+        },
+        {
+          dataIndex: 'isStudentVerified',
+          title: '认证学生',
+          valueType: 'select',
+          valueEnum: isCheckedValueEnumMap,
+          hideInTable: true,
         },
         {
           title: '性别',
@@ -203,6 +213,18 @@ export const SignUpRecordList = ({ id }: { id: number }) => {
           title: '手机号',
           dataIndex: 'purePhoneNumber',
           valueType: 'text',
+        },
+        {
+          title: '户籍',
+          dataIndex: 'householdRegister',
+          hideInTable: true,
+          valueType: 'cascader',
+          request: () => fetch('https://common-1323578300.cos.ap-shanghai.myqcloud.com/shulan-wxmp/region-data.json', { method: 'get' }).then(res => {
+            if (res.ok) return res.json();
+
+            console.error('获取省市数据失败', res);
+            throw new Error('获取省市数据失败');
+          }),
         },
         {
           title: '学校',

@@ -29,7 +29,9 @@ import dayjs, { Dayjs } from "dayjs";
 
 const amapKey = process.env.NEXT_PUBLIC_AMAP_AMP_KEY;
 
-const convertToDayjs = (value: string | string[] | Dayjs | Dayjs[]) => {
+const convertToDayjs = (value: string | string[] | Dayjs | Dayjs[] | null) => {
+  if (!value) return void 0;
+
   if (Array.isArray(value)) return value.map(val => dayjs.isDayjs(val) ? val : dayjs(val));
 
   return dayjs.isDayjs(value) ? value : dayjs(value);
@@ -178,6 +180,7 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
           <ProFormDateTimePicker
             label="取消报名截止时间"
             name="signupCancelAt"
+            // @ts-expect-error
             convertValue={convertToDayjs}
             rules={[
               { required: true, message: '取消报名截止时间不能为空' },
@@ -193,11 +196,12 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
           />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormSwitch label="是否在小程序展示" name="isDisplay" initialValue={id ? void 0 : true} />
+          <ProFormSwitch label="在小程序展示" name="isDisplay" initialValue={id ? void 0 : true} />
           <ProFormSwitch label="启用白名单" name="isWhite" initialValue={id ? void 0 : false} tooltip="启用白名单后，白名单用户报名后将直接通过审核" />
           <ProFormSwitch label="展示酬金" name="isMoney" initialValue={id ? void 0 : true} />
           <ProFormSwitch label="展示工作须知" name="isWorkInstruction" initialValue={id ? void 0 : true} />
-          <ProFormSwitch label="是否线下签到" name="isCheck" initialValue={id ? void 0 : true} />
+          <ProFormSwitch label="线下签到" name="isCheck" initialValue={id ? void 0 : true} />
+          <ProFormSwitch label="仅限认证学生" name="isStudentVerify" initialValue={id ? void 0 : false} />
           <ProFormCheckbox.Group label="活动保障" name="features" valueEnum={activityFeatureValueEnumMap} initialValue={id ? void 0 : []} />
         </ProForm.Group>
         <ProForm.Group>
@@ -240,6 +244,7 @@ export const ActivityForm = ({ id, operation, initialValues }: IActivityFormProp
               <ProFormDateTimeRangePicker
                 label="工作时间"
                 name="dateRange"
+                // @ts-ignore
                 convertValue={convertToDayjs}
                 rules={isWorkListModifiable ? [
                   { required: true, message: '工作时间不能为空' },

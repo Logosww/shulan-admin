@@ -2,6 +2,7 @@ import MyApp from '@/app';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { StoreProvider } from '@/components';
 import { initStore } from '@/store';
+import '@ant-design/v5-patch-for-react-19';
 
 import './global.css';
 
@@ -18,11 +19,11 @@ const RootLayout = async ({ children }: PropsWithChildren) => {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
-          <StoreProvider state={state}>
-            <AntdRegistry>
-              <MyApp>{children}</MyApp>
-            </AntdRegistry>
-          </StoreProvider>
+        <StoreProvider state={state}>
+          <AntdRegistry>
+            <MyApp>{children}</MyApp>
+          </AntdRegistry>
+        </StoreProvider>
       </body>
     </html>
   );

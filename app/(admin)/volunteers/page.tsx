@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { DownOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Popover, Space, Image, Dropdown, Tag, Form } from 'antd';
+import { Button, Popover, Space, Image, Dropdown, Tag, Form, Table } from 'antd';
 import { ProDescriptions, ProTable } from '@ant-design/pro-components';
 import { HttpClient } from '@/utils';
 import { useCOS, useMessage, usePagingAndQuery } from '@/hooks';
-import { Role, VolunteerIdentity, VolunteerWhitelistState, hasActivityExperienceValueEnumMap, idCardTypeValueEnumMap } from '@/constants/value-enum';
+import { Role, VolunteerIdentity, VolunteerWhitelistState, hasActivityExperienceValueEnumMap, idCardTypeValueEnumMap, isCheckedValueEnumMap } from '@/constants/value-enum';
 import { genderValueEnumMap, volunteerIdentityValueEnumMap, volunteerWhitelistStateValueEnumMap } from '@/constants';
 import WhitelistDrawer from './components/WhitelistDrawer';
 import ForbbidenListDrawer from './components/ForbbidenListDrawer';
@@ -25,9 +25,11 @@ type FilterForm = {
   activityCount: number;
   searchActivityId: number;
   hasActivityExperience: boolean;
+  isStudentVerified: boolean;
 };
 
-const descriptionItemStyle = { whiteSpace: 'pre-line', maxWidth: 500 };
+const { Summary } = Table;
+const { Cell, Row } = Summary;
 
 const studentColumns: ProDescriptionsProps<IVolunteerDetail>['columns'] = [
   {
@@ -48,9 +50,9 @@ const studentColumns: ProDescriptionsProps<IVolunteerDetail>['columns'] = [
   {
     title: '学生证',
     renderText: (_, { volunteerIdentityVo: { studentCardPicUrls } }) => (
-      <Space>
+      <div className="flex items-center gap-2 flex-wrap justify-start">
         {studentCardPicUrls.map((url, index) => <Image className="rounded-[6px] object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
-      </Space>
+      </div>
     )
   },
 ];
@@ -107,6 +109,7 @@ const VolunteersPage = () => {
       activityCount: form.activityCount ?? null,
       searchActivityId: form.searchActivityId ?? null,
       hasActivityExperience: form.hasActivityExperience ?? null,
+      isStudentVerified: form.isStudentVerified ?? null,
     }),
   });
 
@@ -122,6 +125,7 @@ const VolunteersPage = () => {
     <ProTable<IVolunteer, FilterForm>
       rowKey="id"
       form={{ variant: 'filled' }}
+      scroll={{ x: '100%' }}
       loading={loading}
       dataSource={volunteerList}
       pagination={paginationConfig}
@@ -141,6 +145,7 @@ const VolunteersPage = () => {
           title: '姓名',
           dataIndex: 'name',
           valueType: 'text',
+          className: 'whitespace-nowrap',
         },
         {
           title: '性别',
@@ -159,6 +164,23 @@ const VolunteersPage = () => {
           dataIndex: 'identity',
           valueType: 'select',
           valueEnum: volunteerIdentityValueEnumMap,
+          render: (_, { identity, isStudentVerified }) => (
+            identity === VolunteerIdentity.student
+              ? (
+                <div className="flex items-center gap-2">
+                  <span className="flex-none">{volunteerIdentityValueEnumMap.get(identity)}</span>
+                  {isStudentVerified && <Tag bordered={false} color="processing">已认证</Tag>}
+                </div>
+              )
+              : volunteerIdentityValueEnumMap.get(identity)
+          )
+        },
+        {
+          dataIndex: 'isStudentVerified',
+          title: '认证学生',
+          valueType: 'select',
+          valueEnum: isCheckedValueEnumMap,
+          hideInTable: true,
         },
         {
           title: '手机号',
@@ -276,14 +298,22 @@ const VolunteersPage = () => {
                         title: '相关经历',
                         dataIndex: 'experience',
                         valueType: 'textarea',
-                        contentStyle: descriptionItemStyle,
+                        render: (_, { experience }) => (
+                          experience
+                            ? (
+                              <div className="whitespace-pre-line max-w-[300px] max-h-[200px] overflow-y-auto">
+                                {experience}
+                              </div>
+                            )
+                            : '无'
+                        ),
                       },
                       {
                         title: '相关经历证明',
                         renderText: (_, { experiencePicUrls }) => (
-                          <Space>
+                          <div className="flex items-center gap-2 flex-wrap justify-start">
                             {experiencePicUrls.map((url, index) => <Image className="rounded-[6px] object-cover" key={index} src={url} style={{ width: 96, height: 60, borderRadius: 6 }} />)}
-                          </Space>
+                          </div>
                         )
                       },
                       {
@@ -298,20 +328,67 @@ const VolunteersPage = () => {
                             : '无'
                         )
                       },
-                      {
-                        title: '累计参与活动数',
-                        dataIndex: 'activityWorkExperienceTotalNum',
-                        valueType: 'digit',
-                      },
+                      // {
+                      //   title: '累计参与活动数',
+                      //   dataIndex: 'activityWorkExperienceTotalNum',
+                      //   valueType: 'digit',
+                      // },
                       {
                         title: '历史志愿活动',
                         dataIndex: 'activityWorkExperienceVos',
                         valueType: 'textarea',
-                        render: (_, { activityWorkExperienceVos: works }) =>
+                        render: (_, {
+                          totalActivityTransferAmount,
+                          activityWorkExperienceTotalNum,
+                          activityWorkExperienceVos: works,
+                        }) =>
                           works.length
                             ? (
-                              <div className="max-h-[300px] overflow-y-auto">
-                                {works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)}
+                              <div className="p-[8px] w-full">
+                                <Table<IVolunteerDetail['activityWorkExperienceVos'][number]>
+                                  size="small"
+                                  style={{ maxWidth: 400, marginInline: 0, marginBlock: 0 }}
+                                  bordered
+                                  pagination={false}
+                                  scroll={{ y: 200, x: '100%' }}
+                                  dataSource={works}
+                                  columns={[
+                                    {
+                                      title: '活动名称',
+                                      dataIndex: 'activityName',
+                                      className: 'max-w-[100px]',
+                                      ellipsis: true,
+                                    },
+                                    {
+                                      title: '岗位',
+                                      dataIndex: 'activityWorkNames',
+                                      ellipsis: true,
+                                      width: 80,
+                                    },
+                                    {
+                                      title: '转账金额',
+                                      dataIndex: 'activityTransferAmount',
+                                      render: amount => `${amount} 元`,
+                                      width: 80,
+                                    },
+                                  ]}
+                                  summary={
+                                    () => {
+                                      const totalAmount = totalActivityTransferAmount ?? works.reduce((acc, cur) => acc + cur.activityTransferAmount, 0);
+                                      const totalNum = activityWorkExperienceTotalNum || works.length;
+
+                                      return (
+                                        <Summary fixed>
+                                          <Row>
+                                            <Cell index={0} colSpan={3}>
+                                              合计：历史累计参与活动 {totalNum} 次，累计转账金额 {totalAmount} 元
+                                            </Cell>
+                                          </Row>
+                                        </Summary>
+                                      );
+                                    }
+                                  }
+                                />
                               </div>
                             )
                             : '无'

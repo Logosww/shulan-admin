@@ -151,6 +151,7 @@ export const AdminManage = () => {
       rowKey="id"
       headerTitle="管理员账号"
       form={{ variant: 'filled' }}
+      scroll={{ x: '100%' }}
       columns={columns}
       loading={loading}
       dataSource={adminList}

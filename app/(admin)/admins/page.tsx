@@ -91,6 +91,7 @@ const AdminsPage = () => {
         rowKey="id"
         headerTitle="管理员账号"
         form={{ variant: 'filled' }}
+        scroll={{ x: '100%' }}
         loading={loading}
         dataSource={adminList}
         pagination={paginationConfig}

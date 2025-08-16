@@ -11,6 +11,7 @@ const HistoryCard = ({ id }: { id: number }) => (
     headerTitle="转账明细"
     search={false}
     pagination={false}
+    scroll={{ x: '100%' }}
     toolbar={{ actions: [], settings: [] }}
     params={{ id }}
     request={params => HttpClient.getPayrollDetails(params as { id: number }).then(data => ({ data, success: true }))}
@@ -38,7 +39,7 @@ const HistoryCard = ({ id }: { id: number }) => (
           <>
             <div className="inline-block mr-[4px]">{payrollAPIStateValueEnumMap.get(state)!}</div>
             {
-              state === PayrollAPIState.fail 
+              state === PayrollAPIState.fail
               && (
                 <Tooltip title={`失败原因：${failReason}`}>
                   <QuestionCircleOutlined />

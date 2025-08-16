@@ -7,7 +7,7 @@ import { HttpClient } from '@/utils';
 import { useMessage } from '@/hooks';
 import { activityStateValueEnumMap, activityTypeValueEnumMap } from '@/constants';
 import { PlusOutlined } from '@ant-design/icons';
-import { 
+import {
   CheckCard,
   ModalForm,
   ProDescriptions,
@@ -19,7 +19,7 @@ import {
 } from '@ant-design/pro-components';
 import { ActivityState, WorkTag, activityFeatureValueEnumMap, workTagValueEnumMap } from '@/constants/value-enum';
 
-import type { ActionType} from '@ant-design/pro-components';
+import type { ActionType } from '@ant-design/pro-components';
 import type { IActivityDetail, IVolunteerWork, VolunteerWorkForm } from '@/utils/http/api-types';
 
 const WorkCard = ({ data, activityId }: { data: IVolunteerWork, activityId: number }) => {
@@ -37,8 +37,8 @@ const WorkCard = ({ data, activityId }: { data: IVolunteerWork, activityId: numb
       style={{ marginBlockEnd: 8, minWidth: 420 }}
       title={(
         <>
-          { data.label !== WorkTag.normal && <Tag bordered={false} color={workTagValueEnumMap.get(data.label)?.status}>{workTagValueEnumMap.get(data.label)?.text}</Tag>}
-          { data.name }
+          {data.label !== WorkTag.normal && <Tag bordered={false} color={workTagValueEnumMap.get(data.label)?.status}>{workTagValueEnumMap.get(data.label)?.text}</Tag>}
+          {data.name}
         </>
       )}
       bodyStyle={{ paddingBlockEnd: 0 }}
@@ -84,7 +84,7 @@ const WorkCard = ({ data, activityId }: { data: IVolunteerWork, activityId: numb
 
 export const ActivityBasicInfo = ({ id }: { id: number }) => {
   const current = dayjs();
-  
+
   const message = useMessage();
   const actionRef = useRef<ActionType>(undefined);
 
@@ -95,7 +95,7 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
   };
 
   const handleAppendWork = async (_form: VolunteerWorkForm & { dateRange: [string, string] }) => {
-    const form: Record<string, any> = {..._form};
+    const form: Record<string, any> = { ..._form };
     const [startAt, endAt] = _form.dateRange;
     form['startAt'] = startAt, form['endAt'] = endAt;
     delete form['dateRange'];
@@ -116,7 +116,7 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
         columns={[
           {
             valueType: 'option',
-            renderText: (_, { id, state }) => 
+            renderText: (_, { id, state }) =>
               state !== ActivityState.finished
               && (
                 <Popconfirm title="提示" description="确认提前结束活动吗？" onConfirm={() => handleEndActivity(id)}>
@@ -221,6 +221,12 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
             renderText: (_, { isCheck }) => isCheck ? '是' : '否',
           },
           {
+            title: '仅限认证学生',
+            dataIndex: 'isStudentVerify',
+            valueType: 'text',
+            renderText: (_, { isStudentVerify }) => isStudentVerify ? '是' : '否',
+          },
+          {
             title: '活动描述',
             dataIndex: 'description',
             valueType: 'textarea',
@@ -263,10 +269,10 @@ export const ActivityBasicInfo = ({ id }: { id: number }) => {
                             { required: true, message: '工作时间不能为空' },
                             () => ({
                               validator: (_, [workStart, workEnd]) => {
-                                if(workStart && workEnd && workStart.isSame(workEnd)) return Promise.reject(new Error('工作时长不能为0'));
-                                if(workStart && ( workStart.isSame(signupEndAt) || workStart.isBefore(signupEndAt))) 
+                                if (workStart && workEnd && workStart.isSame(workEnd)) return Promise.reject(new Error('工作时长不能为0'));
+                                if (workStart && (workStart.isSame(signupEndAt) || workStart.isBefore(signupEndAt)))
                                   return Promise.reject(new Error('工作开始时间不能早于报名截止时间'));
-                                if(workEnd && workEnd.isAfter(endAt)) return Promise.reject(new Error('工作结束时间不能晚于活动结束时间'));
+                                if (workEnd && workEnd.isAfter(endAt)) return Promise.reject(new Error('工作结束时间不能晚于活动结束时间'));
                                 return Promise.resolve();
                               }
                             }),

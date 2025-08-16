@@ -33,7 +33,7 @@ const BatchImportModal = ({ onFinish }: {
       width={480}
       form={form}
       trigger={<Button icon={<UploadOutlined />}>批量导入</Button>}
-      modalProps={{ 
+      modalProps={{
         centered: true,
         afterClose: form.resetFields,
       }}
@@ -103,7 +103,7 @@ const AppendRiskUserModal = ({ onFinish }: {
   );
 }
 
-const RiskUsersPage =  () => {
+const RiskUsersPage = () => {
   const message = useMessage();
   const {
     reload,
@@ -121,8 +121,8 @@ const RiskUsersPage =  () => {
     queryRequest: HttpClient.filterRiskUsers,
     filterFormTransform: form => ({
       name: form.name ?? null,
-      phone: form.phone?? null,
-      idCard: form.idCard?? null,
+      phone: form.phone ?? null,
+      idCard: form.idCard ?? null,
     }),
   });
 
@@ -136,10 +136,13 @@ const RiskUsersPage =  () => {
     <ProTable<IRiskUser, FilterForm>
       rowKey="id"
       form={{ variant: 'filled' }}
-      toolbar={{ actions: [
-        <BatchImportModal key="import" onFinish={reload} />,
-        <AppendRiskUserModal key="add" onFinish={reload} />,
-      ]}}
+      scroll={{ x: '100%' }}
+      toolbar={{
+        actions: [
+          <BatchImportModal key="import" onFinish={reload} />,
+          <AppendRiskUserModal key="add" onFinish={reload} />,
+        ]
+      }}
       columns={[
         { title: '姓名', dataIndex: 'name' },
         { title: '手机号', dataIndex: 'phone' },

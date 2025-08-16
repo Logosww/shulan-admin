@@ -87,6 +87,7 @@ export const Payroll = ({ id }: { id: number }) => {
       loading={loading}
       dataSource={checkinRecordList}
       pagination={paginationConfig}
+      scroll={{ x: '100%' }}
       form={{ variant: 'filled', ignoreRules: false }}
       search={{ span: 5, defaultCollapsed: false }}
       toolbar={{

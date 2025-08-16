@@ -28,7 +28,7 @@ interface IRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
 
 type BannerForm = Omit<IBanner, 'id' | 'coverUrl'> & { coverPath: string };
 
-const BannerModal = ({ open, form, title, onFinish, onOpenChange }: { 
+const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
   title: string;
   open: boolean;
   form: FormInstance;
@@ -39,7 +39,7 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
 
   const handleSubmit = async (_form: IBanner) => {
     const { id, coverUrl } = _form;
-    const form: Record<string, any>= {..._form};
+    const form: Record<string, any> = { ..._form };
     form['targetId'] = _form.targetId ?? 0;
     form['coverPath'] = URL.canParse(coverUrl) ? new URL(coverUrl).pathname.slice(1) : coverUrl;
     form['type'] !== BannerType.miniprogram && (
@@ -67,7 +67,7 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
       <ProFormGroup>
         <ProFormSegmented label="跳转类型" name="type" initialValue={BannerType.activity} valueEnum={bannerTypeValueEnumMap} />
         <ProFormDependency name={['type']}>
-          {({ type }) => 
+          {({ type }) =>
             type !== BannerType.none
               ? type !== BannerType.miniprogram
                 ? (
@@ -78,17 +78,18 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
                     params={type}
                     fieldProps={{
                       showSearch: true,
-                      filterOption: (input, option) => ((option?.label ?? '') as string).toLowerCase().includes(input.toLowerCase())}
+                      filterOption: (input, option) => ((option?.label ?? '') as string).toLowerCase().includes(input.toLowerCase())
+                    }
                     }
                     request={
-                      type === BannerType.activity 
-                        ? () => HttpClient.getActivityOptions({ isFilter: true }) 
+                      type === BannerType.activity
+                        ? () => HttpClient.getActivityOptions({ isFilter: true })
                         : () => HttpClient.getLiveOptions({ isFilter: true })
                     }
                     rules={[{
                       validator: (_, value) => {
                         const type = form.getFieldValue('type') as BannerType;
-                        if([BannerType.activity, BannerType.live].includes(type) && !value) return Promise.reject(new Error('跳转目标不能为空'));
+                        if ([BannerType.activity, BannerType.live].includes(type) && !value) return Promise.reject(new Error('跳转目标不能为空'));
                         return Promise.resolve();
                       }
                     }]}
@@ -99,21 +100,21 @@ const BannerModal = ({ open, form, title, onFinish, onOpenChange }: {
                     <ProFormText width="sm" name="miniProgramName" label="目标小程序名称" rules={[{
                       validator: (_, value) => {
                         const type = form.getFieldValue('type') as BannerType;
-                        if(type === BannerType.miniprogram && !value) return Promise.reject(new Error('目标小程序名称不能为空'));
+                        if (type === BannerType.miniprogram && !value) return Promise.reject(new Error('目标小程序名称不能为空'));
                         return Promise.resolve();
                       }
                     }]} />
                     <ProFormText width="sm" name="miniProgramAppid" label="小程序 appId" rules={[{
                       validator: (_, value) => {
                         const type = form.getFieldValue('type') as BannerType;
-                        if(type === BannerType.miniprogram && !value) return Promise.reject(new Error('小程序 appId 不能为空'));
+                        if (type === BannerType.miniprogram && !value) return Promise.reject(new Error('小程序 appId 不能为空'));
                         return Promise.resolve();
                       }
                     }]} />
                     <ProFormText width="md" name="miniProgramPagePath" label="小程序 path" rules={[{
                       validator: (_, value) => {
                         const type = form.getFieldValue('type') as BannerType;
-                        if(type === BannerType.miniprogram && !value) return Promise.reject(new Error('小程序 path 不能为空'));
+                        if (type === BannerType.miniprogram && !value) return Promise.reject(new Error('小程序 path 不能为空'));
                         return Promise.resolve();
                       }
                     }]} />
@@ -214,7 +215,7 @@ const BannersPage = () => {
     setBannerList(_list => {
       const list = [..._list];
       const index = list.findIndex(({ id: _id }) => _id === id);
-      if(index >= 0) list.splice(index, 1);
+      if (index >= 0) list.splice(index, 1);
       return list;
     });
     message.success('删除成功');
@@ -234,7 +235,7 @@ const BannersPage = () => {
 
   useEffect(() => {
     getBannerList();
-  },[]);
+  }, []);
 
   return (
     <Suspense fallback={<ProSkeleton type="list" />}>
@@ -245,6 +246,7 @@ const BannersPage = () => {
         >
           <ProTable<IBanner>
             rowKey="id"
+            scroll={{ x: '100%' }}
             search={false}
             pagination={false}
             dataSource={bannerList}
@@ -294,8 +296,8 @@ const BannersPage = () => {
                 width: 200,
                 renderText: (_, banner) => (
                   <>
-                    <Button 
-                      type="link" 
+                    <Button
+                      type="link"
                       icon={<EditOutlined />}
                       onClick={() => {
                         setModalTitle('编辑 Banner');
@@ -303,7 +305,7 @@ const BannersPage = () => {
                           ...banner,
                           targetId: banner.targetId ? banner.targetId : void 0,
                           miniProgramName: banner.targetName,
-                         });
+                        });
                         setModalOpen(true);
                       }}
                     >编辑</Button>

@@ -23,7 +23,7 @@ import type {
 export interface ILoginForm {
   phone: string;
   code: string;
-};
+}
 
 export interface IUserProfile {
   id: number;
@@ -31,12 +31,12 @@ export interface IUserProfile {
   sex: Gender;
   desensitizedPhone: string;
   role: Role;
-};
+}
 
 export interface IPagingParams {
   page: number;
   size: number;
-};
+}
 
 export interface IPagingResult<T> {
   page: number;
@@ -46,7 +46,7 @@ export interface IPagingResult<T> {
   hasPrevious: boolean;
   hasNext: boolean;
   records: T[];
-};
+}
 
 export interface IAdminAccount {
   id: number;
@@ -55,7 +55,7 @@ export interface IAdminAccount {
   purePhoneNumber: string;
   state: AdminAccoutState;
   role?: Role;
-};
+}
 
 export interface IActivityDetail {
   id: number;
@@ -87,10 +87,11 @@ export interface IActivityDetail {
   isWorkInstruction: boolean;
   isCheck: boolean;
   isMoney: boolean;
-};
+  isStudentVerify: boolean;
+}
 
 export type ActivityPreview = Pick<
-  IActivityDetail, 
+  IActivityDetail,
   | 'id'
   | 'name'
   | 'city'
@@ -112,18 +113,16 @@ export interface IVolunteerWork {
   label: WorkTag;
   description: string;
   signupSuccessCount?: number;
-};
+}
 
-export type VolunteerWorkForm = Omit<IVolunteerWork,
+export type VolunteerWorkForm = Omit<
+  IVolunteerWork,
   'id' | 'label' | 'isFull' | 'signupSuccessCount'
 >;
 
-export type ActivityForm = Omit<IActivityDetail, 
-  | 'id'
-  | 'state'
-  | 'signupSuccessCount'
-  | 'manager'
-  | 'reviewer'
+export type ActivityForm = Omit<
+  IActivityDetail,
+  'id' | 'state' | 'signupSuccessCount' | 'manager' | 'reviewer'
 >;
 
 export interface IVolunteer {
@@ -138,9 +137,11 @@ export interface IVolunteer {
   createAt: string;
   reviewerName: string;
   reviewAt: string;
-};
+  isStudentVerified: boolean;
+}
 
-export interface IVolunteerDetail extends Omit<IVolunteer, 'createAt' | 'identity' | 'state'> {
+export interface IVolunteerDetail
+  extends Omit<IVolunteer, 'createAt' | 'identity' | 'state'> {
   nickname: string;
   avatarUrl: string;
   idCard: string;
@@ -172,14 +173,19 @@ export interface IVolunteerDetail extends Omit<IVolunteer, 'createAt' | 'identit
     activityName: string;
     activityWorkNames: string;
     activityWorkAt: string;
+    activityTransferAmount: number;
   }[];
-};
+  totalActivityTransferAmount?: number;
+}
 
 export type NullableFilter<T> = {
   [K in keyof T]: T[K] | null;
 };
 
-export type OptionType<T extends string | number = number> = { label: ReactNode; value: T };
+export type OptionType<T extends string | number = number> = {
+  label: ReactNode;
+  value: T;
+};
 
 export interface ICOSBucketCredentials {
   credentials: {
@@ -189,7 +195,7 @@ export interface ICOSBucketCredentials {
   };
   startTime: number;
   expiredTime: number;
-};
+}
 
 export interface ISignUpRecord {
   id: number;
@@ -206,12 +212,15 @@ export interface ISignUpRecord {
   reviewerName: string;
   reviewAt: string;
   ip: string;
-};
+  isStudentVerified: boolean;
+  householdRegister: string[];
+}
 
-export type SignUpRecordDetail = ISignUpRecord & IVolunteerDetail & {
-  reason: string;
-  identityAt: string;
-};
+export type SignUpRecordDetail = ISignUpRecord &
+  IVolunteerDetail & {
+    reason: string;
+    identityAt: string;
+  };
 
 export type TemporaryVolunteerForm = {
   id: number;
@@ -227,7 +236,7 @@ export interface ISettingForm {
   violateCountLimit: number;
   whiteExpire: number;
   violateExpire: number;
-};
+}
 
 export interface IBanner {
   id: number;
@@ -238,12 +247,12 @@ export interface IBanner {
   miniProgramAppid: string;
   miniProgramPagePath: string;
   isDisplay: boolean;
-};
+}
 
 export interface IOption {
   id: number;
   label: string;
-};
+}
 
 export interface IActivityStatistics {
   totalClick: number;
@@ -257,12 +266,12 @@ export interface IActivityStatistics {
   atWork: number;
   offWork: number;
   finished: number;
-  worksVolume: { 
+  worksVolume: {
     id: number;
     name: string;
     volume: number;
   }[];
-};
+}
 
 export interface ILive {
   id: number;
@@ -270,7 +279,7 @@ export interface ILive {
   articleUrl: string;
   title: string;
   digest: string;
-};
+}
 
 export interface INotification {
   id: number;
@@ -280,13 +289,13 @@ export interface INotification {
   state: NotificationState;
   senderName: string;
   content: string;
-};
+}
 
 export interface ICertificate {
   id: number;
   title: string;
   coverUrl: string;
-};
+}
 
 export interface ICheckinRecord {
   id: number;
@@ -302,7 +311,7 @@ export interface ICheckinRecord {
   isChecked: boolean;
   checkAt: string;
   reviewerName: string;
-};
+}
 
 export interface IPayrollRecord {
   id: number;
@@ -318,7 +327,7 @@ export interface IPayrollRecord {
     id: number;
     label: string;
   };
-};
+}
 
 export interface IPaymentPreview {
   totalNumber: number;
@@ -329,7 +338,7 @@ export interface IPaymentPreview {
     localNumber: number;
     localMoney: number;
   }[];
-};
+}
 
 export interface IPayrollDetail {
   outDetailNo: string;
@@ -340,7 +349,7 @@ export interface IPayrollDetail {
   transferAt: string;
   openid: string;
   failReason: string;
-};
+}
 
 export interface INoticeRecord {
   id: number;
@@ -356,15 +365,16 @@ export interface INoticeRecord {
   sendCount: number;
   senderName: string;
   sendAt: string;
-};
+}
 
 export interface INotice {
   title: string;
   rawContent: string;
   htmlContent: string;
-};
+}
 
-export type AuditRejectVolunteersForm = Pick<ISignUpRecord, 
+export type AuditRejectVolunteersForm = Pick<
+  ISignUpRecord,
   | 'id'
   | 'name'
   | 'sex'
@@ -373,6 +383,8 @@ export type AuditRejectVolunteersForm = Pick<ISignUpRecord,
   | 'volunteerState'
   | 'activityWorkVolunteerIdentity'
   | 'ip'
+  | 'isStudentVerified'
+  | 'householdRegister'
 > & {
   activityId: number;
   activityWorkId: number;
@@ -393,4 +405,4 @@ export interface IRiskUser {
   ip: string;
   operator: string;
   createAt: string;
-};
+}

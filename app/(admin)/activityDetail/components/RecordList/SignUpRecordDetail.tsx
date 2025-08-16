@@ -1,6 +1,6 @@
 'use client';
 
-import { Popover, Space, Image, Button } from 'antd';
+import { Popover, Space, Image, Button, Tag, Table } from 'antd';
 import { HttpClient } from '@/utils';
 import { idCardTypeValueEnumMap } from '@/constants/value-enum';
 import { ProDescriptions } from '@ant-design/pro-components';
@@ -8,7 +8,11 @@ import { EyeOutlined } from '@ant-design/icons';
 
 import type {
   SignUpRecordDetail as _SignUpRecordDetail,
+  IVolunteerDetail,
 } from '@/utils/http/api-types';
+
+const { Summary } = Table;
+const { Row, Cell } = Summary;
 
 const signUpDetailItemStyle = { whiteSpace: 'pre-line', maxWidth: 500 };
 
@@ -20,9 +24,18 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
     columns={[
       {
         title: '身份',
-        renderText: (_, { volunteerIdentityVo }) => (
+        renderText: (_, { isStudentVerified, volunteerIdentityVo }) => (
           <>
-            {volunteerIdentityVo.studentCardPicUrls.length ? '学生' : '社会人士'}
+            {
+              volunteerIdentityVo.studentCardPicUrls.length
+                ? (
+                  <>
+                    学生
+                    {isStudentVerified && <Tag bordered={false} color="processing" className="ms-2">已认证</Tag>}
+                  </>
+                )
+                : '社会人士'
+            }
             <Popover
               trigger="click"
               title="身份详情"
@@ -89,6 +102,11 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
         )
       },
       {
+        title: '户籍',
+        dataIndex: 'householdRegister',
+        renderText: (_, { householdRegister }) => householdRegister.join(''),
+      },
+      {
         title: '证件照',
         dataIndex: 'idPhotoUrl',
         renderText: (_, { idPhotoUrl }) => <Image className="rounded-[6px] object-cover" src={idPhotoUrl} width={90} height={120} />
@@ -115,7 +133,7 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
       },
       {
         title: '证件扫描件',
-        renderText: (_ ,{ idCardNationalUrl, idCardPortraitUrl }) => (
+        renderText: (_, { idCardNationalUrl, idCardPortraitUrl }) => (
           <Space>
             <Image className="object-cover" src={idCardNationalUrl} style={{ width: 96, height: 60, borderRadius: 6 }} />
             <Image className="object-cover" src={idCardPortraitUrl} style={{ width: 96, height: 60, borderRadius: 6 }} />
@@ -138,7 +156,7 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
       },
       {
         title: '白名单情况',
-        renderText: (_, { stateVo: { whiteListExpireAt }}) => whiteListExpireAt ? `${whiteListExpireAt} 到期` : '无',
+        renderText: (_, { stateVo: { whiteListExpireAt } }) => whiteListExpireAt ? `${whiteListExpireAt} 到期` : '无',
       },
       {
         title: '违规情况',
@@ -149,23 +167,64 @@ export const SignUpRecordDetail = ({ id }: { id: number }) => (
         )
       },
       {
-        title: '累计参与活动数',
-        dataIndex: 'activityWorkExperienceTotalNum',
-        valueType: 'digit',
-      },
-      {
         title: '历史志愿活动',
         dataIndex: 'activityWorkExperienceVos',
         valueType: 'textarea',
-        render: (_, { activityWorkExperienceVos: works }) => 
+        render: (_, {
+          totalActivityTransferAmount,
+          activityWorkExperienceTotalNum,
+          activityWorkExperienceVos: works,
+        }) =>
           works.length
             ? (
-              <div className="max-h-[300px] overflow-y-auto">
-                {works.map(({ activityName, activityWorkNames }, index) => <div key={index}>【{activityName}】{activityWorkNames}</div>)}
+              <div className="p-[8px] w-full">
+                <Table<IVolunteerDetail['activityWorkExperienceVos'][number]>
+                  size="small"
+                  style={{ marginInline: 8, marginBlock: 0 }}
+                  bordered
+                  pagination={false}
+                  scroll={{ y: 200, x: '100%' }}
+                  dataSource={works}
+                  columns={[
+                    {
+                      title: '活动名称',
+                      dataIndex: 'activityName',
+                      className: 'max-w-[100px]',
+                      ellipsis: true,
+                    },
+                    {
+                      title: '岗位',
+                      dataIndex: 'activityWorkNames',
+                      ellipsis: true,
+                    },
+                    {
+                      title: '转账金额',
+                      dataIndex: 'activityTransferAmount',
+                      render: amount => `${amount} 元`,
+                      width: 200,
+                    },
+                  ]}
+                  summary={
+                    () => {
+                      const totalAmount = totalActivityTransferAmount ?? works.reduce((acc, cur) => acc + cur.activityTransferAmount, 0);
+                      const totalNum = activityWorkExperienceTotalNum || works.length;
+
+                      return (
+                        <Summary fixed>
+                          <Row>
+                            <Cell index={0} colSpan={3}>
+                              合计：历史累计参与活动 {totalNum} 次，累计转账金额 {totalAmount} 元
+                            </Cell>
+                          </Row>
+                        </Summary>
+                      );
+                    }
+                  }
+                />
               </div>
             )
             : '无'
-      }
+      },
     ]}
   />
 );

@@ -13,14 +13,13 @@ import useStore from '@/store';
 
 import type { ActivityPreview } from '@/utils/http/api-types';
 
-type FilterForm = { state: ActivityState; keyword: string };
+type FilterForm = { state: ActivityState; keyword: string; address: string };
 
 const ActivityList = () => {
 
   const router = useRouter();
   const message = useMessage();
   const role = useStore(state => state.role);
-  const formRef = useRef<ProFormInstance>(void 0);
 
   const {
     reload,
@@ -36,7 +35,11 @@ const ActivityList = () => {
   } = usePagingAndQuery<ActivityPreview, FilterForm>({
     pagingRequest: HttpClient.getPagingActivities,
     queryRequest: HttpClient.filterActivities,
-    filterFormTransform: (form) => ({ state: form.state ?? null, keyword: form.keyword ?? null }),
+    filterFormTransform: (form) => ({
+      state: form.state ?? null,
+      keyword: form.keyword ?? null,
+      address: form.address ?? null,
+    }),
   });
 
   const handleCopyActivity = (id: number) => router.push(`/activityForm?operation=copy&id=${id}`);
@@ -100,13 +103,14 @@ const ActivityList = () => {
       <ProForm<FilterForm>
         layout="inline"
         variant="filled"
-        formRef={formRef}
         submitter={{ searchConfig: { submitText: '搜索' } }}
         onFinish={handleFilterQuery}
         onReset={handleFilterReset}
+        isKeyPressSubmit
       >
         <ProFormSelect label="活动状态" name="state" width="xs" valueEnum={activityStateValueEnumMap} />
-        <ProFormText label="活动名称" name="keyword" width="md" fieldProps={{ onPressEnter: formRef.current?.submit }} />
+        <ProFormText label="活动地址" name="address" width="sm" />
+        <ProFormText label="活动名称" name="keyword" width="sm" />
       </ProForm>
       <Button type="primary" icon={<PlusOutlined />} onClick={() => router.push('/activityForm?operation=append')}>新增活动</Button>
     </div>
